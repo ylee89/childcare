@@ -11,11 +11,68 @@ not pressure.
 
 ---
 
-## What's in this repository
+## 🚀 The working app (`app/`)
 
-This is the **product design package** for Feel Friends. It contains the
-full information architecture, user flows, wireframes, design system,
-gamification strategy, MVP scope, and roadmap needed to build the app.
+This repo contains a **fully functional Feel Friends app** — an installable,
+offline-capable Progressive Web App (PWA) built with vanilla JS (no build
+step). It is not a mockup: games are playable, progress persists on-device,
+voice narration speaks, the microphone records, and the parent dashboard shows
+real analytics derived from actual play.
+
+```bash
+npm install          # dev tooling for tests (the app itself needs no deps)
+npm start            # serve the app  ->  http://localhost:5173/
+```
+
+Open it on a phone (same network) or in a desktop browser, and "Add to Home
+Screen" to install it like a native app. It keeps working with no connection.
+
+**What actually works today:**
+
+- **Onboarding** → creates a local child profile (name, age band, avatar).
+- **Daily mood check-in** → records the feeling, validates it, suggests Calm
+  Corner for hard feelings.
+- **Emotion Explorer** → Face Match + Name That Feeling (no-fail), and a
+  collectible 10-card deck that flips to teach each feeling.
+- **Story Adventures** → 4 branching scenarios with real consequences + a
+  bridge into Brave Voice.
+- **Brave Voice** → narrated modelling + real microphone recording with
+  playback/delete (local-only), graceful echo mode without a mic.
+- **Calm Corner** → balloon breathing, an animated glitter-jar canvas,
+  5-4-3-2-1 grounding, quiet listen — reachable from every screen.
+- **Empathy Lab** & **Good Choice Challenge** → working rounds + kindness
+  missions.
+- **Rewards** → cards + stickers persist; Sticker Book aggregates them. No
+  scores/streaks/timers.
+- **Parent gate** (hold + arithmetic) → **Parent Dashboard** with live emotion
+  trends, progress, and a personalized support insight, plus **Settings**
+  (narration/SFX/reduce-motion, data export, delete-all).
+- **Offline** via a service worker; **installable** via the web manifest;
+  **voice narration** via the Web Speech API.
+
+### Tests (the app is verified, not just claimed)
+
+```bash
+npm test             # 129 assertions — design-system prototype + docs (jsdom)
+npm run test:e2e     # 40 assertions — drives the REAL app in Chromium end-to-end
+```
+
+The e2e suite (`tests/app.e2e.js`) walks the whole journey in a real browser:
+onboarding → check-in → games → stories → mic recording → calm → empathy →
+choice → sticker book → parent gate → dashboard, and verifies **data persists
+across reload** and **the app loads while offline**. Latest run: **40/40 pass**.
+
+> `npm run test:e2e` boots its own server. In some locked-down sandboxes that
+> child-process server is killed; if so, run `npm start` in one terminal and
+> `BASE=http://localhost:5173 node tests/app.e2e.js` in another.
+
+---
+
+## Design package (`docs/`)
+
+Alongside the working app, this repo contains the full **product design
+package**: information architecture, user flows, wireframes, design system,
+gamification strategy, MVP scope, and roadmap.
 
 | Deliverable | Document |
 |---|---|
@@ -30,28 +87,29 @@ gamification strategy, MVP scope, and roadmap needed to build the app.
 | 🔒 Safety, Privacy & Accessibility | [`docs/09-safety-privacy-accessibility.md`](docs/09-safety-privacy-accessibility.md) |
 | 🔍 Reference Benchmark (*Breathe, Think, Do*) | [`docs/10-reference-breathe-think-do.md`](docs/10-reference-breathe-think-do.md) |
 
-### Preview
+### Preview — the real app
 
-Live renders of the prototype (captured headless via Chromium with
-`tests/screenshot.js`):
+Live screenshots captured from the **running app** (`tests/app-screens.js`),
+with real on-device state:
 
 | | | |
 |:--:|:--:|:--:|
-| ![Home](tests/screens/01-home.png) | ![Mood check-in](tests/screens/02-checkin.png) | ![Face Match](tests/screens/03-facematch.png) |
-| Friendly Town home | Daily mood check-in | Emotion Explorer · Face Match |
-| ![Story](tests/screens/04-story.png) | ![Brave Voice](tests/screens/05-bravevoice.png) | ![Empathy](tests/screens/06-empathy.png) |
-| Story Adventures | Brave Voice | Empathy Lab |
-| ![Good Choice](tests/screens/07-goodchoice.png) | ![Sticker Book](tests/screens/08-sticker.png) | ![Calm Corner](tests/screens/09-calm.png) |
-| Good Choice Challenge | Sticker Book | Calm Corner (breathing) |
-| ![Dashboard](tests/screens/10-dashboard.png) | | |
-| Parent Dashboard (grown-up) | | |
+| ![Onboarding](tests/app-screens/01-onboarding.png) | ![Check-in](tests/app-screens/02-checkin.png) | ![Home](tests/app-screens/03-home.png) |
+| Onboarding | Daily mood check-in | Friendly Town home |
+| ![Face Match](tests/app-screens/04-facematch.png) | ![Cards](tests/app-screens/05-cards.png) | ![Stories](tests/app-screens/06-stories.png) |
+| Face Match | Collectible feeling cards | Story Adventures |
+| ![Story](tests/app-screens/07-story.png) | ![Brave Voice](tests/app-screens/08-brave.png) | ![Calm](tests/app-screens/09-calm.png) |
+| Story (branching) | Brave Voice (mic) | Calm Corner |
+| ![Empathy](tests/app-screens/10-empathy.png) | ![Choice](tests/app-screens/11-choice.png) | ![Sticker](tests/app-screens/12-sticker.png) |
+| Empathy Lab | Good Choice | Sticker Book |
+| ![Dashboard](tests/app-screens/13-dashboard.png) | | |
+| Parent Dashboard (live data) | | |
 
-### Interactive prototype
+### Early design prototype (`prototype/`)
 
-A self-contained, no-build HTML prototype demonstrating the design system and
-several key screens lives in [`prototype/index.html`](prototype/index.html).
-Open it in any modern browser (or on a phone) to feel the look, scale of
-touch targets, and core interactions.
+A self-contained, single-file HTML prototype from the design phase lives in
+[`prototype/index.html`](prototype/index.html). It predates the full app and is
+kept as a design reference. For the real experience, run the app in `app/`.
 
 ```bash
 # from the repo root

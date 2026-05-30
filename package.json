@@ -2,14 +2,17 @@
   "name": "feel-friends",
   "version": "0.1.0",
   "private": true,
-  "description": "Feel Friends — a social-emotional learning (SEL) app design package for children ages 3-6.",
+  "description": "Feel Friends — a working social-emotional learning (SEL) PWA for children ages 3-6.",
   "directories": {
     "doc": "docs",
     "test": "tests"
   },
   "scripts": {
+    "start": "node server.js",
     "test": "node tests/prototype.test.js",
-    "screens": "node tests/screenshot.js"
+    "test:e2e": "node tests/run-e2e.js",
+    "screens": "node tests/screenshot.js",
+    "icons": "node tests/make-icons.js"
   },
   "keywords": [
     "sel",
