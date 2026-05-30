@@ -30,6 +30,22 @@ gamification strategy, MVP scope, and roadmap needed to build the app.
 | 🔒 Safety, Privacy & Accessibility | [`docs/09-safety-privacy-accessibility.md`](docs/09-safety-privacy-accessibility.md) |
 | 🔍 Reference Benchmark (*Breathe, Think, Do*) | [`docs/10-reference-breathe-think-do.md`](docs/10-reference-breathe-think-do.md) |
 
+### Preview
+
+Live renders of the prototype (captured headless via Chromium with
+`tests/screenshot.js`):
+
+| | | |
+|:--:|:--:|:--:|
+| ![Home](tests/screens/01-home.png) | ![Mood check-in](tests/screens/02-checkin.png) | ![Face Match](tests/screens/03-facematch.png) |
+| Friendly Town home | Daily mood check-in | Emotion Explorer · Face Match |
+| ![Story](tests/screens/04-story.png) | ![Brave Voice](tests/screens/05-bravevoice.png) | ![Empathy](tests/screens/06-empathy.png) |
+| Story Adventures | Brave Voice | Empathy Lab |
+| ![Good Choice](tests/screens/07-goodchoice.png) | ![Sticker Book](tests/screens/08-sticker.png) | ![Calm Corner](tests/screens/09-calm.png) |
+| Good Choice Challenge | Sticker Book | Calm Corner (breathing) |
+| ![Dashboard](tests/screens/10-dashboard.png) | | |
+| Parent Dashboard (grown-up) | | |
+
 ### Interactive prototype
 
 A self-contained, no-build HTML prototype demonstrating the design system and
