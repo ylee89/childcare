@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Feel Friends — Prototype</title>
+<style>
+  /* ---- Design tokens (mirror of docs/04-design-system.md) ---- */
+  :root{
+    --ff-cream:#FFF8EF; --ff-ink:#3A3A4A; --ff-cloud:#FFFFFF;
+    --ff-sky:#7CC6FE; --ff-sun:#FFD56B; --ff-coral:#FF8C7A;
+    --ff-mint:#9BE3B4; --ff-lilac:#C3B5F2;
+    --calm-bg:#26304A; --calm-surface:#33405E; --calm-glow:#A9C6FF; --calm-text:#EAF1FF;
+    --emo-happy:#FFD56B; --emo-sad:#7CA9E0; --emo-angry:#FF6B5E; --emo-frustrated:#FF9F5A;
+    --emo-nervous:#B7E07C; --emo-scared:#9B8CE0; --emo-proud:#FFB36B; --emo-lonely:#8FB0C9;
+    --emo-excited:#FF8FC7; --emo-confused:#C0B7A8;
+    --radius-tile:24px; --radius-card:20px; --pill:999px;
+    --touch:88px;
+    --shadow:0 6px 18px rgba(58,58,74,.12);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;font-family:"Nunito","Quicksand",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:#e9e3d8;color:var(--ff-ink);}
+  body{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px;}
+
+  /* phone frame */
+  .phone{position:relative;width:390px;max-width:100%;height:780px;max-height:96vh;background:var(--ff-cream);
+    border-radius:40px;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden;display:flex;flex-direction:column;}
+  .phone::before{content:"";position:absolute;top:10px;left:50%;transform:translateX(-50%);
+    width:120px;height:24px;background:#1c1c22;border-radius:999px;z-index:50;}
+
+  .screen{flex:1;display:none;flex-direction:column;overflow-y:auto;padding:44px 20px 96px;animation:fade .25s ease-out;}
+  .screen.active{display:flex;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* top bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;min-height:44px;}
+  .topbar h1{font-size:24px;margin:0;font-weight:800;}
+  .back{font-size:24px;background:var(--ff-cloud);border:none;border-radius:var(--pill);
+    width:52px;height:52px;box-shadow:var(--shadow);cursor:pointer;}
+  .keybtn{font-size:18px;background:transparent;border:none;opacity:.45;cursor:pointer;}
+
+  .greet{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800;}
+  .mascot{width:96px;height:96px;border-radius:50%;background:var(--ff-sun);display:flex;align-items:center;
+    justify-content:center;font-size:54px;margin:6px auto 14px;box-shadow:var(--shadow);}
+
+  /* world grid */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .tile{min-height:var(--touch);background:var(--ff-cloud);border:none;border-radius:var(--radius-tile);
+    padding:18px 10px;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;align-items:center;
+    gap:6px;font-weight:800;font-size:16px;color:var(--ff-ink);transition:transform .12s;}
+  .tile:active{transform:scale(.95);}
+  .tile .ico{font-size:40px;}
+  .tile.t-emotion{background:#FFF1CF;} .tile.t-story{background:#E3F0FF;}
+  .tile.t-brave{background:#FFE4DD;} .tile.t-empathy{background:#EEE8FF;}
+  .tile.t-choice{background:#E3F7E9;} .tile.t-sticker{background:#FCE9F4;}
+
+  /* persistent nav */
+  .nav{position:absolute;bottom:0;left:0;right:0;height:84px;display:flex;align-items:center;
+    justify-content:space-between;padding:0 22px 14px;pointer-events:none;}
+  .nav .home,.nav .calm{pointer-events:auto;width:64px;height:64px;border-radius:50%;border:none;font-size:30px;
+    box-shadow:var(--shadow);cursor:pointer;}
+  .nav .home{background:var(--ff-cloud);} .nav .calm{background:var(--calm-glow);}
+
+  /* generic */
+  .prompt{font-size:23px;font-weight:800;text-align:center;margin:6px 0 18px;line-height:1.3;}
+  .center{display:flex;flex-direction:column;align-items:center;gap:14px;flex:1;}
+  .faces{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;}
+  .face{aspect-ratio:1;border:none;border-radius:24px;background:var(--ff-cloud);box-shadow:var(--shadow);
+    font-size:52px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    transition:transform .12s;}
+  .face:active{transform:scale(.94);}
+  .face small{font-size:15px;font-weight:800;color:var(--ff-ink);}
+  .wiggle{animation:wig .5s;}
+  @keyframes wig{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+
+  .moodgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;width:100%;}
+  .moodgrid .face{font-size:34px;border-radius:18px;}
+  .moodgrid .face small{font-size:11px;}
+
+  .pill-btn{background:var(--ff-sky);color:#fff;border:none;border-radius:var(--pill);padding:16px 28px;
+    font-size:19px;font-weight:800;box-shadow:var(--shadow);cursor:pointer;min-height:56px;}
+  .pill-btn.ghost{background:var(--ff-cloud);color:var(--ff-ink);}
+  .pill-btn.mint{background:var(--ff-mint);color:#1f4d33;}
+
+  .toast{margin-top:8px;background:var(--ff-mint);color:#1f4d33;font-weight:800;border-radius:var(--radius-card);
+    padding:14px 18px;text-align:center;font-size:18px;min-height:24px;}
+  .toast.warn{background:#FFE9C7;color:#7a5410;}
+
+  .dots{display:flex;gap:8px;justify-content:center;margin-top:6px;}
+  .dot{width:14px;height:14px;border-radius:50%;background:#e2d9c8;}
+  .dot.on{background:var(--ff-sun);}
+
+  /* story */
+  .scene{width:100%;aspect-ratio:16/10;border-radius:var(--radius-card);background:linear-gradient(135deg,#cdeafe,#e8d9ff);
+    display:flex;align-items:center;justify-content:center;font-size:64px;box-shadow:var(--shadow);margin-bottom:14px;}
+  .choice{width:100%;background:var(--ff-cloud);border:none;border-radius:var(--radius-card);padding:18px;
+    font-size:18px;font-weight:800;text-align:left;box-shadow:var(--shadow);cursor:pointer;display:flex;gap:12px;
+    align-items:center;transition:transform .12s;}
+  .choice:active{transform:scale(.97);}
+  .choice .ce{font-size:30px;}
+
+  /* brave voice */
+  .micwrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .mic{width:150px;height:150px;border-radius:50%;border:none;background:var(--ff-coral);color:#fff;font-size:60px;
+    box-shadow:var(--shadow);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .mic.rec{animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,140,122,.5)}50%{transform:scale(1.05);box-shadow:0 0 0 18px rgba(255,140,122,0)}}
+
+  /* calm */
+  #s-calm{background:var(--calm-bg);color:var(--calm-text);}
+  #s-calm .topbar h1{color:var(--calm-text);}
+  #s-calm .back{background:var(--calm-surface);color:var(--calm-text);}
+  .calm-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;}
+  .calm-tile{aspect-ratio:1.1;border:none;border-radius:24px;background:var(--calm-surface);color:var(--calm-text);
+    font-size:18px;font-weight:800;box-shadow:none;cursor:pointer;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:8px;}
+  .calm-tile .ico{font-size:42px;}
+  .balloon{width:120px;height:150px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+    background:radial-gradient(circle at 35% 30%,#ffd1e8,#ff8fc7);margin:10px auto;
+    transition:transform 4s ease-in-out;}
+  .balloon.in{transform:scale(1.45);transition:transform 4s ease-in-out;}
+  .breath-label{font-size:26px;font-weight:800;text-align:center;color:var(--calm-text);}
+
+  /* dashboard (grown-up) */
+  #s-dash{background:#F4F6FA;}
+  #s-dash .topbar h1{color:#2A3140;}
+  .card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-bottom:14px;}
+  .card h3{margin:0 0 10px;font-size:16px;color:#4A6FA5;}
+  .bar{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:14px;font-weight:700;}
+  .bar i{height:14px;border-radius:7px;display:inline-block;}
+  .insight{background:#EEF4FF;border-radius:12px;padding:14px;font-size:14px;line-height:1.4;}
+  .tabbar{position:absolute;bottom:0;left:0;right:0;height:64px;background:#fff;border-top:1px solid #e6e9f0;
+    display:flex;align-items:center;justify-content:space-around;font-size:12px;font-weight:700;color:#8590a3;}
+  .tabbar b{color:#4A6FA5;}
+
+  .hint{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);background:#1c1c22;color:#fff;
+    font-size:12px;padding:6px 14px;border-radius:999px;opacity:.8;}
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+
+  <!-- HOME -->
+  <section class="screen active" id="s-home">
+    <div class="topbar">
+      <div class="greet">☀️ Good morning!</div>
+      <button class="keybtn" onclick="go('s-dash')" title="Grown-Ups">🔑</button>
+    </div>
+    <div class="mascot">🐻</div>
+    <div class="grid">
+      <button class="tile t-emotion" onclick="openCheckin();go('s-emotion')"><span class="ico">😊</span>Emotion Explorer</button>
+      <button class="tile t-story"   onclick="go('s-story')"><span class="ico">📖</span>Story Adventures</button>
+      <button class="tile t-brave"   onclick="go('s-brave')"><span class="ico">🗣️</span>Brave Voice</button>
+      <button class="tile t-empathy" onclick="go('s-empathy')"><span class="ico">💜</span>Empathy Lab</button>
+      <button class="tile t-choice"  onclick="go('s-choice')"><span class="ico">✅</span>Good Choice</button>
+      <button class="tile t-sticker" onclick="go('s-sticker')"><span class="ico">📚</span>Sticker Book</button>
+    </div>
+    <nav class="nav"><button class="home" onclick="go('s-home')">🏠</button>
+      <button class="calm" onclick="go('s-calm')">🫧</button></nav>
+  </section>
+
+  <!-- MOOD CHECK-IN (overlay-style screen) -->
+  <section class="screen" id="s-checkin">
+    <div class="topbar"><span></span><button class="keybtn" onclick="go('s-home')">☁️ later</button></div>
+    <div class="prompt">How are you feeling today?</div>
+    <div class="moodgrid" id="moodgrid"></div>
+    <div class="toast" id="checkinToast" style="display:none"></div>
+    <div class="center" style="flex:0;margin-top:14px">
+      <button class="pill-btn ghost" onclick="go('s-home')">All done</button>
+    </div>
+  </section>
+
+  <!-- EMOTION EXPLORER: Face Match -->
+  <section class="screen" id="s-emotion">
+    <div class="topbar"><button class="back" onclick="go('s-home')">←</button><h1>Face Match</h1>
+      <button class="keybtn" onclick="go('s-dash')">🔑</button></div>
+    <div class="prompt">Find the friend who feels<br><span id="target">😊 HAPPY</span></div>
+    <div class="faces" id="matchFaces"></div>
+    <div class="toast" id="matchToast" style="display:none"></div>
+    <div class="dots" id="matchDots"></div>
+    <nav class="nav"><button class="home" onclick="go('s-home')">🏠</button>
+      <button class="calm" onclick="go('s-calm')">🫧</button></nav>
+  </section>
+
+  <!-- STORY ADVENTURES -->
+  <section class="screen" id="s-story">
+    <div class="topbar"><button class="back" onclick="go('s-home')">←</button><h1>Sharing</h1>
+      <button class="keybtn" onclick="go('s-dash')">🔑</button></div>
+    <div id="storyStage">
+      <div class="scene">🧸🤲</div>
+      <div class="prompt" style="font-size:20px" id="storyPrompt">A friend wants your truck.<br>What could you do?</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <button class="choice" onclick="storyOutcome('good')"><span class="ce">🗣️</span>"We can take turns!"</button>
+        <button class="choice" onclick="storyOutcome('grab')"><span class="ce">😠</span>Hold it tight: "No, mine!"</button>
+        <button class="choice" onclick="storyOutcome('walk')"><span class="ce">😢</span>Walk away sad</button>
+      </div>
+    </div>
+    <nav class="nav"><button class="home" onclick="go('s-home')">🏠</button>
+      <button class="calm" onclick="go('s-calm')">🫧</button></nav>
+  </section>
+
+  <!-- BRAVE VOICE -->
+  <section class="screen" id="s-brave">
+    <div class="topbar"><button class="back" onclick="go('s-home')">←</button><h1>Brave Voice</h1>
+      <button class="keybtn" onclick="go('s-dash')">🔑</button></div>
+    <div class="prompt">Mochi says it first:<br>“Please stop.”</div>
+    <div class="center">
+      <div style="font-size:20px;font-weight:800">Now you try! 💪</div>
+      <div class="micwrap">
+        <button class="mic" id="micBtn"
+          onpointerdown="micStart()" onpointerup="micStop()" onpointerleave="micStop()">🎤</button>
+        <div style="font-weight:800" id="micLabel">hold to talk</div>
+      </div>
+      <div class="toast" id="braveToast" style="display:none"></div>
+    </div>
+    <nav class="nav"><button class="home" onclick="go('s-home')">🏠</button>
+      <button class="calm" onclick="go('s-calm')">🫧</button></nav>
+  </section>
+
+  <!-- EMPATHY LAB -->
+  <section class="screen" id="s-empathy">
+    <div class="topbar"><button class="back" onclick="go('s-home')">←</button><h1>Empathy Lab</h1>
+      <button class="keybtn" onclick="go('s-dash')">🔑</button></div>
+    <div class="scene" style="background:linear-gradient(135deg,#ffe0c2,#ffd1e8)">🍦😢</div>
+    <div class="prompt" style="font-size:20px">This friend dropped their ice cream.<br>How do they feel?</div>
+    <div class="faces" id="empFaces"></div>
+    <div class="toast" id="empToast" style="display:none"></div>
+    <nav class="nav"><button class="home" onclick="go('s-home')">🏠</button>
+      <button class="calm" onclick="go('s-calm')">🫧</button></nav>
+  </section>
+
+  <!-- GOOD CHOICE -->
+  <section class="screen" id="s-choice">
+    <div class="topbar"><button class="back" onclick="go('s-home')">←</button><h1>Good Choice</h1>
+      <button class="keybtn" onclick="go('s-dash')">🔑</button></div>
+    <div class="scene" style="background:linear-gradient(135deg,#d9f7e3,#cdeafe)">🧹🧸</div>
+    <div class="prompt" style="font-size:20px">It's clean-up time, but you want to keep playing.</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button class="choice" onclick="choiceOut(true)"><span class="ce">🧹</span>Help clean up</button>
+      <button class="choice" onclick="choiceOut(false)"><span class="ce">🙅</span>Keep playing</button>
+    </div>
+    <div class="toast" id="choiceToast" style="display:none"></div>
+    <nav class="nav"><button class="home" onclick="go('s-home')">🏠</button>
+      <button class="calm" onclick="go('s-calm')">🫧</button></nav>
+  </section>
+
+  <!-- STICKER BOOK -->
+  <section class="screen" id="s-sticker">
+    <div class="topbar"><button class="back" onclick="go('s-home')">←</button><h1>My Collection</h1>
+      <button class="keybtn" onclick="go('s-dash')">🔑</button></div>
+    <div class="card" style="background:#fff;box-shadow:var(--shadow)">
+      <h3 style="color:var(--ff-ink)">Stickers I earned</h3>
+      <div id="stickerShelf" style="font-size:34px;line-height:1.6">⭐ 🌈 💪 💜 🎈</div>
+    </div>
+    <div class="card" style="background:#fff;box-shadow:var(--shadow)">
+      <h3 style="color:var(--ff-ink)">Friends I've met</h3>
+      <div style="font-size:30px;line-height:1.6">🐻 Mochi&nbsp; 🐰 Pip&nbsp; 🦊 Fen&nbsp; 🦉 ???</div>
+    </div>
+    <nav class="nav"><button class="home" onclick="go('s-home')">🏠</button>
+      <button class="calm" onclick="go('s-calm')">🫧</button></nav>
+  </section>
+
+  <!-- CALM CORNER -->
+  <section class="screen" id="s-calm">
+    <div class="topbar"><button class="back" onclick="goBackFromCalm()">←</button><h1>Calm Corner</h1><span></span></div>
+    <div id="calmMenu">
+      <div class="prompt" style="color:var(--calm-text)">Pick a calm thing</div>
+      <div class="calm-grid">
+        <button class="calm-tile" onclick="startBalloon()"><span class="ico">🎈</span>Balloon Breathing</button>
+        <button class="calm-tile" onclick="alert('Glitter Jar: shake & watch it settle ✨')"><span class="ico">✨</span>Glitter Jar</button>
+        <button class="calm-tile" onclick="alert('Counting Calm: find 5 things you see… 🔢')"><span class="ico">🔢</span>Counting Calm</button>
+        <button class="calm-tile" onclick="alert('Quiet Listen: just listen 🎧')"><span class="ico">🎧</span>Quiet Listen</button>
+      </div>
+    </div>
+    <div id="calmBalloon" style="display:none">
+      <div class="balloon" id="balloon"></div>
+      <div class="breath-label" id="breathLabel">Breathe in…</div>
+      <div class="center" style="flex:0;margin-top:18px">
+        <button class="pill-btn mint" onclick="stopBalloon()">I feel calmer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PARENT DASHBOARD (grown-up) -->
+  <section class="screen" id="s-dash">
+    <div class="topbar"><h1>Dashboard</h1><span style="font-weight:800;color:#4A6FA5">Aria ▾</span></div>
+    <div class="card"><h3>This week</h3>
+      <div style="font-size:14px;font-weight:700">4 days active · 5 worlds visited · 6 mood check-ins</div></div>
+    <div class="card"><h3>Feelings this week</h3>
+      <div class="bar">happy <i style="width:120px;background:var(--emo-happy)"></i></div>
+      <div class="bar">frustrated <i style="width:70px;background:var(--emo-frustrated)"></i></div>
+      <div class="bar">excited <i style="width:55px;background:var(--emo-excited)"></i></div>
+      <div class="bar">sad <i style="width:35px;background:var(--emo-sad)"></i></div>
+    </div>
+    <div class="card"><h3>💡 Areas to support</h3>
+      <div class="insight">Aria often walks away in conflict stories. Try practicing
+        <b>“I don’t like that.”</b> together in Brave Voice.</div>
+      <div style="margin-top:12px"><button class="pill-btn" style="background:#4A6FA5;width:100%"
+        onclick="go('s-brave')">Open activity →</button></div>
+    </div>
+    <div class="card"><h3>✨ AI Story Generator</h3>
+      <div style="font-size:14px">Make a personalized story for Aria (needs wifi, you review it first).</div>
+      <div style="margin-top:10px"><button class="pill-btn ghost" style="width:100%"
+        onclick="alert('Story Generator: enter a situation, generate, review, then save offline.')">New story</button></div>
+    </div>
+    <div class="tabbar"><b>Dashboard</b><span>Stories</span><span>Kids</span><span onclick="go('s-home')" style="cursor:pointer">⚙ Exit</span></div>
+  </section>
+
+</div>
+<div class="hint">Tap around — this is a clickable design prototype</div>
+
+<script>
+/* ---- data ---- */
+const EMO = {
+  happy:{e:'😊',c:'--emo-happy'}, sad:{e:'😢',c:'--emo-sad'}, angry:{e:'😠',c:'--emo-angry'},
+  frustrated:{e:'😣',c:'--emo-frustrated'}, nervous:{e:'😰',c:'--emo-nervous'}, scared:{e:'😨',c:'--emo-scared'},
+  proud:{e:'😌',c:'--emo-proud'}, lonely:{e:'😞',c:'--emo-lonely'}, excited:{e:'🤩',c:'--emo-excited'},
+  confused:{e:'😕',c:'--emo-confused'}
+};
+const ORDER = ['happy','sad','angry','frustrated','nervous','scared','proud','lonely','excited','confused'];
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelector('#'+id).scrollTop = 0;
+  if(id==='s-emotion') newMatchRound();
+  if(id==='s-empathy') buildEmpathy();
+  if(id==='s-calm'){showCalmMenu();}
+}
+
+/* ---- mood check-in ---- */
+function openCheckin(){ /* in a real app this overlays Home on first open; here it's reachable but optional */ }
+const mg=document.getElementById('moodgrid');
+ORDER.forEach(k=>{
+  const b=document.createElement('button'); b.className='face';
+  b.innerHTML=`${EMO[k].e}<small>${k}</small>`;
+  b.onclick=()=>{const t=document.getElementById('checkinToast');t.style.display='block';
+    t.textContent=`Thanks for sharing. It's okay to feel ${k}. 💛`;};
+  mg.appendChild(b);
+});
+
+/* ---- face match ---- */
+let matchRound=0;
+function newMatchRound(){
+  const target = ORDER[Math.floor(Math.random()*ORDER.length)];
+  document.getElementById('target').textContent = `${EMO[target].e} ${target.toUpperCase()}`;
+  const pool = ORDER.filter(x=>x!==target).sort(()=>Math.random()-.5).slice(0,3);
+  const opts = [...pool,target].sort(()=>Math.random()-.5);
+  const wrap=document.getElementById('matchFaces'); wrap.innerHTML='';
+  opts.forEach(k=>{
+    const b=document.createElement('button'); b.className='face'; b.innerHTML=`${EMO[k].e}<small>${k}</small>`;
+    b.onclick=()=>{
+      const t=document.getElementById('matchToast'); t.style.display='block';
+      if(k===target){ b.classList.add('wiggle'); t.className='toast'; t.textContent=`Yes! That's ${k}! ⭐ Card collected.`;
+        matchRound=Math.min(matchRound+1,5); drawDots();
+        setTimeout(()=>{ if(matchRound<5) newMatchRound(); }, 1100);
+      } else { t.className='toast warn'; t.textContent=`That friend feels ${k}. Can you find ${target}?`; }
+    };
+    wrap.appendChild(b);
+  });
+  drawDots();
+}
+function drawDots(){const d=document.getElementById('matchDots');d.innerHTML='';
+  for(let i=0;i<5;i++){const s=document.createElement('span');s.className='dot'+(i<matchRound?' on':'');d.appendChild(s);}}
+
+/* ---- story ---- */
+function storyOutcome(kind){
+  const stage=document.getElementById('storyStage');
+  const map={
+    good:{e:'🧸😊',t:'Your friend smiles and you both play. That felt good! ⭐'},
+    grab:{e:'🧸😟',t:'Your friend looks sad and play feels yucky. Want to try another way?'},
+    walk:{e:'😢',t:'You feel lonely. You can share AND get a turn. Try again?'}
+  }[kind];
+  stage.innerHTML = `<div class="scene">${map.e}</div>
+    <div class="prompt" style="font-size:20px">${map.t}</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button class="choice" onclick="resetStory()"><span class="ce">↺</span>Try another way</button>
+      <button class="choice" onclick="go('s-brave')"><span class="ce">🗣️</span>Practice the brave words</button>
+      <button class="choice" onclick="go('s-home')"><span class="ce">🏠</span>Keep going</button>
+    </div>`;
+}
+function resetStory(){ document.getElementById('storyStage').innerHTML = STORY_HTML; }
+const STORY_HTML = document.getElementById('storyStage').innerHTML;
+
+/* ---- brave voice ---- */
+let recT;
+function micStart(){const b=document.getElementById('micBtn');b.classList.add('rec');
+  document.getElementById('micLabel').textContent='listening…';}
+function micStop(){const b=document.getElementById('micBtn');if(!b.classList.contains('rec'))return;
+  b.classList.remove('rec'); document.getElementById('micLabel').textContent='hold to talk';
+  const t=document.getElementById('braveToast'); t.style.display='block';
+  t.textContent='You used your brave voice! 💪 (recording stays on this device)';}
+
+/* ---- empathy ---- */
+function buildEmpathy(){
+  const wrap=document.getElementById('empFaces'); wrap.innerHTML='';
+  ['happy','sad','angry','excited'].forEach(k=>{
+    const b=document.createElement('button'); b.className='face'; b.innerHTML=`${EMO[k].e}<small>${k}</small>`;
+    b.onclick=()=>{const t=document.getElementById('empToast');t.style.display='block';
+      t.className = k==='sad'?'toast':'toast warn';
+      t.textContent = k==='sad' ? 'Yes — they feel sad. What could we do to help? 💜'
+                                 : 'Look at their face… do they feel sad?';};
+    wrap.appendChild(b);
+  });
+}
+
+/* ---- good choice ---- */
+function choiceOut(good){const t=document.getElementById('choiceToast');t.style.display='block';
+  t.className=good?'toast':'toast warn';
+  t.textContent=good?'Clean-up is faster together — then more play time! ⭐':'The toys stayed out… want to choose again?';}
+
+/* ---- calm ---- */
+let calmReturn='s-home';
+function showCalmMenu(){document.getElementById('calmMenu').style.display='block';
+  document.getElementById('calmBalloon').style.display='none';}
+function startBalloon(){document.getElementById('calmMenu').style.display='none';
+  document.getElementById('calmBalloon').style.display='block';breathe();}
+let breatheTimer;
+function breathe(){
+  const bal=document.getElementById('balloon'), lab=document.getElementById('breathLabel');
+  let inhale=true;
+  const cycle=()=>{ if(inhale){bal.classList.add('in');lab.textContent='Breathe in…';}
+    else{bal.classList.remove('in');lab.textContent='…and out…';} inhale=!inhale; };
+  cycle(); breatheTimer=setInterval(cycle,5000);
+}
+function stopBalloon(){clearInterval(breatheTimer);showCalmMenu();}
+function goBackFromCalm(){clearInterval(breatheTimer);go('s-home');}
+</script>
+</body>
+</html>
