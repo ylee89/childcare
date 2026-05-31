@@ -111,7 +111,7 @@ function creature(cx, cy, opts = {}) {
     <ellipse cx="-13" cy="${-half+20}" rx="12" ry="8" fill="#fff" opacity="0.22" transform="rotate(-18 -13 ${-half+20})"/>
     <circle cx="-22" cy="6" r="5" fill="#FF9DA8" opacity="0.5"/><circle cx="22" cy="6" r="5" fill="#FF9DA8" opacity="0.5"/>
     ${snout(sp)}
-    ${eyesG(face)}${browsG(face)}${tearG(face)}${mouthG(face)}`;
+    ${eyesG(face)}${browsG(face)}${tearG(face)}${sp === 'bunny' ? '' : mouthG(face)}`;
 
   return `<g transform="translate(${cx} ${cy}) scale(${flip} 1)">
     <ellipse cx="0" cy="${half + 12}" rx="40" ry="11" fill="url(#ffFloor)"/>
