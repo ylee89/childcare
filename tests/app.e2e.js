@@ -49,6 +49,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     window.speechSynthesis && (window.speechSynthesis.speak = () => {});
   });
   ok('app booted', await page.evaluate(() => !!window.FeelFriends));
+  // skip splash if present, then wait for onboarding
+  await page.locator('.splash').click({ timeout: 800 }).catch(() => {});
+  await page.waitForSelector('text=Welcome to Feel Friends', { timeout: 4000 }).catch(() => {});
   ok('starts at onboarding (no profile yet)', await page.locator('text=Welcome to Feel Friends').count() === 1);
 
   // ---- 1. Onboarding ----
@@ -234,6 +237,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => !!window.FeelFriends, null, { timeout: 5000 }).catch(() => {});
     ok('app still loads while OFFLINE', await page.evaluate(() => !!window.FeelFriends));
+    await page.locator('.splash').click({ timeout: 800 }).catch(() => {}); // skip splash
+    await page.waitForSelector('.grid, .moodgrid', { timeout: 4000 }).catch(() => {});
     ok('home renders offline', await page.locator('.grid, .moodgrid').count() >= 1);
     await context.setOffline(false);
   } else {
