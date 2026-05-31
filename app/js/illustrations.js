@@ -132,6 +132,22 @@ function frame(bg, bg2, inner) {
     ${inner}
   </svg>`;
 }
+// a clearer indoor floor band (used by scenes that want a room setting)
+const floorBand = (c) => `<path d="M0 150 Q160 140 320 150 L320 200 L0 200 Z" fill="${c}"/><path d="M0 150 Q160 140 320 150" fill="none" stroke="#000" stroke-opacity="0.05" stroke-width="3"/>`;
+
+// ---- environment props ----
+const windowProp = (x, y) => `<g transform="translate(${x} ${y})">
+  <rect x="-34" y="-26" width="68" height="52" rx="8" fill="#BFE6FF"/><rect x="-34" y="-26" width="68" height="52" rx="8" fill="url(#ffBack)"/>
+  <circle cx="14" cy="-11" r="7" fill="#FFE9A8"/><ellipse cx="-9" cy="7" rx="13" ry="5" fill="#fff" opacity="0.85"/><ellipse cx="3" cy="9" rx="9" ry="4" fill="#fff" opacity="0.85"/>
+  <rect x="-34" y="-26" width="68" height="52" rx="8" fill="none" stroke="#fff" stroke-width="5"/>
+  <line x1="0" y1="-26" x2="0" y2="26" stroke="#fff" stroke-width="4"/><line x1="-34" y1="0" x2="34" y2="0" stroke="#fff" stroke-width="4"/>
+  <rect x="-38" y="23" width="76" height="6" rx="3" fill="#fff"/></g>`;
+const rug = (cx, cy, rx, c) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${(rx * 0.3).toFixed(0)}" fill="${c}" opacity="0.6"/><ellipse cx="${cx}" cy="${cy}" rx="${(rx * 0.66).toFixed(0)}" ry="${(rx * 0.2).toFixed(0)}" fill="none" stroke="#fff" stroke-width="2.5" opacity="0.5"/>`;
+const block = (x, y, c, l) => `<g transform="translate(${x} ${y})"><rect x="-10" y="-10" width="20" height="20" rx="4" fill="${c}"/><rect x="-10" y="-10" width="20" height="20" rx="4" fill="url(#ffVol)"/><text x="0" y="5" font-size="13" font-family="Nunito,sans-serif" font-weight="800" fill="#fff" text-anchor="middle">${l}</text></g>`;
+const sideTable = (x, topY, w) => `<g><rect x="${x - w / 2 + 5}" y="${topY + 8}" width="6" height="26" fill="#B98A5E"/><rect x="${x + w / 2 - 11}" y="${topY + 8}" width="6" height="26" fill="#B98A5E"/><rect x="${x - w / 2}" y="${topY}" width="${w}" height="10" rx="3" fill="#D2A679"/><rect x="${x - w / 2}" y="${topY}" width="${w}" height="10" rx="3" fill="url(#ffVol)"/></g>`;
+const plate = (x, y) => `<ellipse cx="${x}" cy="${y}" rx="17" ry="6" fill="#fff"/><ellipse cx="${x}" cy="${y}" rx="17" ry="6" fill="url(#ffVol)"/><ellipse cx="${x}" cy="${y - 1}" rx="10" ry="3.4" fill="#EFE4D2"/>`;
+const cup = (x, y) => `<g transform="translate(${x} ${y})"><rect x="-7" y="-13" width="14" height="16" rx="3" fill="#9BE3B4"/><rect x="-7" y="-13" width="14" height="16" rx="3" fill="url(#ffVol)"/><path d="M7 -9 q7 2 0 9" stroke="#9BE3B4" stroke-width="3" fill="none"/></g>`;
+const doorway = (x, y) => `<g transform="translate(${x} ${y})"><rect x="-30" y="-44" width="60" height="88" rx="8" fill="#E2C39B"/><rect x="-24" y="-38" width="48" height="82" rx="6" fill="#C9A271"/><rect x="-24" y="-38" width="48" height="82" rx="6" fill="url(#ffVol)"/><circle cx="16" cy="4" r="3" fill="#FFD56B"/></g>`;
 
 // props
 const truck = (x, y) => `<g transform="translate(${x} ${y})">
@@ -179,9 +195,14 @@ const SCENES = {
     creature(258, 120, { species: 'cat', color: C.catLav, face: 'sad', flip: true })),
 
   help: () => frame('#EEE8FF', '#D9CFF2',
-    effort(180, 70, 1) + effort(118, 70, -1) + sweat(184, 92) +
-    creature(150, 108, { species: 'bear', color: C.bearTan, face: 'frustrated', arm: 'none' }) +
-    `<g class="ffStruggle" transform="translate(150 150)">${cookieJar()}
+    // kitchen setting: window on the wall, floor, a snack counter, and a rug
+    windowProp(250, 50) +
+    floorBand('#D9CFF2') +
+    sideTable(258, 150, 70) + plate(252, 150) + cup(278, 145) +
+    rug(140, 178, 92, '#CDBFEC') +
+    effort(180, 68, 1) + effort(118, 68, -1) + sweat(184, 90) +
+    creature(146, 106, { species: 'bear', color: C.bearTan, face: 'frustrated', arm: 'none' }) +
+    `<g class="ffStruggle" transform="translate(146 150)">${cookieJar()}
        <ellipse cx="-24" cy="-9" rx="9" ry="8" fill="${C.bearTan}"/><ellipse cx="-24" cy="-9" rx="9" ry="8" fill="url(#ffSphere)"/>
        <ellipse cx="24" cy="-9" rx="9" ry="8" fill="${C.bearTan}"/><ellipse cx="24" cy="-9" rx="9" ry="8" fill="url(#ffSphere)"/></g>`),
 };
