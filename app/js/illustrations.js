@@ -270,16 +270,19 @@ export function mascot(size = 120) {
         <path d="M0 3 q1.5 -3 3 0 q1.5 3 3 0" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="1.1"/>
       </pattern>
     </defs>
-    <ellipse cx="60" cy="111" rx="32" ry="7" fill="#000" opacity="0.10"/>
+    <ellipse cx="60" cy="116" rx="30" ry="6" fill="#000" opacity="0.10"/>
     <circle cx="60" cy="58" r="54" fill="url(#lumiGlow)"/>
     <!-- body IS a soft, slightly irregular heart -->
-    <path id="lumiBodyShape" d="M60 110
-      C26 84 16 60 24 44
-      C31 30 48 30 56 44
-      C58 48 60 50 60 52
-      C60 50 63 47 66 43
-      C75 30 92 33 97 48
-      C103 66 90 86 60 110 Z" fill="url(#lumiBody)"/>
+    <path id="lumiBodyShape" d="M60 100
+      C26 76 16 56 24 40
+      C31 26 48 26 56 40
+      C58 44 60 46 60 48
+      C60 46 63 43 66 39
+      C75 26 92 29 97 44
+      C103 62 90 78 60 100 Z" fill="url(#lumiBody)"/>
+    <!-- little feet (no arms), in front so they peek out below -->
+    <ellipse cx="49" cy="104" rx="11" ry="7" fill="#8A6FC8"/><ellipse cx="49" cy="104" rx="11" ry="7" fill="url(#ffSphere)"/>
+    <ellipse cx="71" cy="104" rx="11" ry="7" fill="#8A6FC8"/><ellipse cx="71" cy="104" rx="11" ry="7" fill="url(#ffSphere)"/>
     <use href="#lumiBodyShape" fill="url(#lumiKnit)"/>
     <use href="#lumiBodyShape" fill="url(#ffSphere)"/>
     <!-- top-left highlight for volume -->
