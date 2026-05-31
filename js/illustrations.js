@@ -270,38 +270,32 @@ export function mascot(size = 120) {
         <path d="M0 3 q1.5 -3 3 0 q1.5 3 3 0" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="1.1"/>
       </pattern>
     </defs>
-    <ellipse cx="60" cy="110" rx="36" ry="7" fill="#000" opacity="0.10"/>
+    <ellipse cx="60" cy="111" rx="32" ry="7" fill="#000" opacity="0.10"/>
     <circle cx="60" cy="58" r="54" fill="url(#lumiGlow)"/>
-    <!-- plump purple body -->
-    <path id="lumiBodyShape" d="M60 16 C32 16 18 40 18 66 C18 96 36 110 60 110 C84 110 102 96 102 66 C102 40 88 16 60 16 Z" fill="url(#lumiBody)"/>
+    <!-- body IS a soft, slightly irregular heart -->
+    <path id="lumiBodyShape" d="M60 110
+      C26 84 16 60 24 44
+      C31 30 48 30 56 44
+      C58 48 60 50 60 52
+      C60 50 63 47 66 43
+      C75 30 92 33 97 48
+      C103 66 90 86 60 110 Z" fill="url(#lumiBody)"/>
     <use href="#lumiBodyShape" fill="url(#lumiKnit)"/>
     <use href="#lumiBodyShape" fill="url(#ffSphere)"/>
-    <!-- top highlight -->
-    <ellipse cx="44" cy="40" rx="15" ry="10" fill="#fff" opacity="0.30" transform="rotate(-20 44 40)"/>
+    <!-- top-left highlight for volume -->
+    <ellipse cx="42" cy="50" rx="14" ry="10" fill="#fff" opacity="0.32" transform="rotate(-24 42 50)"/>
     <!-- little brows -->
-    <path d="M40 44 q5 -4 10 -1" stroke="#E7A33C" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <path d="M70 43 q5 -3 10 1" stroke="#E7A33C" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M40 50 q5 -4 10 -1" stroke="#E7A33C" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M70 49 q5 -3 10 1" stroke="#E7A33C" stroke-width="3" fill="none" stroke-linecap="round"/>
     <!-- big shiny eyes -->
-    <ellipse cx="50" cy="56" rx="8" ry="9.5" fill="#fff"/><ellipse cx="70" cy="56" rx="8" ry="9.5" fill="#fff"/>
-    <circle cx="51" cy="58" r="5" fill="#2E2440"/><circle cx="71" cy="58" r="5" fill="#2E2440"/>
-    <circle cx="53" cy="56" r="2" fill="#fff"/><circle cx="73" cy="56" r="2" fill="#fff"/>
-    <!-- small smile + cheeks -->
-    <path d="M55 67 q5 5 10 0" stroke="#7A5BB0" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-    <ellipse cx="40" cy="64" rx="5" ry="3.5" fill="#FF9DB0" opacity="0.45"/><ellipse cx="80" cy="64" rx="5" ry="3.5" fill="#FF9DB0" opacity="0.45"/>
-    <!-- big pink heart being hugged (front and centre) -->
-    <path id="lumiHug" d="M60 112 C24 86 30 60 48 55 C59 52 60 63 60 68 C60 63 61 52 72 55 C90 60 96 86 60 112 Z" fill="url(#lumiHeartG)"/>
-    <use href="#lumiHug" fill="url(#lumiKnitP)"/>
-    <use href="#lumiHug" fill="url(#ffSphere)"/>
-    <ellipse cx="50" cy="68" rx="8" ry="5" fill="#fff" opacity="0.45" transform="rotate(-20 50 68)"/>
-    <!-- chunky arms wrapping around the heart -->
-    <path d="M24 76 Q22 96 44 104" stroke="#A98FE0" stroke-width="15" fill="none" stroke-linecap="round"/>
-    <path d="M96 76 Q98 96 76 104" stroke="#A98FE0" stroke-width="15" fill="none" stroke-linecap="round"/>
-    <path d="M24 76 Q22 96 44 104" stroke="url(#ffVol)" stroke-width="15" fill="none" stroke-linecap="round" opacity="0.4"/>
-    <path d="M96 76 Q98 96 76 104" stroke="url(#ffVol)" stroke-width="15" fill="none" stroke-linecap="round" opacity="0.4"/>
-    <ellipse cx="46" cy="105" rx="8.5" ry="7.5" fill="#B79EE8"/><ellipse cx="46" cy="105" rx="8.5" ry="7.5" fill="url(#ffSphere)"/>
-    <ellipse cx="74" cy="105" rx="8.5" ry="7.5" fill="#B79EE8"/><ellipse cx="74" cy="105" rx="8.5" ry="7.5" fill="url(#ffSphere)"/>
+    <ellipse cx="50" cy="62" rx="8" ry="9.5" fill="#fff"/><ellipse cx="70" cy="62" rx="8" ry="9.5" fill="#fff"/>
+    <circle cx="51" cy="64" r="5" fill="#2E2440"/><circle cx="71" cy="64" r="5" fill="#2E2440"/>
+    <circle cx="53" cy="62" r="2" fill="#fff"/><circle cx="73" cy="62" r="2" fill="#fff"/>
+    <!-- smile + cheeks -->
+    <path d="M54 74 q6 6 12 0" stroke="#7A5BB0" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <ellipse cx="39" cy="70" rx="5.5" ry="4" fill="#FF9DB0" opacity="0.5"/><ellipse cx="81" cy="70" rx="5.5" ry="4" fill="#FF9DB0" opacity="0.5"/>
     <!-- sparkles -->
-    <g fill="#FFD56B"><path d="M104 34 l1.8 4.4 4.4 1.8 -4.4 1.8 -1.8 4.4 -1.8 -4.4 -4.4 -1.8 4.4 -1.8 Z"/>
-      <path d="M14 40 l1.3 3.2 3.2 1.3 -3.2 1.3 -1.3 3.2 -1.3 -3.2 -3.2 -1.3 3.2 -1.3 Z"/></g>
+    <g fill="#FFD56B"><path d="M104 36 l1.8 4.4 4.4 1.8 -4.4 1.8 -1.8 4.4 -1.8 -4.4 -4.4 -1.8 4.4 -1.8 Z"/>
+      <path d="M14 44 l1.3 3.2 3.2 1.3 -3.2 1.3 -1.3 3.2 -1.3 -3.2 -3.2 -1.3 3.2 -1.3 Z"/></g>
   </svg>`;
 }
