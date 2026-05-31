@@ -69,7 +69,7 @@ function ears(species, c) {
 }
 function snout(species) {
   switch (species) {
-    case 'bunny': return `<ellipse cx="0" cy="6" rx="11" ry="8" fill="#fff" opacity="0.3"/><path d="M-3 1 L3 1 L0 5 Z" fill="#FF7DA0"/><line x1="0" y1="5" x2="0" y2="8" stroke="#5A3B2E" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
+    case 'bunny': return `<ellipse cx="0" cy="6" rx="11" ry="8" fill="#fff" opacity="0.3"/><path d="M-3.2 1 L3.2 1 L0 5 Z" fill="#FF7DA0"/><path d="M0 5 V9 M0 9 Q-5 13 -8 9 M0 9 Q5 13 8 9" stroke="#5A3B2E" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
     case 'fox': return `<ellipse cx="0" cy="7" rx="12" ry="9" fill="#fff" opacity="0.45"/><ellipse cx="0" cy="3" rx="4" ry="3" fill="#2A1E18"/>`;
     case 'cat': return `<ellipse cx="0" cy="5" rx="11" ry="8" fill="#fff" opacity="0.3"/><path d="M-2.6 2 L2.6 2 L0 5 Z" fill="#FF7DA0"/>
       <g stroke="#5A3B2E" stroke-width="1.4" stroke-linecap="round" opacity="0.7"><line x1="6" y1="5" x2="22" y2="2"/><line x1="6" y1="7" x2="22" y2="8"/><line x1="-6" y1="5" x2="-22" y2="2"/><line x1="-6" y1="7" x2="-22" y2="8"/></g>`;
