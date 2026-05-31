@@ -48,38 +48,81 @@ function brows(face) {
 }
 const tear = (face) => (face === 'sad') ? `<circle cx="-10" cy="7" r="2.6" fill="#7CC6FE"/><circle cx="-10" cy="7" r="2.6" fill="url(#ffSphere)"/>` : '';
 
-/** A child figure. (cx,cy)=head centre. opts: i, face, flip, armL/armR, lean. */
+// Dimensional hairstyles (head-local coords, head r=22 centred at 0,0).
+// Each: dark base for depth + main colour + sphere shading + glossy highlight.
+function hair(style, c) {
+  const gloss = (d) => `<path d="${d}" fill="url(#ffVol)" opacity="0.5"/>`;
+  switch (style % 5) {
+    case 1: { // curly / afro — cluster of shaded puffs
+      const puffs = [[0,-27,14],[-16,-19,12],[16,-19,12],[-23,-6,9],[23,-6,9],[-10,-29,11],[10,-29,11]];
+      const base = puffs.map(([x,y,r]) => `<circle cx="${x}" cy="${y-1.5}" r="${r}" fill="#000" opacity="0.18"/>`).join('');
+      const main = puffs.map(([x,y,r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`).join('');
+      const shade = puffs.map(([x,y,r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#ffSphere)"/>`).join('');
+      const hi = `<g fill="#fff" opacity="0.20"><circle cx="-9" cy="-27" r="5"/><circle cx="-17" cy="-19" r="4"/><circle cx="3" cy="-30" r="4"/></g>`;
+      return base + main + shade + hi;
+    }
+    case 2: { // side swoop
+      const d = `M-23 -4 Q-25 -31 3 -31 Q27 -31 22 -6 Q13 -17 2 -16 Q-5 -23 -13 -18 Q-11 -10 -23 -4 Z`;
+      return `<path d="${d}" fill="#000" opacity="0.16" transform="translate(0 1.5)"/><path d="${d}" fill="${c}"/>${gloss(d)}`
+        + `<path d="M-15 -21 Q-1 -29 14 -23" stroke="#fff" stroke-width="3" opacity="0.22" fill="none" stroke-linecap="round"/>`;
+    }
+    case 3: { // top puff / bun
+      const cap = `M-22 -4 Q-23 -27 0 -27 Q23 -27 22 -4 Q12 -16 0 -15 Q-12 -16 -22 -4 Z`;
+      return `<path d="${cap}" fill="#000" opacity="0.16" transform="translate(0 1.5)"/><path d="${cap}" fill="${c}"/>${gloss(cap)}`
+        + `<circle cx="0" cy="-30" r="10" fill="${c}"/><circle cx="0" cy="-30" r="10" fill="url(#ffSphere)"/>`
+        + `<ellipse cx="-7" cy="-19" rx="8" ry="4.5" fill="#fff" opacity="0.18" transform="rotate(-18 -7 -19)"/>`;
+    }
+    case 4: { // short buzz / low cap
+      const d = `M-21 -2 Q-22 -25 0 -25 Q22 -25 21 -2 Q12 -13 0 -13 Q-12 -13 -21 -2 Z`;
+      return `<path d="${d}" fill="#000" opacity="0.16" transform="translate(0 1.5)"/><path d="${d}" fill="${c}"/>${gloss(d)}`
+        + `<ellipse cx="-7" cy="-16" rx="8" ry="4" fill="#fff" opacity="0.16" transform="rotate(-18 -7 -16)"/>`;
+    }
+    default: { // tousled short (lumpy top)
+      const d = `M-23 -3 Q-26 -31 0 -31 Q26 -31 23 -3 Q18 -15 11 -15 Q13 -22 4 -20 Q6 -26 -3 -23 Q-2 -18 -11 -18 Q-9 -23 -18 -16 Q-21 -10 -23 -3 Z`;
+      return `<path d="${d}" fill="#000" opacity="0.16" transform="translate(0 1.5)"/><path d="${d}" fill="${c}"/>${gloss(d)}`
+        + `<ellipse cx="-8" cy="-19" rx="9" ry="5" fill="#fff" opacity="0.20" transform="rotate(-20 -8 -19)"/>`;
+    }
+  }
+}
+
+/** A child figure. (cx,cy)=head centre. opts: i, face, flip, armL/armR, lean, hairStyle. */
 function child(cx, cy, opts = {}) {
   const i = opts.i ?? 0;
-  const skin = SKIN[i % SKIN.length], hair = HAIR[i % HAIR.length];
+  const skin = SKIN[i % SKIN.length], hairC = HAIR[i % HAIR.length];
   const shirt = SHIRT[i % SHIRT.length], pants = PANTS[i % PANTS.length];
   const face = opts.face || 'smile';
+  const hairStyle = opts.hairStyle ?? i;
   const lean = opts.lean || 0;
   const flip = opts.flip ? -1 : 1;
-  const bT = 22, bW = 52, bH = 52, footY = bT + bH + 20;
+  const bT = 20, bW = 56, bH = 56, footY = bT + bH + 20;
 
-  const leg = (x) => `<line x1="${x}" y1="${bT + bH - 6}" x2="${x * 1.15}" y2="${footY}" stroke="${pants}" stroke-width="13" stroke-linecap="round"/>`
-    + `<ellipse cx="${x * 1.15 + 3}" cy="${footY + 2}" rx="9" ry="5.5" fill="#3A3A4A"/>`;
+  const leg = (x) => `<line x1="${x}" y1="${bT + bH - 8}" x2="${x * 1.18}" y2="${footY}" stroke="${pants}" stroke-width="14" stroke-linecap="round"/>`
+    + `<line x1="${x}" y1="${bT + bH - 8}" x2="${x * 1.18}" y2="${footY}" stroke="url(#ffVol)" stroke-width="14" stroke-linecap="round" opacity="0.5"/>`
+    + `<ellipse cx="${x * 1.18 + 3}" cy="${footY + 2}" rx="9.5" ry="6" fill="#3A3A4A"/>`;
 
   const arm = (side, pose) => {
-    const sx = side * (bW / 2 - 4), sy = bT + 10;
-    let ex = side * (bW / 2 + 12), ey = bT + 36;
+    const sx = side * (bW / 2 - 6), sy = bT + 12;
+    let ex = side * (bW / 2 + 12), ey = bT + 38;
     if (pose === 'up')    { ex = side * (bW / 2 + 4);  ey = bT - 16; }
     if (pose === 'reach') { ex = side * (bW / 2 + 30); ey = bT + 4; }
-    if (pose === 'hip')   { ex = side * (bW / 2 + 1);  ey = bT + 24; }
-    return `<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="${shirt}" stroke-width="12" stroke-linecap="round"/>`
-      + `<circle cx="${ex}" cy="${ey}" r="6.5" fill="${skin}"/><circle cx="${ex}" cy="${ey}" r="6.5" fill="url(#ffSphere)"/>`;
+    if (pose === 'hip')   { ex = side * (bW / 2 + 1);  ey = bT + 26; }
+    return `<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="${shirt}" stroke-width="13" stroke-linecap="round"/>`
+      + `<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="url(#ffVol)" stroke-width="13" stroke-linecap="round" opacity="0.45"/>`
+      + `<circle cx="${ex}" cy="${ey}" r="7" fill="${skin}"/><circle cx="${ex}" cy="${ey}" r="7" fill="url(#ffSphere)"/>`;
   };
 
+  // chunky bean torso for a rounded, inflated 3D feel
+  const torso = `M${-bW/2} ${bT+16} Q${-bW/2} ${bT} ${-bW/2+18} ${bT} L${bW/2-18} ${bT} Q${bW/2} ${bT} ${bW/2} ${bT+16} L${bW/2} ${bT+bH-16} Q${bW/2} ${bT+bH} ${bW/2-16} ${bT+bH} L${-bW/2+16} ${bT+bH} Q${-bW/2} ${bT+bH} ${-bW/2} ${bT+bH-16} Z`;
+
   return `<g transform="translate(${cx} ${cy}) rotate(${lean}) scale(${flip} 1)">
-    <ellipse cx="2" cy="${footY + 12}" rx="40" ry="11" fill="url(#ffFloor)"/>
+    <ellipse cx="2" cy="${footY + 12}" rx="42" ry="11" fill="url(#ffFloor)"/>
     ${leg(-11)}${leg(11)}
     ${arm(-1, opts.armL || 'down')}${arm(1, opts.armR || 'down')}
-    <rect x="${-bW / 2}" y="${bT}" width="${bW}" height="${bH}" rx="20" fill="${shirt}"/>
-    <rect x="${-bW / 2}" y="${bT}" width="${bW}" height="${bH}" rx="20" fill="url(#ffVol)"/>
+    <path d="${torso}" fill="${shirt}"/>
+    <path d="${torso}" fill="url(#ffSphere)"/>
+    <ellipse cx="-12" cy="${bT + 14}" rx="11" ry="7" fill="#fff" opacity="0.22" transform="rotate(-18 -12 ${bT + 14})"/>
     <circle cx="0" cy="0" r="22" fill="${skin}"/>
-    <path d="M-22 -4 Q-23 -28 0 -28 Q23 -28 22 -4 Q12 -17 0 -16 Q-12 -17 -22 -4 Z" fill="${hair}"/>
-    <path d="M-22 -4 Q-23 -28 0 -28 Q23 -28 22 -4 Q12 -17 0 -16 Q-12 -17 -22 -4 Z" fill="url(#ffVol)" opacity="0.5"/>
+    ${hair(hairStyle, hairC)}
     <circle cx="-13" cy="9" r="4.5" fill="#FF9DA8" opacity="0.5"/><circle cx="13" cy="9" r="4.5" fill="#FF9DA8" opacity="0.5"/>
     <circle cx="-7" cy="-1" r="3.1" fill="#3A2A22"/><circle cx="7" cy="-1" r="3.1" fill="#3A2A22"/>
     <circle cx="-5.8" cy="-2.2" r="1.05" fill="#fff"/><circle cx="8.2" cy="-2.2" r="1.05" fill="#fff"/>
