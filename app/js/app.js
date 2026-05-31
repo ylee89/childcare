@@ -5,6 +5,7 @@ import {
   EMOTIONS, emo, SITUATIONS, STORIES, PHRASES, phrase,
   EMPATHY, CHOICES, MISSIONS, AVATARS, AGE_BANDS,
 } from './content.js';
+import { storyScene, storyOutcomeArt } from './illustrations.js';
 
 const root = document.getElementById('app');
 
@@ -309,7 +310,7 @@ route('story', ({ id }) => {
   function ask() {
     stage.innerHTML = '';
     stage.append(
-      h('div', { class: 'scene' }, story.emoji),
+      h('div', { class: 'scene illus', html: storyScene(story.id) }),
       narrated(story.scene + ' What could you do?'),
       ...story.choices.map(c => h('button', { class: 'choice', onclick: () => outcome(c) },
         h('span', { class: 'ce' }, c.emoji), c.label)));
@@ -326,7 +327,7 @@ route('story', ({ id }) => {
       buttons.push(h('button', { class: 'choice', onclick: () => go('stories') }, h('span', { class: 'ce' }, '✅'), 'Keep going'));
     }
     stage.append(
-      h('div', { class: 'scene' }, emo(c.feel)?.emoji || story.face),
+      h('div', { class: 'scene illus', html: storyOutcomeArt(c.good) }),
       narrated(c.outcome),
       ...buttons);
   }
