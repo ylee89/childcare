@@ -165,6 +165,13 @@ const slide = () => `<g>
     <line x1="249" y1="172" x2="278" y2="172" stroke="#FFD56B"/><line x1="250" y1="152" x2="279" y2="152" stroke="#9BE3B4"/>
     <line x1="251" y1="132" x2="280" y2="132" stroke="#FF8C7A"/><line x1="252" y1="112" x2="281" y2="112" stroke="#FFD56B"/>
     <line x1="253" y1="93" x2="282" y2="93" stroke="#9BE3B4"/></g>
+  <!-- safety hand-rail posts standing above the platform entrance -->
+  <g stroke-linecap="round">
+    <line x1="166" y1="92" x2="160" y2="28" stroke="#7CC6FE" stroke-width="6"/>
+    <line x1="238" y1="92" x2="244" y2="28" stroke="#7CC6FE" stroke-width="6"/>
+    <path d="M160 32 q1 -9 10 -8" stroke="#7CC6FE" stroke-width="6" fill="none"/>
+    <path d="M244 32 q-1 -9 -10 -8" stroke="#7CC6FE" stroke-width="6" fill="none"/>
+    <line x1="162" y1="50" x2="242" y2="50" stroke="#FFD56B" stroke-width="5"/></g>
   <!-- platform deck (mint) -->
   <rect x="150" y="86" width="104" height="13" rx="4" fill="#9BE3B4"/><rect x="150" y="86" width="104" height="13" rx="4" fill="url(#ffVol)"/>
   <!-- light-blue chute (sweeps down-left) -->
@@ -212,9 +219,9 @@ const SCENES = {
 
   pushed: () => frame('#FFE4DD', '#F6CFC6', // on the platform, shoved before sliding down (chute on the left)
     floorBand('#F6CFC6') + slide() +
-    creature(140, 52, { species: 'cat', color: C.catGrey, face: 'scared', lean: -10, arm: 'up', noShadow: true }) +
-    sparkle(176, 48) +
-    creature(202, 52, { species: 'fox', color: C.foxOrange, face: 'angry', flip: true, lean: -12, arm: 'reach', noShadow: true })),
+    creature(138, 70, { species: 'cat', color: C.catGrey, face: 'scared', lean: -10, arm: 'up', noShadow: true }) +
+    sparkle(176, 64) +
+    creature(202, 70, { species: 'fox', color: C.foxOrange, face: 'angry', flip: true, lean: -12, arm: 'reach', noShadow: true })),
 
   excluded: () => frame('#E3F0FF', '#C9DEF6', // playroom: two on a rug, one apart
     floorBand('#C9DEF6') + windowProp(256, 50) + rug(132, 180, 118, '#CBDFF5') +
