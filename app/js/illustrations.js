@@ -153,18 +153,12 @@ const doorway = (x, y) => `<g transform="translate(${x} ${y})"><rect x="-30" y="
 // playground slide in the app's soft pastel palette: sky-blue ladder/poles,
 // pastel rungs, light-blue chute with blue rails, + a back pair of rails (depth).
 const slide = () => `<g>
-  <!-- back ladder rails (the two added poles, for 3D depth) -->
-  <line x1="258" y1="186" x2="264" y2="82" stroke="#A9D9F7" stroke-width="6" stroke-linecap="round"/>
-  <line x1="286" y1="186" x2="290" y2="82" stroke="#A9D9F7" stroke-width="6" stroke-linecap="round"/>
-  <!-- blue support poles -->
-  <g stroke="#7CC6FE" stroke-linecap="round"><line x1="170" y1="98" x2="170" y2="188" stroke-width="6"/><line x1="234" y1="98" x2="234" y2="188" stroke-width="6"/><line x1="56" y1="150" x2="56" y2="188" stroke-width="5"/></g>
-  <!-- front ladder rails -->
-  <line x1="246" y1="188" x2="252" y2="84" stroke="#7CC6FE" stroke-width="6" stroke-linecap="round"/>
-  <line x1="276" y1="188" x2="280" y2="84" stroke="#7CC6FE" stroke-width="6" stroke-linecap="round"/>
-  <g stroke-width="6" stroke-linecap="round">
-    <line x1="249" y1="172" x2="278" y2="172" stroke="#FFD56B"/><line x1="250" y1="152" x2="279" y2="152" stroke="#9BE3B4"/>
-    <line x1="251" y1="132" x2="280" y2="132" stroke="#FF8C7A"/><line x1="252" y1="112" x2="281" y2="112" stroke="#FFD56B"/>
-    <line x1="253" y1="93" x2="282" y2="93" stroke="#9BE3B4"/></g>
+  <!-- mint support poles under the platform -->
+  <g stroke="#9BD9A8" stroke-linecap="round"><line x1="170" y1="98" x2="170" y2="188" stroke-width="6"/><line x1="234" y1="98" x2="234" y2="188" stroke-width="6"/></g>
+  <!-- simple coral ladder -->
+  <g stroke="#F2A28C" stroke-width="6" stroke-linecap="round">
+    <line x1="250" y1="188" x2="254" y2="88"/><line x1="278" y1="188" x2="280" y2="88"/>
+    <line x1="252" y1="168" x2="279" y2="168"/><line x1="253" y1="142" x2="280" y2="142"/><line x1="254" y1="116" x2="281" y2="116"/></g>
   <!-- platform deck (mint) -->
   <rect x="150" y="86" width="104" height="13" rx="4" fill="#9BE3B4"/><rect x="150" y="86" width="104" height="13" rx="4" fill="url(#ffVol)"/>
   <!-- light-blue chute (sweeps down-left) -->
