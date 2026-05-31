@@ -1,25 +1,18 @@
 // Feel Friends — inline SVG illustrations for Story Adventures.
-// Friendly, dimensional, diverse characters depicting each situation.
-// Style cues from soft kids'-app art (Sesame "Breathe, Think, Do", Sago Mini):
-// volumetric shading via gradient overlays, soft contact shadows, highlights,
-// cheek blush, chunky rounded forms. No external assets — works offline.
+// Cute, dimensional CREATURE characters (bear / bunny / fox / cat) so young
+// children feel warmth & affinity. Soft volumetric shading, big shiny eyes,
+// cheek blush, rounded plush bodies. No external assets — works offline.
 
-const SKIN  = ['#F6CBA6', '#E2A877', '#C07F4A', '#8A5630'];
-const HAIR  = ['#2E2A28', '#5C3A1E', '#111111', '#A6612E', '#E6B54A'];
-const SHIRT = ['#5FB6F6', '#FF8FC7', '#7FD8A0', '#FFCB52', '#B7A6F0', '#FF8C7A'];
-const PANTS = ['#46618E', '#7A5AA8', '#3E8E6B', '#C77A3A', '#5566A0', '#C75B49'];
-
-// volumetric overlays (identical across SVGs → safe to reuse the same ids)
 const DEFS = `<defs>
-  <radialGradient id="ffSphere" cx="0.36" cy="0.30" r="0.80">
-    <stop offset="0" stop-color="#fff" stop-opacity="0.50"/>
+  <radialGradient id="ffSphere" cx="0.36" cy="0.28" r="0.85">
+    <stop offset="0" stop-color="#fff" stop-opacity="0.55"/>
     <stop offset="0.45" stop-color="#fff" stop-opacity="0"/>
-    <stop offset="1" stop-color="#3A2A22" stop-opacity="0.20"/>
+    <stop offset="1" stop-color="#3A2A22" stop-opacity="0.22"/>
   </radialGradient>
   <linearGradient id="ffVol" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0" stop-color="#fff" stop-opacity="0.42"/>
+    <stop offset="0" stop-color="#fff" stop-opacity="0.4"/>
     <stop offset="0.5" stop-color="#fff" stop-opacity="0"/>
-    <stop offset="1" stop-color="#000" stop-opacity="0.16"/>
+    <stop offset="1" stop-color="#000" stop-opacity="0.18"/>
   </linearGradient>
   <radialGradient id="ffFloor" cx="0.5" cy="0.5" r="0.5">
     <stop offset="0" stop-color="#000" stop-opacity="0.16"/>
@@ -31,103 +24,98 @@ const DEFS = `<defs>
   </linearGradient>
 </defs>`;
 
-function mouth(face) {
-  switch (face) {
-    case 'smile':   return `<path d="M-8 8 Q0 16 8 8" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
-    case 'big':     return `<path d="M-9 6 Q0 19 9 6 Z" fill="#7A3F33"/><path d="M-6 12 Q0 16 6 12 Z" fill="#FF9D90"/>`;
-    case 'sad':     return `<path d="M-8 13 Q0 5 8 13" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
-    case 'worried': return `<path d="M-7 11 Q0 8 7 12" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
-    case 'angry':   return `<path d="M-8 12 Q0 7 8 12" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
-    default:        return `<line x1="-6" y1="10" x2="6" y2="10" stroke="#5A3B2E" stroke-width="2.6" stroke-linecap="round"/>`;
-  }
+// ---- expressive face parts (body-local coords; eyes ~y -12, mouth ~y 11) ----
+function eyesG(face) {
+  const lid = (face === 'sad' || face === 'worried')
+    ? `<path d="M-20 -16 Q-13 -20 -6 -16" stroke="#3A2A22" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M6 -16 Q13 -20 20 -16" stroke="#3A2A22" stroke-width="2" fill="none" stroke-linecap="round"/>` : '';
+  return `<ellipse cx="-13" cy="-11" rx="7.5" ry="9" fill="#fff"/><ellipse cx="13" cy="-11" rx="7.5" ry="9" fill="#fff"/>
+    <circle cx="-12" cy="-9" r="4.4" fill="#2A1E18"/><circle cx="14" cy="-9" r="4.4" fill="#2A1E18"/>
+    <circle cx="-10.4" cy="-10.8" r="1.7" fill="#fff"/><circle cx="15.6" cy="-10.8" r="1.7" fill="#fff"/>${lid}`;
 }
-function brows(face) {
-  if (face === 'angry')   return `<line x1="-14" y1="-10" x2="-5" y2="-5" stroke="#3A2A22" stroke-width="2.6" stroke-linecap="round"/><line x1="14" y1="-10" x2="5" y2="-5" stroke="#3A2A22" stroke-width="2.6" stroke-linecap="round"/>`;
-  if (face === 'sad' || face === 'worried') return `<line x1="-13" y1="-8" x2="-5" y2="-11" stroke="#3A2A22" stroke-width="2.4" stroke-linecap="round"/><line x1="13" y1="-8" x2="5" y2="-11" stroke="#3A2A22" stroke-width="2.4" stroke-linecap="round"/>`;
+function browsG(face) {
+  if (face === 'angry') return `<line x1="-19" y1="-22" x2="-7" y2="-18" stroke="#2A1E18" stroke-width="2.8" stroke-linecap="round"/><line x1="19" y1="-22" x2="7" y2="-18" stroke="#2A1E18" stroke-width="2.8" stroke-linecap="round"/>`;
+  if (face === 'worried') return `<line x1="-18" y1="-22" x2="-8" y2="-24" stroke="#2A1E18" stroke-width="2.4" stroke-linecap="round"/><line x1="18" y1="-22" x2="8" y2="-24" stroke="#2A1E18" stroke-width="2.4" stroke-linecap="round"/>`;
   return '';
 }
-const tear = (face) => (face === 'sad') ? `<circle cx="-10" cy="7" r="2.6" fill="#7CC6FE"/><circle cx="-10" cy="7" r="2.6" fill="url(#ffSphere)"/>` : '';
-
-// Dimensional hairstyles (head-local coords, head r=22 centred at 0,0).
-// Each: dark base for depth + main colour + sphere shading + glossy highlight.
-function hair(style, c) {
-  const gloss = (d) => `<path d="${d}" fill="url(#ffVol)" opacity="0.5"/>`;
-  switch (style % 5) {
-    case 1: { // curly / afro — cluster of shaded puffs
-      const puffs = [[0,-27,14],[-16,-19,12],[16,-19,12],[-23,-6,9],[23,-6,9],[-10,-29,11],[10,-29,11]];
-      const base = puffs.map(([x,y,r]) => `<circle cx="${x}" cy="${y-1.5}" r="${r}" fill="#000" opacity="0.18"/>`).join('');
-      const main = puffs.map(([x,y,r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`).join('');
-      const shade = puffs.map(([x,y,r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#ffSphere)"/>`).join('');
-      const hi = `<g fill="#fff" opacity="0.20"><circle cx="-9" cy="-27" r="5"/><circle cx="-17" cy="-19" r="4"/><circle cx="3" cy="-30" r="4"/></g>`;
-      return base + main + shade + hi;
-    }
-    case 2: { // side swoop
-      const d = `M-23 -4 Q-25 -31 3 -31 Q27 -31 22 -6 Q13 -17 2 -16 Q-5 -23 -13 -18 Q-11 -10 -23 -4 Z`;
-      return `<path d="${d}" fill="#000" opacity="0.16" transform="translate(0 1.5)"/><path d="${d}" fill="${c}"/>${gloss(d)}`
-        + `<path d="M-15 -21 Q-1 -29 14 -23" stroke="#fff" stroke-width="3" opacity="0.22" fill="none" stroke-linecap="round"/>`;
-    }
-    case 3: { // top puff / bun
-      const cap = `M-22 -4 Q-23 -27 0 -27 Q23 -27 22 -4 Q12 -16 0 -15 Q-12 -16 -22 -4 Z`;
-      return `<path d="${cap}" fill="#000" opacity="0.16" transform="translate(0 1.5)"/><path d="${cap}" fill="${c}"/>${gloss(cap)}`
-        + `<circle cx="0" cy="-30" r="10" fill="${c}"/><circle cx="0" cy="-30" r="10" fill="url(#ffSphere)"/>`
-        + `<ellipse cx="-7" cy="-19" rx="8" ry="4.5" fill="#fff" opacity="0.18" transform="rotate(-18 -7 -19)"/>`;
-    }
-    case 4: { // short buzz / low cap
-      const d = `M-21 -2 Q-22 -25 0 -25 Q22 -25 21 -2 Q12 -13 0 -13 Q-12 -13 -21 -2 Z`;
-      return `<path d="${d}" fill="#000" opacity="0.16" transform="translate(0 1.5)"/><path d="${d}" fill="${c}"/>${gloss(d)}`
-        + `<ellipse cx="-7" cy="-16" rx="8" ry="4" fill="#fff" opacity="0.16" transform="rotate(-18 -7 -16)"/>`;
-    }
-    default: { // tousled short (lumpy top)
-      const d = `M-23 -3 Q-26 -31 0 -31 Q26 -31 23 -3 Q18 -15 11 -15 Q13 -22 4 -20 Q6 -26 -3 -23 Q-2 -18 -11 -18 Q-9 -23 -18 -16 Q-21 -10 -23 -3 Z`;
-      return `<path d="${d}" fill="#000" opacity="0.16" transform="translate(0 1.5)"/><path d="${d}" fill="${c}"/>${gloss(d)}`
-        + `<ellipse cx="-8" cy="-19" rx="9" ry="5" fill="#fff" opacity="0.20" transform="rotate(-20 -8 -19)"/>`;
-    }
+function mouthG(face) {
+  switch (face) {
+    case 'big':     return `<path d="M-9 9 Q0 21 9 9 Z" fill="#7A3F33"/><path d="M-5 15 Q0 19 5 15 Z" fill="#FF9D90"/>`;
+    case 'smile':   return `<path d="M-8 10 Q0 18 8 10" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+    case 'sad':     return `<path d="M-7 16 Q0 8 7 16" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+    case 'worried': return `<path d="M-6 13 Q0 10 6 14" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+    case 'angry':   return `<path d="M-7 14 Q0 9 7 14" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+    default:        return `<line x1="-6" y1="12" x2="6" y2="12" stroke="#5A3B2E" stroke-width="2.6" stroke-linecap="round"/>`;
   }
 }
+const tearG = (face) => (face === 'sad') ? `<circle cx="-18" cy="-2" r="3" fill="#7CC6FE"/><circle cx="-18" cy="-2" r="3" fill="url(#ffSphere)"/>` : '';
 
-/** A child figure. (cx,cy)=head centre. opts: i, face, flip, armL/armR, lean, hairStyle. */
-function child(cx, cy, opts = {}) {
-  const i = opts.i ?? 0;
-  const skin = SKIN[i % SKIN.length], hairC = HAIR[i % HAIR.length];
-  const shirt = SHIRT[i % SHIRT.length], pants = PANTS[i % PANTS.length];
+// species-specific ears / snout / tail (body-local; body half-height ~39)
+function ears(species, c) {
+  switch (species) {
+    case 'bunny': return `<g>
+      <g transform="translate(-12 -40) rotate(-9)"><ellipse rx="7.5" ry="23" fill="${c}"/><ellipse cx="0" cy="2" rx="3.4" ry="16" fill="#FF9DB0" opacity="0.65"/><ellipse rx="7.5" ry="23" fill="url(#ffVol)"/></g>
+      <g transform="translate(12 -40) rotate(9)"><ellipse rx="7.5" ry="23" fill="${c}"/><ellipse cx="0" cy="2" rx="3.4" ry="16" fill="#FF9DB0" opacity="0.65"/><ellipse rx="7.5" ry="23" fill="url(#ffVol)"/></g></g>`;
+    case 'fox': return `<g>
+      <path d="M-26 -30 L-11 -46 L-2 -28 Z" fill="${c}"/><path d="M-22 -32 L-12 -42 L-7 -30 Z" fill="#5A3B2E" opacity="0.55"/>
+      <path d="M26 -30 L11 -46 L2 -28 Z" fill="${c}"/><path d="M22 -32 L12 -42 L7 -30 Z" fill="#5A3B2E" opacity="0.55"/></g>`;
+    case 'cat': return `<g>
+      <path d="M-23 -30 L-12 -47 L-3 -30 Z" fill="${c}"/><path d="M-19 -32 L-12 -42 L-7 -31 Z" fill="#FF9DB0" opacity="0.6"/>
+      <path d="M23 -30 L12 -47 L3 -30 Z" fill="${c}"/><path d="M19 -32 L12 -42 L7 -31 Z" fill="#FF9DB0" opacity="0.6"/></g>`;
+    default: return `<g> <!-- bear -->
+      <circle cx="-20" cy="-36" r="12" fill="${c}"/><circle cx="-20" cy="-36" r="6" fill="#fff" opacity="0.3"/>
+      <circle cx="20" cy="-36" r="12" fill="${c}"/><circle cx="20" cy="-36" r="6" fill="#fff" opacity="0.3"/>
+      <circle cx="-20" cy="-36" r="12" fill="url(#ffSphere)"/><circle cx="20" cy="-36" r="12" fill="url(#ffSphere)"/></g>`;
+  }
+}
+function snout(species) {
+  switch (species) {
+    case 'bunny': return `<ellipse cx="0" cy="6" rx="11" ry="8" fill="#fff" opacity="0.35"/><path d="M-3 1 L3 1 L0 5 Z" fill="#FF7DA0"/><path d="M0 5 V9 M0 9 Q-4 11 -6 9 M0 9 Q4 11 6 9" stroke="#5A3B2E" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+    case 'fox': return `<ellipse cx="0" cy="7" rx="12" ry="9" fill="#fff" opacity="0.45"/><ellipse cx="0" cy="3" rx="4" ry="3" fill="#2A1E18"/>`;
+    case 'cat': return `<ellipse cx="0" cy="5" rx="11" ry="8" fill="#fff" opacity="0.3"/><path d="M-2.6 2 L2.6 2 L0 5 Z" fill="#FF7DA0"/>
+      <g stroke="#5A3B2E" stroke-width="1.4" stroke-linecap="round" opacity="0.7"><line x1="6" y1="5" x2="22" y2="2"/><line x1="6" y1="7" x2="22" y2="8"/><line x1="-6" y1="5" x2="-22" y2="2"/><line x1="-6" y1="7" x2="-22" y2="8"/></g>`;
+    default: return `<ellipse cx="0" cy="6" rx="13" ry="10" fill="#fff" opacity="0.32"/><ellipse cx="0" cy="0" rx="4.2" ry="3.2" fill="#5A3B2E"/>`;
+  }
+}
+function tail(species, c, side) {
+  if (species === 'fox') return `<path d="M${side*30} 26 Q${side*58} 18 ${side*54} 44 Q${side*44} 40 ${side*28} 36 Z" fill="${c}"/><path d="M${side*50} 30 Q${side*58} 30 ${side*54} 44 Q${side*47} 41 ${side*45} 36 Z" fill="#fff" opacity="0.8"/>`;
+  if (species === 'cat') return `<path d="M${side*30} 28 Q${side*56} 24 ${side*52} 0 Q${side*60} 24 ${side*40} 36 Z" fill="${c}"/>`;
+  return '';
+}
+
+/** A cute creature. (cx,cy)=body centre. opts: species,color,face,flip,lean,arm. */
+function creature(cx, cy, opts = {}) {
+  const sp = opts.species || 'bear';
+  const c = opts.color || '#E8A86B';
   const face = opts.face || 'smile';
-  const hairStyle = opts.hairStyle ?? i;
   const lean = opts.lean || 0;
   const flip = opts.flip ? -1 : 1;
-  const bT = 20, bW = 56, bH = 56, footY = bT + bH + 20;
+  const bw = 66, bh = 80, half = bh / 2;
+  // rounded plush body
+  const body = `M${-bw/2} ${-half+24} Q${-bw/2} ${-half} ${-bw/2+24} ${-half} L${bw/2-24} ${-half} Q${bw/2} ${-half} ${bw/2} ${-half+24} L${bw/2} ${half-20} Q${bw/2} ${half} ${bw/2-20} ${half} L${-bw/2+20} ${half} Q${-bw/2} ${half} ${-bw/2} ${half-20} Z`;
 
-  const leg = (x) => `<line x1="${x}" y1="${bT + bH - 8}" x2="${x * 1.18}" y2="${footY}" stroke="${pants}" stroke-width="14" stroke-linecap="round"/>`
-    + `<line x1="${x}" y1="${bT + bH - 8}" x2="${x * 1.18}" y2="${footY}" stroke="url(#ffVol)" stroke-width="14" stroke-linecap="round" opacity="0.5"/>`
-    + `<ellipse cx="${x * 1.18 + 3}" cy="${footY + 2}" rx="9.5" ry="6" fill="#3A3A4A"/>`;
-
-  const arm = (side, pose) => {
-    const sx = side * (bW / 2 - 6), sy = bT + 12;
-    let ex = side * (bW / 2 + 12), ey = bT + 38;
-    if (pose === 'up')    { ex = side * (bW / 2 + 4);  ey = bT - 16; }
-    if (pose === 'reach') { ex = side * (bW / 2 + 30); ey = bT + 4; }
-    if (pose === 'hip')   { ex = side * (bW / 2 + 1);  ey = bT + 26; }
-    return `<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="${shirt}" stroke-width="13" stroke-linecap="round"/>`
-      + `<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="url(#ffVol)" stroke-width="13" stroke-linecap="round" opacity="0.45"/>`
-      + `<circle cx="${ex}" cy="${ey}" r="7" fill="${skin}"/><circle cx="${ex}" cy="${ey}" r="7" fill="url(#ffSphere)"/>`;
+  const foot = (x) => `<ellipse cx="${x}" cy="${half-1}" rx="11" ry="7" fill="${c}"/><ellipse cx="${x}" cy="${half-1}" rx="11" ry="7" fill="url(#ffVol)"/>`;
+  const armNub = (side) => {
+    if (opts.arm === 'reach') return `<ellipse cx="${side*(bw/2+10)}" cy="2" rx="11" ry="8" fill="${c}" transform="rotate(${side*-18} ${side*(bw/2+6)} 2)"/><ellipse cx="${side*(bw/2+10)}" cy="2" rx="11" ry="8" fill="url(#ffSphere)" transform="rotate(${side*-18} ${side*(bw/2+6)} 2)"/>`;
+    if (opts.arm === 'up') return `<ellipse cx="${side*(bw/2-2)}" cy="${-half+6}" rx="8" ry="11" fill="${c}"/><ellipse cx="${side*(bw/2-2)}" cy="${-half+6}" rx="8" ry="11" fill="url(#ffSphere)"/>`;
+    return `<ellipse cx="${side*(bw/2-1)}" cy="12" rx="9" ry="11" fill="${c}"/><ellipse cx="${side*(bw/2-1)}" cy="12" rx="9" ry="11" fill="url(#ffSphere)"/>`;
   };
 
-  // chunky bean torso for a rounded, inflated 3D feel
-  const torso = `M${-bW/2} ${bT+16} Q${-bW/2} ${bT} ${-bW/2+18} ${bT} L${bW/2-18} ${bT} Q${bW/2} ${bT} ${bW/2} ${bT+16} L${bW/2} ${bT+bH-16} Q${bW/2} ${bT+bH} ${bW/2-16} ${bT+bH} L${-bW/2+16} ${bT+bH} Q${-bW/2} ${bT+bH} ${-bW/2} ${bT+bH-16} Z`;
+  const inner = `
+    ${tail(sp, c, -1)}
+    ${ears(sp, c)}
+    ${foot(-15)}${foot(15)}
+    ${armNub(-1)}${armNub(1)}
+    <path d="${body}" fill="${c}"/>
+    <path d="${body}" fill="url(#ffSphere)"/>
+    <ellipse cx="0" cy="14" rx="22" ry="20" fill="#fff" opacity="0.16"/>
+    <ellipse cx="-13" cy="${-half+20}" rx="12" ry="8" fill="#fff" opacity="0.22" transform="rotate(-18 -13 ${-half+20})"/>
+    <circle cx="-22" cy="6" r="5" fill="#FF9DA8" opacity="0.5"/><circle cx="22" cy="6" r="5" fill="#FF9DA8" opacity="0.5"/>
+    ${snout(sp)}
+    ${eyesG(face)}${browsG(face)}${tearG(face)}${mouthG(face)}`;
 
-  return `<g transform="translate(${cx} ${cy}) rotate(${lean}) scale(${flip} 1)">
-    <ellipse cx="2" cy="${footY + 12}" rx="42" ry="11" fill="url(#ffFloor)"/>
-    ${leg(-11)}${leg(11)}
-    ${arm(-1, opts.armL || 'down')}${arm(1, opts.armR || 'down')}
-    <path d="${torso}" fill="${shirt}"/>
-    <path d="${torso}" fill="url(#ffSphere)"/>
-    <ellipse cx="-12" cy="${bT + 14}" rx="11" ry="7" fill="#fff" opacity="0.22" transform="rotate(-18 -12 ${bT + 14})"/>
-    <circle cx="0" cy="0" r="22" fill="${skin}"/>
-    ${hair(hairStyle, hairC)}
-    <circle cx="-13" cy="9" r="4.5" fill="#FF9DA8" opacity="0.5"/><circle cx="13" cy="9" r="4.5" fill="#FF9DA8" opacity="0.5"/>
-    <circle cx="-7" cy="-1" r="3.1" fill="#3A2A22"/><circle cx="7" cy="-1" r="3.1" fill="#3A2A22"/>
-    <circle cx="-5.8" cy="-2.2" r="1.05" fill="#fff"/><circle cx="8.2" cy="-2.2" r="1.05" fill="#fff"/>
-    ${brows(face)}${tear(face)}${mouth(face)}
-    <circle cx="0" cy="0" r="22" fill="url(#ffSphere)"/>
+  return `<g transform="translate(${cx} ${cy}) scale(${flip} 1)">
+    <ellipse cx="0" cy="${half + 12}" rx="40" ry="11" fill="url(#ffFloor)"/>
+    <g transform="rotate(${lean})">${inner}</g>
   </g>`;
 }
 
@@ -137,64 +125,65 @@ function frame(bg, bg2, inner) {
     ${DEFS}
     <rect width="${W}" height="${H}" rx="20" fill="${bg}"/>
     <rect width="${W}" height="${H}" rx="20" fill="url(#ffBack)"/>
-    <ellipse cx="${W / 2}" cy="208" rx="220" ry="48" fill="${bg2}"/>
+    <ellipse cx="${W / 2}" cy="212" rx="230" ry="50" fill="${bg2}"/>
     ${inner}
   </svg>`;
 }
 
-// props with a little shading
+// props
 const truck = (x, y) => `<g transform="translate(${x} ${y})">
   <ellipse cx="2" cy="16" rx="26" ry="6" fill="url(#ffFloor)"/>
-  <rect x="-24" y="-13" width="38" height="20" rx="5" fill="#FF8C7A"/>
-  <rect x="-24" y="-13" width="38" height="20" rx="5" fill="url(#ffVol)"/>
-  <rect x="12" y="-7" width="15" height="14" rx="4" fill="#FFD56B"/>
-  <rect x="12" y="-7" width="15" height="14" rx="4" fill="url(#ffVol)"/>
-  <circle cx="-13" cy="9" r="6.5" fill="#3A3A4A"/><circle cx="18" cy="9" r="6.5" fill="#3A3A4A"/>
-  <circle cx="-13" cy="9" r="2.5" fill="#9aa0ad"/><circle cx="18" cy="9" r="2.5" fill="#9aa0ad"/></g>`;
+  <rect x="-24" y="-13" width="38" height="20" rx="6" fill="#FF8C7A"/><rect x="-24" y="-13" width="38" height="20" rx="6" fill="url(#ffVol)"/>
+  <rect x="12" y="-7" width="15" height="14" rx="4" fill="#FFD56B"/><rect x="12" y="-7" width="15" height="14" rx="4" fill="url(#ffVol)"/>
+  <circle cx="-13" cy="9" r="6.5" fill="#3A3A4A"/><circle cx="18" cy="9" r="6.5" fill="#3A3A4A"/></g>`;
 const ball = (x, y) => `<g transform="translate(${x} ${y})">
-  <ellipse cx="0" cy="20" rx="18" ry="5" fill="url(#ffFloor)"/>
-  <circle r="17" fill="#fff"/><circle r="17" fill="url(#ffSphere)"/>
-  <path d="M-17 0 H17 M0 -17 V17" stroke="#5FB6F6" stroke-width="3"/></g>`;
+  <ellipse cx="0" cy="18" rx="16" ry="5" fill="url(#ffFloor)"/>
+  <circle r="15" fill="#fff"/><circle r="15" fill="url(#ffSphere)"/><path d="M-15 0 H15 M0 -15 V15" stroke="#5FB6F6" stroke-width="3"/></g>`;
 const heart = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 7 C-7 -5 -20 2 0 18 C20 2 7 -5 0 7 Z" fill="#FF6B8A"/><path d="M0 7 C-7 -5 -20 2 0 18 C20 2 7 -5 0 7 Z" fill="url(#ffVol)"/></g>`;
+const sparkle = (x, y) => `<g transform="translate(${x} ${y})" fill="#FFD56B"><path d="M0 -9 L2 -2 L9 0 L2 2 L0 9 L-2 2 L-9 0 L-2 -2 Z"/></g>`;
+
+// creature colours
+const C = { bearTan: '#E0A36A', bunnyPink: '#F3C0D4', foxOrange: '#FF9F5A', catGrey: '#AAB3C4', bearMint: '#9BE3B4', catLav: '#B7A6F0' };
 
 // ---- the four situations ----
 const SCENES = {
   sharing: () => frame('#FFF1CF', '#F3DFA6',
-    child(106, 78, { i: 0, face: 'neutral', armR: 'hip' }) +
-    truck(150, 150) +
-    child(214, 78, { i: 1, face: 'worried', flip: true, armL: 'reach' })),
+    creature(104, 116, { species: 'bear', color: C.bearTan, face: 'neutral' }) +
+    truck(160, 158) +
+    creature(214, 116, { species: 'bunny', color: C.bunnyPink, face: 'worried', flip: true, arm: 'reach' })),
 
   pushed: () => frame('#FFE4DD', '#F6CFC6',
-    `<g stroke="#E89A8C" stroke-width="3" stroke-dasharray="6 8" opacity=".7"><line x1="44" y1="150" x2="276" y2="150"/></g>` +
-    child(118, 76, { i: 2, face: 'angry', lean: 12, armR: 'reach' }) +
-    child(206, 84, { i: 3, face: 'worried', lean: 9, armL: 'up', armR: 'up' })),
+    `<g stroke="#E89A8C" stroke-width="3" stroke-dasharray="6 8" opacity=".7"><line x1="40" y1="166" x2="280" y2="166"/></g>` +
+    creature(116, 116, { species: 'fox', color: C.foxOrange, face: 'angry', lean: 13, arm: 'reach' }) +
+    sparkle(168, 96) +
+    creature(210, 120, { species: 'cat', color: C.catGrey, face: 'worried', lean: 9, arm: 'up' })),
 
   excluded: () => frame('#E3F0FF', '#C9DEF6',
-    child(92, 80, { i: 1, face: 'big', armR: 'reach' }) +
-    ball(148, 150) +
-    child(178, 80, { i: 3, face: 'smile', flip: true, armL: 'reach' }) +
-    child(270, 84, { i: 0, face: 'sad', flip: true, armL: 'hip' })),
+    creature(86, 118, { species: 'bear', color: C.bearMint, face: 'big' }) +
+    ball(120, 162) +
+    creature(150, 118, { species: 'bunny', color: C.bunnyPink, face: 'smile' }) +
+    creature(258, 120, { species: 'cat', color: C.catLav, face: 'sad', flip: true })),
 
   help: () => frame('#EEE8FF', '#D9CFF2',
-    `<g transform="translate(232 64)">
-       <ellipse cx="0" cy="44" rx="34" ry="7" fill="url(#ffFloor)"/>
-       <rect x="-32" y="-32" width="64" height="22" rx="6" fill="#C3B5F2"/><rect x="-32" y="-32" width="64" height="22" rx="6" fill="url(#ffVol)"/>
-       <rect x="-32" y="-6" width="64" height="22" rx="6" fill="#B3A2E8"/><rect x="-32" y="-6" width="64" height="22" rx="6" fill="url(#ffVol)"/>
-       <circle cx="0" cy="-21" r="10" fill="#FFD56B"/><circle cx="0" cy="-21" r="10" fill="url(#ffSphere)"/></g>` +
-    child(138, 94, { i: 2, face: 'worried', armL: 'up', armR: 'up' })),
+    `<g transform="translate(238 66)">
+       <ellipse cx="0" cy="46" rx="34" ry="7" fill="url(#ffFloor)"/>
+       <rect x="-32" y="-30" width="64" height="22" rx="6" fill="#C3B5F2"/><rect x="-32" y="-30" width="64" height="22" rx="6" fill="url(#ffVol)"/>
+       <rect x="-32" y="-4" width="64" height="22" rx="6" fill="#B3A2E8"/><rect x="-32" y="-4" width="64" height="22" rx="6" fill="url(#ffVol)"/>
+       <circle cx="0" cy="-19" r="10" fill="#FFD56B"/><circle cx="0" cy="-19" r="10" fill="url(#ffSphere)"/></g>` +
+    creature(130, 120, { species: 'bear', color: C.bearTan, face: 'worried', arm: 'up' })),
 };
 
 // ---- outcome illustrations ----
 function outcomeArt(kind) {
   if (kind === 'good') return frame('#E3F7E9', '#C6ECD2',
-    heart(160, 38, 1.5) +
-    child(116, 84, { i: 0, face: 'big', armR: 'reach' }) +
-    child(204, 84, { i: 3, face: 'big', flip: true, armL: 'reach' }));
-  return frame('#FFF4E0', '#F3E2BE', // gentle reflect — never scary
-    `<g transform="translate(236 50)" opacity=".85"><circle r="17" fill="#fff"/><circle r="17" fill="url(#ffSphere)"/>
+    heart(160, 44, 1.5) + sparkle(96, 60) + sparkle(228, 70) +
+    creature(112, 118, { species: 'bear', color: C.bearTan, face: 'big', arm: 'reach' }) +
+    creature(208, 118, { species: 'bunny', color: C.bunnyPink, face: 'big', flip: true, arm: 'reach' }));
+  return frame('#FFF4E0', '#F3E2BE',
+    `<g transform="translate(236 52)" opacity=".9"><circle r="17" fill="#fff"/><circle r="17" fill="url(#ffSphere)"/>
        <path d="M-6 -3 a7 7 0 1 1 6 8 v3" fill="none" stroke="#FFB36B" stroke-width="3.2" stroke-linecap="round"/>
        <circle cx="0" cy="12" r="2" fill="#FFB36B"/></g>` +
-    child(150, 90, { i: 1, face: 'worried', armL: 'hip' }));
+    creature(150, 120, { species: 'fox', color: C.foxOrange, face: 'worried' }));
 }
 
 export function storyScene(id) { return (SCENES[id] || SCENES.sharing)(); }
