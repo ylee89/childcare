@@ -246,46 +246,62 @@ function outcomeArt(kind) {
 export function storyScene(id) { return (SCENES[id] || SCENES.sharing)(); }
 export function storyOutcomeArt(good) { return outcomeArt(good ? 'good' : 'reflect'); }
 
-// ---- Feel Friends mascot: "Lumi", an original heart-shaped glow-creature ----
-// The body itself is a plump heart (no antenna). Dimensional shading, big shiny
-// eyes, heart cheeks, little arm nubs. Pure inline SVG, scales to any size.
+// ---- Feel Friends mascot: "Lumi" ----
+// A soft, plump purple creature hugging a pink heart (ref: cozy knit-plush
+// style). Dimensional radial shading + soft knit-like texture, big shiny eyes,
+// little brows, arms wrapping a glossy heart. Pure inline SVG, scales to size.
 export function mascot(size = 120) {
   return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Feel Friends mascot">
     ${DEFS}
     <defs>
-      <radialGradient id="lumiGlow" cx="0.5" cy="0.45" r="0.6">
-        <stop offset="0" stop-color="#FFE3EC" stop-opacity="0.95"/><stop offset="1" stop-color="#FFE3EC" stop-opacity="0"/>
+      <radialGradient id="lumiGlow" cx="0.5" cy="0.5" r="0.6">
+        <stop offset="0" stop-color="#E7DDFB" stop-opacity="0.95"/><stop offset="1" stop-color="#E7DDFB" stop-opacity="0"/>
       </radialGradient>
-      <radialGradient id="lumiBody" cx="0.4" cy="0.3" r="0.85">
-        <stop offset="0" stop-color="#FFA9B8"/><stop offset="0.5" stop-color="#FF8095"/><stop offset="1" stop-color="#E85F7A"/>
+      <radialGradient id="lumiBody" cx="0.42" cy="0.30" r="0.9">
+        <stop offset="0" stop-color="#CDB9F2"/><stop offset="0.55" stop-color="#B79EE8"/><stop offset="1" stop-color="#9A7FD6"/>
       </radialGradient>
-      <radialGradient id="lumiShade" cx="0.5" cy="0.95" r="0.7">
-        <stop offset="0" stop-color="#C9445F" stop-opacity="0.55"/><stop offset="0.6" stop-color="#C9445F" stop-opacity="0"/>
+      <radialGradient id="lumiHeartG" cx="0.4" cy="0.3" r="0.9">
+        <stop offset="0" stop-color="#FFC2D6"/><stop offset="0.55" stop-color="#FF9DBE"/><stop offset="1" stop-color="#F07AA3"/>
       </radialGradient>
+      <pattern id="lumiKnit" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
+        <path d="M0 3 q1.5 -3 3 0 q1.5 3 3 0" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="1.1"/>
+      </pattern>
+      <pattern id="lumiKnitP" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
+        <path d="M0 3 q1.5 -3 3 0 q1.5 3 3 0" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="1.1"/>
+      </pattern>
     </defs>
-    <ellipse cx="60" cy="108" rx="34" ry="7" fill="#000" opacity="0.10"/>
-    <circle cx="60" cy="58" r="52" fill="url(#lumiGlow)"/>
-    <!-- little arm nubs behind the body -->
-    <ellipse cx="18" cy="74" rx="8" ry="10" fill="#FF8095"/><ellipse cx="18" cy="74" rx="8" ry="10" fill="url(#ffSphere)"/>
-    <ellipse cx="102" cy="74" rx="8" ry="10" fill="#FF8095"/><ellipse cx="102" cy="74" rx="8" ry="10" fill="url(#ffSphere)"/>
-    <!-- HEART body -->
-    <path id="lumiHeart" d="M60 104 C18 74 22 40 42 32 C54 27 60 36 60 44 C60 36 66 27 78 32 C98 40 102 74 60 104 Z" fill="url(#lumiBody)"/>
-    <use href="#lumiHeart" fill="url(#lumiShade)"/>
-    <use href="#lumiHeart" fill="url(#ffSphere)"/>
-    <!-- glossy top highlights for volume -->
-    <ellipse cx="45" cy="48" rx="13" ry="9" fill="#fff" opacity="0.40" transform="rotate(-22 45 48)"/>
-    <ellipse cx="74" cy="46" rx="7" ry="5" fill="#fff" opacity="0.30" transform="rotate(20 74 46)"/>
-    <!-- heart cheeks -->
-    <path d="M40 74 c-3 -3 -8 0 -8 3 c0 4 8 8 8 8 c0 0 8 -4 8 -8 c0 -3 -5 -6 -8 -3 Z" fill="#C9445F" opacity="0.30"/>
-    <path d="M80 74 c-3 -3 -8 0 -8 3 c0 4 8 8 8 8 c0 0 8 -4 8 -8 c0 -3 -5 -6 -8 -3 Z" fill="#C9445F" opacity="0.30"/>
+    <ellipse cx="60" cy="110" rx="36" ry="7" fill="#000" opacity="0.10"/>
+    <circle cx="60" cy="58" r="54" fill="url(#lumiGlow)"/>
+    <!-- plump purple body -->
+    <path id="lumiBodyShape" d="M60 16 C32 16 18 40 18 66 C18 96 36 110 60 110 C84 110 102 96 102 66 C102 40 88 16 60 16 Z" fill="url(#lumiBody)"/>
+    <use href="#lumiBodyShape" fill="url(#lumiKnit)"/>
+    <use href="#lumiBodyShape" fill="url(#ffSphere)"/>
+    <!-- top highlight -->
+    <ellipse cx="44" cy="40" rx="15" ry="10" fill="#fff" opacity="0.30" transform="rotate(-20 44 40)"/>
+    <!-- little brows -->
+    <path d="M40 44 q5 -4 10 -1" stroke="#E7A33C" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M70 43 q5 -3 10 1" stroke="#E7A33C" stroke-width="3" fill="none" stroke-linecap="round"/>
     <!-- big shiny eyes -->
-    <ellipse cx="49" cy="60" rx="8.5" ry="10.5" fill="#fff"/><ellipse cx="71" cy="60" rx="8.5" ry="10.5" fill="#fff"/>
-    <circle cx="50" cy="62" r="5.4" fill="#3A2230"/><circle cx="72" cy="62" r="5.4" fill="#3A2230"/>
-    <circle cx="52" cy="60" r="2.1" fill="#fff"/><circle cx="74" cy="60" r="2.1" fill="#fff"/>
-    <!-- happy mouth -->
-    <path d="M54 73 Q60 80 66 73" stroke="#3A2230" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="50" cy="56" rx="8" ry="9.5" fill="#fff"/><ellipse cx="70" cy="56" rx="8" ry="9.5" fill="#fff"/>
+    <circle cx="51" cy="58" r="5" fill="#2E2440"/><circle cx="71" cy="58" r="5" fill="#2E2440"/>
+    <circle cx="53" cy="56" r="2" fill="#fff"/><circle cx="73" cy="56" r="2" fill="#fff"/>
+    <!-- small smile + cheeks -->
+    <path d="M55 67 q5 5 10 0" stroke="#7A5BB0" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="40" cy="64" rx="5" ry="3.5" fill="#FF9DB0" opacity="0.45"/><ellipse cx="80" cy="64" rx="5" ry="3.5" fill="#FF9DB0" opacity="0.45"/>
+    <!-- big pink heart being hugged (front and centre) -->
+    <path id="lumiHug" d="M60 112 C24 86 30 60 48 55 C59 52 60 63 60 68 C60 63 61 52 72 55 C90 60 96 86 60 112 Z" fill="url(#lumiHeartG)"/>
+    <use href="#lumiHug" fill="url(#lumiKnitP)"/>
+    <use href="#lumiHug" fill="url(#ffSphere)"/>
+    <ellipse cx="50" cy="68" rx="8" ry="5" fill="#fff" opacity="0.45" transform="rotate(-20 50 68)"/>
+    <!-- chunky arms wrapping around the heart -->
+    <path d="M24 76 Q22 96 44 104" stroke="#A98FE0" stroke-width="15" fill="none" stroke-linecap="round"/>
+    <path d="M96 76 Q98 96 76 104" stroke="#A98FE0" stroke-width="15" fill="none" stroke-linecap="round"/>
+    <path d="M24 76 Q22 96 44 104" stroke="url(#ffVol)" stroke-width="15" fill="none" stroke-linecap="round" opacity="0.4"/>
+    <path d="M96 76 Q98 96 76 104" stroke="url(#ffVol)" stroke-width="15" fill="none" stroke-linecap="round" opacity="0.4"/>
+    <ellipse cx="46" cy="105" rx="8.5" ry="7.5" fill="#B79EE8"/><ellipse cx="46" cy="105" rx="8.5" ry="7.5" fill="url(#ffSphere)"/>
+    <ellipse cx="74" cy="105" rx="8.5" ry="7.5" fill="#B79EE8"/><ellipse cx="74" cy="105" rx="8.5" ry="7.5" fill="url(#ffSphere)"/>
     <!-- sparkles -->
-    <g fill="#FFD56B"><path d="M104 36 l1.8 4.4 4.4 1.8 -4.4 1.8 -1.8 4.4 -1.8 -4.4 -4.4 -1.8 4.4 -1.8 Z"/>
-      <path d="M14 42 l1.3 3.2 3.2 1.3 -3.2 1.3 -1.3 3.2 -1.3 -3.2 -3.2 -1.3 3.2 -1.3 Z"/></g>
+    <g fill="#FFD56B"><path d="M104 34 l1.8 4.4 4.4 1.8 -4.4 1.8 -1.8 4.4 -1.8 -4.4 -4.4 -1.8 4.4 -1.8 Z"/>
+      <path d="M14 40 l1.3 3.2 3.2 1.3 -3.2 1.3 -1.3 3.2 -1.3 -3.2 -3.2 -1.3 3.2 -1.3 Z"/></g>
   </svg>`;
 }
