@@ -5,7 +5,7 @@ import {
   EMOTIONS, emo, SITUATIONS, STORIES, PHRASES, phrase,
   EMPATHY, CHOICES, MISSIONS, AVATARS, AGE_BANDS,
 } from './content.js';
-import { storyScene, storyOutcomeArt } from './illustrations.js';
+import { storyScene, storyOutcomeArt, mascot } from './illustrations.js';
 
 const root = document.getElementById('app');
 
@@ -130,6 +130,9 @@ route('home', () => {
       h('div', { class: 'greet' }, `☀️ Hi, ${child?.name || 'Friend'}!`),
       h('button', { class: 'keybtn', onclick: () => go('gate') }, '🔑')),
     h('div', { class: 'mascot', onclick: () => Audio.speak(`Hi ${child?.name || 'friend'}! What would you like to do?`) }, child?.avatar || '🐻'),
+    h('div', { class: 'brand', onclick: () => Audio.speak('Feel Friends') },
+      h('span', { class: 'brand-logo', html: mascot(34) }),
+      h('span', { class: 'brand-name' }, 'Feel Friends')),
     grid, persistentNav(),
   );
   // gentle daily check-in suggestion (skippable)
@@ -695,8 +698,23 @@ route('settings', () => {
   return wrap;
 });
 
-/* ---------- boot ---------- */
+/* ---------- splash + boot ---------- */
+function splash() {
+  document.body.dataset.mode = 'child';
+  const s = h('div', { class: 'splash' },
+    h('div', { class: 'splash-mascot', html: mascot(132) }),
+    h('div', { class: 'splash-name' }, 'Feel Friends'),
+    h('div', { class: 'splash-tag' }, 'Big feelings are okay 💛'));
+  root.innerHTML = '';
+  root.append(s);
+  let done = false;
+  const finish = () => { if (done) return; done = true; boot(); };
+  s.addEventListener('click', finish); // tap to skip
+  setTimeout(() => Audio.speak('Feel Friends'), 250);
+  setTimeout(() => { s.classList.add('out'); }, 1500);
+  setTimeout(finish, 1950);
+}
 function boot() {
   go(Store.isOnboarded() ? 'home' : 'onboarding');
 }
-boot();
+splash();
