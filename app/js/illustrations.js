@@ -245,3 +245,45 @@ function outcomeArt(kind) {
 
 export function storyScene(id) { return (SCENES[id] || SCENES.sharing)(); }
 export function storyOutcomeArt(good) { return outcomeArt(good ? 'good' : 'reflect'); }
+
+// ---- Feel Friends mascot: "Lumi", an original rounded glow-creature ----
+// Not an animal — a soft droplet/spark being with a heart antenna, big shiny
+// eyes and heart cheeks. Pure inline SVG, scales to any size.
+export function mascot(size = 120) {
+  return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Feel Friends mascot">
+    ${DEFS}
+    <defs>
+      <radialGradient id="lumiGlow" cx="0.5" cy="0.42" r="0.6">
+        <stop offset="0" stop-color="#FFE9A8" stop-opacity="0.9"/><stop offset="1" stop-color="#FFE9A8" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="lumiBody" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#9AD7FF"/><stop offset="0.55" stop-color="#7CC6FE"/><stop offset="1" stop-color="#6FB0E8"/>
+      </linearGradient>
+    </defs>
+    <circle cx="60" cy="62" r="50" fill="url(#lumiGlow)"/>
+    <!-- antenna with heart -->
+    <path d="M60 26 Q58 16 64 10" stroke="#6FB0E8" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M64 6 c-3 -3 -8 0 -8 4 c0 4 8 8 8 8 c0 0 8 -4 8 -8 c0 -4 -5 -7 -8 -4 Z" fill="#FF8C7A"/>
+    <path d="M64 6 c-3 -3 -8 0 -8 4 c0 4 8 8 8 8 c0 0 8 -4 8 -8 c0 -4 -5 -7 -8 -4 Z" fill="url(#ffVol)"/>
+    <!-- body: rounded droplet -->
+    <path d="M60 24 C30 24 22 54 22 72 C22 95 39 108 60 108 C81 108 98 95 98 72 C98 54 90 24 60 24 Z" fill="url(#lumiBody)"/>
+    <path d="M60 24 C30 24 22 54 22 72 C22 95 39 108 60 108 C81 108 98 95 98 72 C98 54 90 24 60 24 Z" fill="url(#ffSphere)"/>
+    <!-- side nubs -->
+    <ellipse cx="20" cy="78" rx="8" ry="10" fill="#7CC6FE"/><ellipse cx="20" cy="78" rx="8" ry="10" fill="url(#ffSphere)"/>
+    <ellipse cx="100" cy="78" rx="8" ry="10" fill="#7CC6FE"/><ellipse cx="100" cy="78" rx="8" ry="10" fill="url(#ffSphere)"/>
+    <!-- highlight -->
+    <ellipse cx="46" cy="52" rx="16" ry="11" fill="#fff" opacity="0.30" transform="rotate(-18 46 52)"/>
+    <!-- heart cheeks -->
+    <path d="M40 78 c-3 -3 -8 0 -8 3 c0 4 8 8 8 8 c0 0 8 -4 8 -8 c0 -3 -5 -6 -8 -3 Z" fill="#FF9DB0" opacity="0.7"/>
+    <path d="M80 78 c-3 -3 -8 0 -8 3 c0 4 8 8 8 8 c0 0 8 -4 8 -8 c0 -3 -5 -6 -8 -3 Z" fill="#FF9DB0" opacity="0.7"/>
+    <!-- big shiny eyes -->
+    <ellipse cx="48" cy="64" rx="8.5" ry="10.5" fill="#fff"/><ellipse cx="72" cy="64" rx="8.5" ry="10.5" fill="#fff"/>
+    <circle cx="49" cy="66" r="5.2" fill="#2A3550"/><circle cx="73" cy="66" r="5.2" fill="#2A3550"/>
+    <circle cx="51" cy="64" r="2" fill="#fff"/><circle cx="75" cy="64" r="2" fill="#fff"/>
+    <!-- happy mouth -->
+    <path d="M53 77 Q60 84 67 77" stroke="#2A3550" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- sparkles -->
+    <g fill="#FFD56B"><path d="M104 40 l1.6 4 4 1.6 -4 1.6 -1.6 4 -1.6 -4 -4 -1.6 4 -1.6 Z"/>
+      <path d="M16 44 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2 Z"/></g>
+  </svg>`;
+}
