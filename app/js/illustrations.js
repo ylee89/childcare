@@ -177,22 +177,26 @@ const C = { bearTan: '#E0A36A', bunnyPink: '#F3C0D4', foxOrange: '#FF9F5A', catG
 
 // ---- the four situations ----
 const SCENES = {
-  sharing: () => frame('#FFF1CF', '#F3DFA6',
+  sharing: () => frame('#FFF1CF', '#F3DFA6', // playroom: rug + scattered toy blocks
+    floorBand('#F3DFA6') + rug(160, 178, 112, '#F0CE8E') +
+    block(46, 150, '#7CC6FE', 'A') + block(66, 150, '#FF8FC7', 'B') +
     creature(104, 116, { species: 'bear', color: C.bearTan, face: 'neutral' }) +
     truck(160, 158) +
     creature(214, 116, { species: 'bunny', color: C.bunnyPink, face: 'worried', flip: true, arm: 'reach' })),
 
-  pushed: () => frame('#FFE4DD', '#F6CFC6',
-    `<g stroke="#E89A8C" stroke-width="3" stroke-dasharray="6 8" opacity=".7"><line x1="40" y1="166" x2="280" y2="166"/></g>` +
-    creature(116, 116, { species: 'fox', color: C.foxOrange, face: 'angry', lean: 13, arm: 'reach' }) +
-    sparkle(168, 96) +
-    creature(210, 120, { species: 'cat', color: C.catGrey, face: 'worried', lean: 9, arm: 'up' })),
+  pushed: () => frame('#FFE4DD', '#F6CFC6', // waiting in line toward a door
+    floorBand('#F6CFC6') + doorway(286, 150) +
+    `<g stroke="#E89A8C" stroke-width="3" stroke-dasharray="6 8" opacity=".7"><line x1="44" y1="170" x2="250" y2="170"/></g>` +
+    creature(112, 116, { species: 'fox', color: C.foxOrange, face: 'angry', lean: 13, arm: 'reach' }) +
+    sparkle(166, 96) +
+    creature(204, 120, { species: 'cat', color: C.catGrey, face: 'worried', lean: 9, arm: 'up' })),
 
-  excluded: () => frame('#E3F0FF', '#C9DEF6',
-    creature(86, 118, { species: 'bear', color: C.bearMint, face: 'big' }) +
-    ball(120, 162) +
-    creature(150, 118, { species: 'bunny', color: C.bunnyPink, face: 'smile' }) +
-    creature(258, 120, { species: 'cat', color: C.catLav, face: 'sad', flip: true })),
+  excluded: () => frame('#E3F0FF', '#C9DEF6', // playroom: two on a rug, one apart
+    floorBand('#C9DEF6') + windowProp(256, 50) + rug(132, 180, 118, '#CBDFF5') +
+    creature(84, 118, { species: 'bear', color: C.bearMint, face: 'big' }) +
+    ball(118, 162) +
+    creature(148, 118, { species: 'bunny', color: C.bunnyPink, face: 'smile' }) +
+    creature(260, 120, { species: 'cat', color: C.catLav, face: 'sad', flip: true })),
 
   help: () => frame('#EEE8FF', '#D9CFF2',
     // kitchen setting: window on the wall, floor, a snack counter, and a rug
