@@ -246,59 +246,44 @@ function outcomeArt(kind) {
 export function storyScene(id) { return (SCENES[id] || SCENES.sharing)(); }
 export function storyOutcomeArt(good) { return outcomeArt(good ? 'good' : 'reflect'); }
 
-// ---- Feel Friends mascot: "Lumi" ----
-// A soft, plump purple creature hugging a pink heart (ref: cozy knit-plush
-// style). Dimensional radial shading + soft knit-like texture, big shiny eyes,
-// little brows, arms wrapping a glossy heart. Pure inline SVG, scales to size.
+// ---- Feel Friends mascot: "Lumi", an original rounded glow-creature ----
+// Not an animal — a soft droplet/spark being with a heart antenna, big shiny
+// eyes and heart cheeks. Pure inline SVG, scales to any size.
 export function mascot(size = 120) {
   return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Feel Friends mascot">
     ${DEFS}
     <defs>
-      <radialGradient id="lumiGlow" cx="0.5" cy="0.5" r="0.6">
-        <stop offset="0" stop-color="#E7DDFB" stop-opacity="0.95"/><stop offset="1" stop-color="#E7DDFB" stop-opacity="0"/>
+      <radialGradient id="lumiGlow" cx="0.5" cy="0.42" r="0.6">
+        <stop offset="0" stop-color="#FFE9A8" stop-opacity="0.9"/><stop offset="1" stop-color="#FFE9A8" stop-opacity="0"/>
       </radialGradient>
-      <radialGradient id="lumiBody" cx="0.42" cy="0.30" r="0.9">
-        <stop offset="0" stop-color="#CDB9F2"/><stop offset="0.55" stop-color="#B79EE8"/><stop offset="1" stop-color="#9A7FD6"/>
-      </radialGradient>
-      <radialGradient id="lumiHeartG" cx="0.4" cy="0.3" r="0.9">
-        <stop offset="0" stop-color="#FFC2D6"/><stop offset="0.55" stop-color="#FF9DBE"/><stop offset="1" stop-color="#F07AA3"/>
-      </radialGradient>
-      <pattern id="lumiKnit" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
-        <path d="M0 3 q1.5 -3 3 0 q1.5 3 3 0" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="1.1"/>
-      </pattern>
-      <pattern id="lumiKnitP" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
-        <path d="M0 3 q1.5 -3 3 0 q1.5 3 3 0" fill="none" stroke="#fff" stroke-opacity="0.18" stroke-width="1.1"/>
-      </pattern>
+      <linearGradient id="lumiBody" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#9AD7FF"/><stop offset="0.55" stop-color="#7CC6FE"/><stop offset="1" stop-color="#6FB0E8"/>
+      </linearGradient>
     </defs>
-    <ellipse cx="60" cy="116" rx="30" ry="6" fill="#000" opacity="0.10"/>
-    <circle cx="60" cy="58" r="54" fill="url(#lumiGlow)"/>
-    <!-- body IS a soft, slightly irregular heart -->
-    <path id="lumiBodyShape" d="M60 100
-      C26 76 16 56 24 40
-      C31 26 48 26 56 40
-      C58 44 60 46 60 48
-      C60 46 63 43 66 39
-      C75 26 92 29 97 44
-      C103 62 90 78 60 100 Z" fill="url(#lumiBody)"/>
-    <!-- little feet (no arms), in front so they peek out below -->
-    <ellipse cx="49" cy="104" rx="11" ry="7" fill="#8A6FC8"/><ellipse cx="49" cy="104" rx="11" ry="7" fill="url(#ffSphere)"/>
-    <ellipse cx="71" cy="104" rx="11" ry="7" fill="#8A6FC8"/><ellipse cx="71" cy="104" rx="11" ry="7" fill="url(#ffSphere)"/>
-    <use href="#lumiBodyShape" fill="url(#lumiKnit)"/>
-    <use href="#lumiBodyShape" fill="url(#ffSphere)"/>
-    <!-- top-left highlight for volume -->
-    <ellipse cx="42" cy="50" rx="14" ry="10" fill="#fff" opacity="0.32" transform="rotate(-24 42 50)"/>
-    <!-- little brows -->
-    <path d="M40 50 q5 -4 10 -1" stroke="#E7A33C" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <path d="M70 49 q5 -3 10 1" stroke="#E7A33C" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="60" cy="62" r="50" fill="url(#lumiGlow)"/>
+    <!-- antenna with heart -->
+    <path d="M60 26 Q58 16 64 10" stroke="#6FB0E8" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M64 6 c-3 -3 -8 0 -8 4 c0 4 8 8 8 8 c0 0 8 -4 8 -8 c0 -4 -5 -7 -8 -4 Z" fill="#FF8C7A"/>
+    <path d="M64 6 c-3 -3 -8 0 -8 4 c0 4 8 8 8 8 c0 0 8 -4 8 -8 c0 -4 -5 -7 -8 -4 Z" fill="url(#ffVol)"/>
+    <!-- body: rounded droplet -->
+    <path d="M60 24 C30 24 22 54 22 72 C22 95 39 108 60 108 C81 108 98 95 98 72 C98 54 90 24 60 24 Z" fill="url(#lumiBody)"/>
+    <path d="M60 24 C30 24 22 54 22 72 C22 95 39 108 60 108 C81 108 98 95 98 72 C98 54 90 24 60 24 Z" fill="url(#ffSphere)"/>
+    <!-- side nubs -->
+    <ellipse cx="20" cy="78" rx="8" ry="10" fill="#7CC6FE"/><ellipse cx="20" cy="78" rx="8" ry="10" fill="url(#ffSphere)"/>
+    <ellipse cx="100" cy="78" rx="8" ry="10" fill="#7CC6FE"/><ellipse cx="100" cy="78" rx="8" ry="10" fill="url(#ffSphere)"/>
+    <!-- highlight -->
+    <ellipse cx="46" cy="52" rx="16" ry="11" fill="#fff" opacity="0.30" transform="rotate(-18 46 52)"/>
+    <!-- heart cheeks -->
+    <path d="M40 78 c-3 -3 -8 0 -8 3 c0 4 8 8 8 8 c0 0 8 -4 8 -8 c0 -3 -5 -6 -8 -3 Z" fill="#FF9DB0" opacity="0.7"/>
+    <path d="M80 78 c-3 -3 -8 0 -8 3 c0 4 8 8 8 8 c0 0 8 -4 8 -8 c0 -3 -5 -6 -8 -3 Z" fill="#FF9DB0" opacity="0.7"/>
     <!-- big shiny eyes -->
-    <ellipse cx="50" cy="62" rx="8" ry="9.5" fill="#fff"/><ellipse cx="70" cy="62" rx="8" ry="9.5" fill="#fff"/>
-    <circle cx="51" cy="64" r="5" fill="#2E2440"/><circle cx="71" cy="64" r="5" fill="#2E2440"/>
-    <circle cx="53" cy="62" r="2" fill="#fff"/><circle cx="73" cy="62" r="2" fill="#fff"/>
-    <!-- smile + cheeks -->
-    <path d="M54 74 q6 6 12 0" stroke="#7A5BB0" stroke-width="2.8" fill="none" stroke-linecap="round"/>
-    <ellipse cx="39" cy="70" rx="5.5" ry="4" fill="#FF9DB0" opacity="0.5"/><ellipse cx="81" cy="70" rx="5.5" ry="4" fill="#FF9DB0" opacity="0.5"/>
+    <ellipse cx="48" cy="64" rx="8.5" ry="10.5" fill="#fff"/><ellipse cx="72" cy="64" rx="8.5" ry="10.5" fill="#fff"/>
+    <circle cx="49" cy="66" r="5.2" fill="#2A3550"/><circle cx="73" cy="66" r="5.2" fill="#2A3550"/>
+    <circle cx="51" cy="64" r="2" fill="#fff"/><circle cx="75" cy="64" r="2" fill="#fff"/>
+    <!-- happy mouth -->
+    <path d="M53 77 Q60 84 67 77" stroke="#2A3550" stroke-width="3" fill="none" stroke-linecap="round"/>
     <!-- sparkles -->
-    <g fill="#FFD56B"><path d="M104 36 l1.8 4.4 4.4 1.8 -4.4 1.8 -1.8 4.4 -1.8 -4.4 -4.4 -1.8 4.4 -1.8 Z"/>
-      <path d="M14 44 l1.3 3.2 3.2 1.3 -3.2 1.3 -1.3 3.2 -1.3 -3.2 -3.2 -1.3 3.2 -1.3 Z"/></g>
+    <g fill="#FFD56B"><path d="M104 40 l1.6 4 4 1.6 -4 1.6 -1.6 4 -1.6 -4 -4 -1.6 4 -1.6 Z"/>
+      <path d="M16 44 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2 Z"/></g>
   </svg>`;
 }
