@@ -150,18 +150,27 @@ const sideTable = (x, topY, w) => `<g><rect x="${x - w / 2 + 5}" y="${topY + 8}"
 const plate = (x, y) => `<ellipse cx="${x}" cy="${y}" rx="17" ry="6" fill="#fff"/><ellipse cx="${x}" cy="${y}" rx="17" ry="6" fill="url(#ffVol)"/><ellipse cx="${x}" cy="${y - 1}" rx="10" ry="3.4" fill="#EFE4D2"/>`;
 const cup = (x, y) => `<g transform="translate(${x} ${y})"><rect x="-7" y="-13" width="14" height="16" rx="3" fill="#9BE3B4"/><rect x="-7" y="-13" width="14" height="16" rx="3" fill="url(#ffVol)"/><path d="M7 -9 q7 2 0 9" stroke="#9BE3B4" stroke-width="3" fill="none"/></g>`;
 const doorway = (x, y) => `<g transform="translate(${x} ${y})"><rect x="-30" y="-44" width="60" height="88" rx="8" fill="#E2C39B"/><rect x="-24" y="-38" width="48" height="82" rx="6" fill="#C9A271"/><rect x="-24" y="-38" width="48" height="82" rx="6" fill="url(#ffVol)"/><circle cx="16" cy="4" r="3" fill="#FFD56B"/></g>`;
-// a big playground slide: ladder (left) → high platform → chute sweeping down-right
+// playground slide modelled on a real one: ladder right (blue rails + colourful
+// rungs), high platform, grey chute sweeping down-left with thick red side rails.
 const slide = () => `<g>
-  <line x1="92" y1="104" x2="86" y2="184" stroke="#C98A53" stroke-width="7" stroke-linecap="round"/>
-  <line x1="160" y1="104" x2="166" y2="184" stroke="#C98A53" stroke-width="7" stroke-linecap="round"/>
-  <g stroke="#FF8C7A" stroke-width="6" stroke-linecap="round">
-    <line x1="38" y1="184" x2="56" y2="100"/><line x1="64" y1="184" x2="78" y2="100"/>
-    <line x1="49" y1="160" x2="70" y2="160"/><line x1="52" y1="140" x2="72" y2="140"/><line x1="56" y1="120" x2="74" y2="120"/></g>
-  <rect x="72" y="96" width="122" height="12" rx="4" fill="#9BE3B4"/><rect x="72" y="96" width="122" height="12" rx="4" fill="url(#ffVol)"/>
-  <g stroke="#FFD56B" stroke-width="5" stroke-linecap="round"><line x1="80" y1="96" x2="80" y2="72"/><line x1="186" y1="96" x2="186" y2="72"/><line x1="80" y1="74" x2="186" y2="74"/></g>
-  <path d="M190 100 Q300 114 300 178 L272 178 Q272 126 190 116 Z" fill="#7CC6FE"/><path d="M190 100 Q300 114 300 178 L272 178 Q272 126 190 116 Z" fill="url(#ffVol)"/>
-  <path d="M190 98 Q306 112 306 178" stroke="#3FA0E8" stroke-width="5" fill="none" stroke-linecap="round"/>
-  <path d="M190 117 Q272 127 272 178" stroke="#3FA0E8" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/></g>`;
+  <!-- blue support poles -->
+  <g stroke="#3F6CB0" stroke-linecap="round"><line x1="170" y1="98" x2="170" y2="188" stroke-width="6"/><line x1="234" y1="98" x2="234" y2="188" stroke-width="6"/><line x1="56" y1="150" x2="56" y2="188" stroke-width="5"/></g>
+  <!-- ladder (right) -->
+  <line x1="246" y1="188" x2="252" y2="84" stroke="#3F6CB0" stroke-width="6" stroke-linecap="round"/>
+  <line x1="276" y1="188" x2="280" y2="84" stroke="#3F6CB0" stroke-width="6" stroke-linecap="round"/>
+  <g stroke-width="6" stroke-linecap="round">
+    <line x1="249" y1="172" x2="278" y2="172" stroke="#E0533B"/><line x1="250" y1="152" x2="279" y2="152" stroke="#5FB87A"/>
+    <line x1="251" y1="132" x2="280" y2="132" stroke="#E0533B"/><line x1="252" y1="112" x2="281" y2="112" stroke="#F2A33C"/>
+    <line x1="253" y1="93" x2="282" y2="93" stroke="#5FB87A"/></g>
+  <!-- platform deck -->
+  <rect x="150" y="86" width="104" height="13" rx="3" fill="#BCC1CB"/><rect x="150" y="86" width="104" height="13" rx="3" fill="url(#ffVol)"/>
+  <!-- grey chute surface (sweeps down-left) -->
+  <path d="M158 90 Q74 100 44 150 Q40 161 50 165 L78 152 Q102 112 160 104 Z" fill="#B0B6C0"/>
+  <path d="M158 90 Q74 100 44 150 Q40 161 50 165 L78 152 Q102 112 160 104 Z" fill="url(#ffVol)"/>
+  <!-- thick red side rails -->
+  <path d="M160 85 Q70 95 38 150 Q34 163 50 169" stroke="#C0392B" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M160 104 Q100 112 78 152 L64 167" stroke="#D85A47" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <ellipse cx="50" cy="171" rx="10" ry="4" fill="#C0392B"/></g>`;
 
 // props
 const truck = (x, y) => `<g transform="translate(${x} ${y})">
@@ -198,11 +207,11 @@ const SCENES = {
     truck(160, 158) +
     creature(214, 116, { species: 'bunny', color: C.bunnyPink, face: 'worried', flip: true, arm: 'reach' })),
 
-  pushed: () => frame('#FFE4DD', '#F6CFC6', // on the slide platform, shoved before sliding down
+  pushed: () => frame('#FFE4DD', '#F6CFC6', // on the platform, shoved before sliding down (chute on the left)
     floorBand('#F6CFC6') + slide() +
-    creature(116, 58, { species: 'fox', color: C.foxOrange, face: 'angry', lean: 12, arm: 'reach', noShadow: true }) +
-    sparkle(150, 52) +
-    creature(170, 58, { species: 'cat', color: C.catGrey, face: 'scared', lean: 12, arm: 'up', noShadow: true })),
+    creature(140, 52, { species: 'cat', color: C.catGrey, face: 'scared', lean: -10, arm: 'up', noShadow: true }) +
+    sparkle(176, 48) +
+    creature(202, 52, { species: 'fox', color: C.foxOrange, face: 'angry', flip: true, lean: -12, arm: 'reach', noShadow: true })),
 
   excluded: () => frame('#E3F0FF', '#C9DEF6', // playroom: two on a rug, one apart
     floorBand('#C9DEF6') + windowProp(256, 50) + rug(132, 180, 118, '#CBDFF5') +
