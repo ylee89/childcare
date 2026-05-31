@@ -33,7 +33,7 @@ function eyesG(face) {
     <circle cx="-10.4" cy="-10.8" r="1.7" fill="#fff"/><circle cx="15.6" cy="-10.8" r="1.7" fill="#fff"/>${lid}`;
 }
 function browsG(face) {
-  if (face === 'angry') return `<line x1="-19" y1="-22" x2="-7" y2="-18" stroke="#2A1E18" stroke-width="2.8" stroke-linecap="round"/><line x1="19" y1="-22" x2="7" y2="-18" stroke="#2A1E18" stroke-width="2.8" stroke-linecap="round"/>`;
+  if (face === 'angry' || face === 'frustrated') return `<line x1="-19" y1="-22" x2="-7" y2="-18" stroke="#2A1E18" stroke-width="2.8" stroke-linecap="round"/><line x1="19" y1="-22" x2="7" y2="-18" stroke="#2A1E18" stroke-width="2.8" stroke-linecap="round"/>`;
   if (face === 'worried') return `<line x1="-18" y1="-22" x2="-8" y2="-24" stroke="#2A1E18" stroke-width="2.4" stroke-linecap="round"/><line x1="18" y1="-22" x2="8" y2="-24" stroke="#2A1E18" stroke-width="2.4" stroke-linecap="round"/>`;
   return '';
 }
@@ -44,6 +44,7 @@ function mouthG(face) {
     case 'sad':     return `<path d="M-7 16 Q0 8 7 16" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
     case 'worried': return `<path d="M-6 13 Q0 10 6 14" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
     case 'angry':   return `<path d="M-7 14 Q0 9 7 14" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
+    case 'frustrated': return `<rect x="-7" y="10" width="14" height="7" rx="2.5" fill="#7A3F33"/><rect x="-7" y="10" width="14" height="2.6" fill="#fff"/><g stroke="#7A3F33" stroke-width="1"><line x1="-2.5" y1="10" x2="-2.5" y2="13"/><line x1="2.5" y1="10" x2="2.5" y2="13"/></g>`;
     default:        return `<line x1="-6" y1="12" x2="6" y2="12" stroke="#5A3B2E" stroke-width="2.6" stroke-linecap="round"/>`;
   }
 }
@@ -95,6 +96,7 @@ function creature(cx, cy, opts = {}) {
 
   const foot = (x) => `<ellipse cx="${x}" cy="${half-1}" rx="11" ry="7" fill="${c}"/><ellipse cx="${x}" cy="${half-1}" rx="11" ry="7" fill="url(#ffVol)"/>`;
   const armNub = (side) => {
+    if (opts.arm === 'none') return '';
     if (opts.arm === 'reach') return `<ellipse cx="${side*(bw/2+10)}" cy="2" rx="11" ry="8" fill="${c}" transform="rotate(${side*-18} ${side*(bw/2+6)} 2)"/><ellipse cx="${side*(bw/2+10)}" cy="2" rx="11" ry="8" fill="url(#ffSphere)" transform="rotate(${side*-18} ${side*(bw/2+6)} 2)"/>`;
     if (opts.arm === 'up') return `<ellipse cx="${side*(bw/2-2)}" cy="${-half+6}" rx="8" ry="11" fill="${c}"/><ellipse cx="${side*(bw/2-2)}" cy="${-half+6}" rx="8" ry="11" fill="url(#ffSphere)"/>`;
     return `<ellipse cx="${side*(bw/2-1)}" cy="12" rx="9" ry="11" fill="${c}"/><ellipse cx="${side*(bw/2-1)}" cy="12" rx="9" ry="11" fill="url(#ffSphere)"/>`;
@@ -113,9 +115,10 @@ function creature(cx, cy, opts = {}) {
     ${snout(sp)}
     ${eyesG(face)}${browsG(face)}${tearG(face)}${sp === 'bunny' ? '' : mouthG(face)}`;
 
+  const delay = ((Math.abs(Math.round(cx)) % 7) / 7 * 1.6).toFixed(2);
   return `<g transform="translate(${cx} ${cy}) scale(${flip} 1)">
     <ellipse cx="0" cy="${half + 12}" rx="40" ry="11" fill="url(#ffFloor)"/>
-    <g transform="rotate(${lean})">${inner}</g>
+    <g class="ffChar" style="animation-delay:${delay}s"><g transform="rotate(${lean})">${inner}</g></g>
   </g>`;
 }
 
@@ -141,6 +144,17 @@ const ball = (x, y) => `<g transform="translate(${x} ${y})">
   <circle r="15" fill="#fff"/><circle r="15" fill="url(#ffSphere)"/><path d="M-15 0 H15 M0 -15 V15" stroke="#5FB6F6" stroke-width="3"/></g>`;
 const heart = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M0 7 C-7 -5 -20 2 0 18 C20 2 7 -5 0 7 Z" fill="#FF6B8A"/><path d="M0 7 C-7 -5 -20 2 0 18 C20 2 7 -5 0 7 Z" fill="url(#ffVol)"/></g>`;
 const sparkle = (x, y) => `<g transform="translate(${x} ${y})" fill="#FFD56B"><path d="M0 -9 L2 -2 L9 0 L2 2 L0 9 L-2 2 L-9 0 L-2 -2 Z"/></g>`;
+// a cookie jar with a lid being pulled off (origin = jar centre)
+const cookieJar = () => `
+  <ellipse cx="0" cy="36" rx="26" ry="6" fill="url(#ffFloor)"/>
+  <rect x="-22" y="-2" width="44" height="40" rx="12" fill="#CFE8FF"/>
+  <circle cx="-9" cy="18" r="7" fill="#C98A53"/><circle cx="9" cy="20" r="7" fill="#C98A53"/><circle cx="0" cy="27" r="7" fill="#C98A53"/>
+  <g fill="#6B4423"><circle cx="-10" cy="16" r="1.5"/><circle cx="-7" cy="20" r="1.5"/><circle cx="10" cy="19" r="1.5"/><circle cx="7" cy="22" r="1.5"/><circle cx="1" cy="26" r="1.5"/></g>
+  <rect x="-22" y="-2" width="44" height="40" rx="12" fill="url(#ffVol)"/>
+  <rect x="-25" y="-16" width="50" height="13" rx="6" fill="#FF8C7A"/><rect x="-25" y="-16" width="50" height="13" rx="6" fill="url(#ffVol)"/>
+  <rect x="-9" y="-23" width="18" height="8" rx="3" fill="#FF8C7A"/>`;
+const sweat = (x, y) => `<g transform="translate(${x} ${y})"><path d="M0 -3 C-5 4 -5 9 0 9 C5 9 5 4 0 -3 Z" fill="#7CC6FE"/><path d="M0 -3 C-5 4 -5 9 0 9 C5 9 5 4 0 -3 Z" fill="url(#ffSphere)"/></g>`;
+const effort = (x, y, f = 1) => `<g transform="translate(${x} ${y}) scale(${f} 1)" stroke="#C9A24B" stroke-width="2.6" stroke-linecap="round" fill="none" opacity="0.8"><path d="M0 0 q5 -4 1 -10"/><path d="M8 3 q6 -4 2 -11"/></g>`;
 
 // creature colours
 const C = { bearTan: '#E0A36A', bunnyPink: '#F3C0D4', foxOrange: '#FF9F5A', catGrey: '#AAB3C4', bearMint: '#9BE3B4', catLav: '#B7A6F0' };
@@ -165,12 +179,11 @@ const SCENES = {
     creature(258, 120, { species: 'cat', color: C.catLav, face: 'sad', flip: true })),
 
   help: () => frame('#EEE8FF', '#D9CFF2',
-    `<g transform="translate(238 66)">
-       <ellipse cx="0" cy="46" rx="34" ry="7" fill="url(#ffFloor)"/>
-       <rect x="-32" y="-30" width="64" height="22" rx="6" fill="#C3B5F2"/><rect x="-32" y="-30" width="64" height="22" rx="6" fill="url(#ffVol)"/>
-       <rect x="-32" y="-4" width="64" height="22" rx="6" fill="#B3A2E8"/><rect x="-32" y="-4" width="64" height="22" rx="6" fill="url(#ffVol)"/>
-       <circle cx="0" cy="-19" r="10" fill="#FFD56B"/><circle cx="0" cy="-19" r="10" fill="url(#ffSphere)"/></g>` +
-    creature(130, 120, { species: 'bear', color: C.bearTan, face: 'worried', arm: 'up' })),
+    effort(180, 70, 1) + effort(118, 70, -1) + sweat(184, 92) +
+    creature(150, 108, { species: 'bear', color: C.bearTan, face: 'frustrated', arm: 'none' }) +
+    `<g class="ffStruggle" transform="translate(150 150)">${cookieJar()}
+       <ellipse cx="-24" cy="-9" rx="9" ry="8" fill="${C.bearTan}"/><ellipse cx="-24" cy="-9" rx="9" ry="8" fill="url(#ffSphere)"/>
+       <ellipse cx="24" cy="-9" rx="9" ry="8" fill="${C.bearTan}"/><ellipse cx="24" cy="-9" rx="9" ry="8" fill="url(#ffSphere)"/></g>`),
 };
 
 // ---- outcome illustrations ----
