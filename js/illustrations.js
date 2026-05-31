@@ -34,7 +34,7 @@ function eyesG(face) {
 }
 function browsG(face) {
   if (face === 'angry' || face === 'frustrated') return `<line x1="-19" y1="-22" x2="-7" y2="-18" stroke="#2A1E18" stroke-width="2.8" stroke-linecap="round"/><line x1="19" y1="-22" x2="7" y2="-18" stroke="#2A1E18" stroke-width="2.8" stroke-linecap="round"/>`;
-  if (face === 'worried') return `<line x1="-18" y1="-22" x2="-8" y2="-24" stroke="#2A1E18" stroke-width="2.4" stroke-linecap="round"/><line x1="18" y1="-22" x2="8" y2="-24" stroke="#2A1E18" stroke-width="2.4" stroke-linecap="round"/>`;
+  if (face === 'worried' || face === 'scared') return `<line x1="-18" y1="-22" x2="-8" y2="-24" stroke="#2A1E18" stroke-width="2.4" stroke-linecap="round"/><line x1="18" y1="-22" x2="8" y2="-24" stroke="#2A1E18" stroke-width="2.4" stroke-linecap="round"/>`;
   return '';
 }
 function mouthG(face) {
@@ -45,6 +45,7 @@ function mouthG(face) {
     case 'worried': return `<path d="M-6 13 Q0 10 6 14" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
     case 'angry':   return `<path d="M-7 14 Q0 9 7 14" stroke="#5A3B2E" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
     case 'frustrated': return `<rect x="-7" y="10" width="14" height="7" rx="2.5" fill="#7A3F33"/><rect x="-7" y="10" width="14" height="2.6" fill="#fff"/><g stroke="#7A3F33" stroke-width="1"><line x1="-2.5" y1="10" x2="-2.5" y2="13"/><line x1="2.5" y1="10" x2="2.5" y2="13"/></g>`;
+    case 'scared':  return `<ellipse cx="0" cy="13" rx="4.5" ry="5.5" fill="#7A3F33"/>`;
     default:        return `<line x1="-6" y1="12" x2="6" y2="12" stroke="#5A3B2E" stroke-width="2.6" stroke-linecap="round"/>`;
   }
 }
@@ -116,8 +117,9 @@ function creature(cx, cy, opts = {}) {
     ${eyesG(face)}${browsG(face)}${tearG(face)}${sp === 'bunny' ? '' : mouthG(face)}`;
 
   const delay = ((Math.abs(Math.round(cx)) % 7) / 7 * 1.6).toFixed(2);
+  const shadow = opts.noShadow ? '' : `<ellipse cx="0" cy="${half + 12}" rx="40" ry="11" fill="url(#ffFloor)"/>`;
   return `<g transform="translate(${cx} ${cy}) scale(${flip} 1)">
-    <ellipse cx="0" cy="${half + 12}" rx="40" ry="11" fill="url(#ffFloor)"/>
+    ${shadow}
     <g class="ffChar" style="animation-delay:${delay}s"><g transform="rotate(${lean})">${inner}</g></g>
   </g>`;
 }
@@ -148,17 +150,18 @@ const sideTable = (x, topY, w) => `<g><rect x="${x - w / 2 + 5}" y="${topY + 8}"
 const plate = (x, y) => `<ellipse cx="${x}" cy="${y}" rx="17" ry="6" fill="#fff"/><ellipse cx="${x}" cy="${y}" rx="17" ry="6" fill="url(#ffVol)"/><ellipse cx="${x}" cy="${y - 1}" rx="10" ry="3.4" fill="#EFE4D2"/>`;
 const cup = (x, y) => `<g transform="translate(${x} ${y})"><rect x="-7" y="-13" width="14" height="16" rx="3" fill="#9BE3B4"/><rect x="-7" y="-13" width="14" height="16" rx="3" fill="url(#ffVol)"/><path d="M7 -9 q7 2 0 9" stroke="#9BE3B4" stroke-width="3" fill="none"/></g>`;
 const doorway = (x, y) => `<g transform="translate(${x} ${y})"><rect x="-30" y="-44" width="60" height="88" rx="8" fill="#E2C39B"/><rect x="-24" y="-38" width="48" height="82" rx="6" fill="#C9A271"/><rect x="-24" y="-38" width="48" height="82" rx="6" fill="url(#ffVol)"/><circle cx="16" cy="4" r="3" fill="#FFD56B"/></g>`;
-// a playground slide (ladder on the right, ramp sweeping down-left)
+// a big playground slide: ladder (left) → high platform → chute sweeping down-right
 const slide = () => `<g>
-  <line x1="262" y1="70" x2="256" y2="150" stroke="#C98A53" stroke-width="6" stroke-linecap="round"/>
-  <line x1="284" y1="70" x2="290" y2="150" stroke="#C98A53" stroke-width="6" stroke-linecap="round"/>
-  <g stroke="#FF8C7A" stroke-width="5" stroke-linecap="round">
-    <line x1="263" y1="148" x2="263" y2="60"/><line x1="283" y1="148" x2="283" y2="60"/>
-    <line x1="263" y1="134" x2="283" y2="134"/><line x1="263" y1="116" x2="283" y2="116"/><line x1="263" y1="98" x2="283" y2="98"/><line x1="263" y1="80" x2="283" y2="80"/></g>
-  <rect x="240" y="52" width="52" height="13" rx="4" fill="#9BE3B4"/><rect x="240" y="52" width="52" height="13" rx="4" fill="url(#ffVol)"/>
-  <path d="M242 62 Q150 80 150 150 L176 150 Q176 96 274 78 Z" fill="#7CC6FE"/>
-  <path d="M242 62 Q150 80 150 150 L176 150 Q176 96 274 78 Z" fill="url(#ffVol)"/>
-  <path d="M242 60 Q146 78 146 150" stroke="#3FA0E8" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;
+  <line x1="92" y1="104" x2="86" y2="184" stroke="#C98A53" stroke-width="7" stroke-linecap="round"/>
+  <line x1="160" y1="104" x2="166" y2="184" stroke="#C98A53" stroke-width="7" stroke-linecap="round"/>
+  <g stroke="#FF8C7A" stroke-width="6" stroke-linecap="round">
+    <line x1="38" y1="184" x2="56" y2="100"/><line x1="64" y1="184" x2="78" y2="100"/>
+    <line x1="49" y1="160" x2="70" y2="160"/><line x1="52" y1="140" x2="72" y2="140"/><line x1="56" y1="120" x2="74" y2="120"/></g>
+  <rect x="72" y="96" width="122" height="12" rx="4" fill="#9BE3B4"/><rect x="72" y="96" width="122" height="12" rx="4" fill="url(#ffVol)"/>
+  <g stroke="#FFD56B" stroke-width="5" stroke-linecap="round"><line x1="80" y1="96" x2="80" y2="72"/><line x1="186" y1="96" x2="186" y2="72"/><line x1="80" y1="74" x2="186" y2="74"/></g>
+  <path d="M190 100 Q300 114 300 178 L272 178 Q272 126 190 116 Z" fill="#7CC6FE"/><path d="M190 100 Q300 114 300 178 L272 178 Q272 126 190 116 Z" fill="url(#ffVol)"/>
+  <path d="M190 98 Q306 112 306 178" stroke="#3FA0E8" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M190 117 Q272 127 272 178" stroke="#3FA0E8" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/></g>`;
 
 // props
 const truck = (x, y) => `<g transform="translate(${x} ${y})">
@@ -195,12 +198,11 @@ const SCENES = {
     truck(160, 158) +
     creature(214, 116, { species: 'bunny', color: C.bunnyPink, face: 'worried', flip: true, arm: 'reach' })),
 
-  pushed: () => frame('#FFE4DD', '#F6CFC6', // cutting in line at the playground slide
+  pushed: () => frame('#FFE4DD', '#F6CFC6', // on the slide platform, shoved before sliding down
     floorBand('#F6CFC6') + slide() +
-    `<g stroke="#E89A8C" stroke-width="3" stroke-dasharray="6 8" opacity=".6"><line x1="40" y1="172" x2="150" y2="172"/></g>` +
-    creature(96, 120, { species: 'cat', color: C.catGrey, face: 'worried', lean: -8, arm: 'up' }) +
-    sparkle(146, 100) +
-    creature(186, 116, { species: 'fox', color: C.foxOrange, face: 'angry', lean: -12, arm: 'reach' })),
+    creature(116, 58, { species: 'fox', color: C.foxOrange, face: 'angry', lean: 12, arm: 'reach', noShadow: true }) +
+    sparkle(150, 52) +
+    creature(170, 58, { species: 'cat', color: C.catGrey, face: 'scared', lean: 12, arm: 'up', noShadow: true })),
 
   excluded: () => frame('#E3F0FF', '#C9DEF6', // playroom: two on a rug, one apart
     floorBand('#C9DEF6') + windowProp(256, 50) + rug(132, 180, 118, '#CBDFF5') +
