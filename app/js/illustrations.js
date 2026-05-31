@@ -150,27 +150,30 @@ const sideTable = (x, topY, w) => `<g><rect x="${x - w / 2 + 5}" y="${topY + 8}"
 const plate = (x, y) => `<ellipse cx="${x}" cy="${y}" rx="17" ry="6" fill="#fff"/><ellipse cx="${x}" cy="${y}" rx="17" ry="6" fill="url(#ffVol)"/><ellipse cx="${x}" cy="${y - 1}" rx="10" ry="3.4" fill="#EFE4D2"/>`;
 const cup = (x, y) => `<g transform="translate(${x} ${y})"><rect x="-7" y="-13" width="14" height="16" rx="3" fill="#9BE3B4"/><rect x="-7" y="-13" width="14" height="16" rx="3" fill="url(#ffVol)"/><path d="M7 -9 q7 2 0 9" stroke="#9BE3B4" stroke-width="3" fill="none"/></g>`;
 const doorway = (x, y) => `<g transform="translate(${x} ${y})"><rect x="-30" y="-44" width="60" height="88" rx="8" fill="#E2C39B"/><rect x="-24" y="-38" width="48" height="82" rx="6" fill="#C9A271"/><rect x="-24" y="-38" width="48" height="82" rx="6" fill="url(#ffVol)"/><circle cx="16" cy="4" r="3" fill="#FFD56B"/></g>`;
-// playground slide modelled on a real one: ladder right (blue rails + colourful
-// rungs), high platform, grey chute sweeping down-left with thick red side rails.
+// playground slide in the app's soft pastel palette: sky-blue ladder/poles,
+// pastel rungs, light-blue chute with blue rails, + a back pair of rails (depth).
 const slide = () => `<g>
+  <!-- back ladder rails (the two added poles, for 3D depth) -->
+  <line x1="258" y1="186" x2="264" y2="82" stroke="#A9D9F7" stroke-width="6" stroke-linecap="round"/>
+  <line x1="286" y1="186" x2="290" y2="82" stroke="#A9D9F7" stroke-width="6" stroke-linecap="round"/>
   <!-- blue support poles -->
-  <g stroke="#3F6CB0" stroke-linecap="round"><line x1="170" y1="98" x2="170" y2="188" stroke-width="6"/><line x1="234" y1="98" x2="234" y2="188" stroke-width="6"/><line x1="56" y1="150" x2="56" y2="188" stroke-width="5"/></g>
-  <!-- ladder (right) -->
-  <line x1="246" y1="188" x2="252" y2="84" stroke="#3F6CB0" stroke-width="6" stroke-linecap="round"/>
-  <line x1="276" y1="188" x2="280" y2="84" stroke="#3F6CB0" stroke-width="6" stroke-linecap="round"/>
+  <g stroke="#7CC6FE" stroke-linecap="round"><line x1="170" y1="98" x2="170" y2="188" stroke-width="6"/><line x1="234" y1="98" x2="234" y2="188" stroke-width="6"/><line x1="56" y1="150" x2="56" y2="188" stroke-width="5"/></g>
+  <!-- front ladder rails -->
+  <line x1="246" y1="188" x2="252" y2="84" stroke="#7CC6FE" stroke-width="6" stroke-linecap="round"/>
+  <line x1="276" y1="188" x2="280" y2="84" stroke="#7CC6FE" stroke-width="6" stroke-linecap="round"/>
   <g stroke-width="6" stroke-linecap="round">
-    <line x1="249" y1="172" x2="278" y2="172" stroke="#E0533B"/><line x1="250" y1="152" x2="279" y2="152" stroke="#5FB87A"/>
-    <line x1="251" y1="132" x2="280" y2="132" stroke="#E0533B"/><line x1="252" y1="112" x2="281" y2="112" stroke="#F2A33C"/>
-    <line x1="253" y1="93" x2="282" y2="93" stroke="#5FB87A"/></g>
-  <!-- platform deck -->
-  <rect x="150" y="86" width="104" height="13" rx="3" fill="#BCC1CB"/><rect x="150" y="86" width="104" height="13" rx="3" fill="url(#ffVol)"/>
-  <!-- grey chute surface (sweeps down-left) -->
-  <path d="M158 90 Q74 100 44 150 Q40 161 50 165 L78 152 Q102 112 160 104 Z" fill="#B0B6C0"/>
+    <line x1="249" y1="172" x2="278" y2="172" stroke="#FFD56B"/><line x1="250" y1="152" x2="279" y2="152" stroke="#9BE3B4"/>
+    <line x1="251" y1="132" x2="280" y2="132" stroke="#FF8C7A"/><line x1="252" y1="112" x2="281" y2="112" stroke="#FFD56B"/>
+    <line x1="253" y1="93" x2="282" y2="93" stroke="#9BE3B4"/></g>
+  <!-- platform deck (mint) -->
+  <rect x="150" y="86" width="104" height="13" rx="4" fill="#9BE3B4"/><rect x="150" y="86" width="104" height="13" rx="4" fill="url(#ffVol)"/>
+  <!-- light-blue chute (sweeps down-left) -->
+  <path d="M158 90 Q74 100 44 150 Q40 161 50 165 L78 152 Q102 112 160 104 Z" fill="#A9D9F7"/>
   <path d="M158 90 Q74 100 44 150 Q40 161 50 165 L78 152 Q102 112 160 104 Z" fill="url(#ffVol)"/>
-  <!-- thick red side rails -->
-  <path d="M160 85 Q70 95 38 150 Q34 163 50 169" stroke="#C0392B" stroke-width="9" fill="none" stroke-linecap="round"/>
-  <path d="M160 104 Q100 112 78 152 L64 167" stroke="#D85A47" stroke-width="6" fill="none" stroke-linecap="round"/>
-  <ellipse cx="50" cy="171" rx="10" ry="4" fill="#C0392B"/></g>`;
+  <!-- blue side rails -->
+  <path d="M160 85 Q70 95 38 150 Q34 163 50 169" stroke="#4FA8EE" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M160 104 Q100 112 78 152 L64 167" stroke="#7CC6FE" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <ellipse cx="50" cy="171" rx="10" ry="4" fill="#4FA8EE"/></g>`;
 
 // props
 const truck = (x, y) => `<g transform="translate(${x} ${y})">
