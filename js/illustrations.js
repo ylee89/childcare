@@ -148,6 +148,17 @@ const sideTable = (x, topY, w) => `<g><rect x="${x - w / 2 + 5}" y="${topY + 8}"
 const plate = (x, y) => `<ellipse cx="${x}" cy="${y}" rx="17" ry="6" fill="#fff"/><ellipse cx="${x}" cy="${y}" rx="17" ry="6" fill="url(#ffVol)"/><ellipse cx="${x}" cy="${y - 1}" rx="10" ry="3.4" fill="#EFE4D2"/>`;
 const cup = (x, y) => `<g transform="translate(${x} ${y})"><rect x="-7" y="-13" width="14" height="16" rx="3" fill="#9BE3B4"/><rect x="-7" y="-13" width="14" height="16" rx="3" fill="url(#ffVol)"/><path d="M7 -9 q7 2 0 9" stroke="#9BE3B4" stroke-width="3" fill="none"/></g>`;
 const doorway = (x, y) => `<g transform="translate(${x} ${y})"><rect x="-30" y="-44" width="60" height="88" rx="8" fill="#E2C39B"/><rect x="-24" y="-38" width="48" height="82" rx="6" fill="#C9A271"/><rect x="-24" y="-38" width="48" height="82" rx="6" fill="url(#ffVol)"/><circle cx="16" cy="4" r="3" fill="#FFD56B"/></g>`;
+// a playground slide (ladder on the right, ramp sweeping down-left)
+const slide = () => `<g>
+  <line x1="262" y1="70" x2="256" y2="150" stroke="#C98A53" stroke-width="6" stroke-linecap="round"/>
+  <line x1="284" y1="70" x2="290" y2="150" stroke="#C98A53" stroke-width="6" stroke-linecap="round"/>
+  <g stroke="#FF8C7A" stroke-width="5" stroke-linecap="round">
+    <line x1="263" y1="148" x2="263" y2="60"/><line x1="283" y1="148" x2="283" y2="60"/>
+    <line x1="263" y1="134" x2="283" y2="134"/><line x1="263" y1="116" x2="283" y2="116"/><line x1="263" y1="98" x2="283" y2="98"/><line x1="263" y1="80" x2="283" y2="80"/></g>
+  <rect x="240" y="52" width="52" height="13" rx="4" fill="#9BE3B4"/><rect x="240" y="52" width="52" height="13" rx="4" fill="url(#ffVol)"/>
+  <path d="M242 62 Q150 80 150 150 L176 150 Q176 96 274 78 Z" fill="#7CC6FE"/>
+  <path d="M242 62 Q150 80 150 150 L176 150 Q176 96 274 78 Z" fill="url(#ffVol)"/>
+  <path d="M242 60 Q146 78 146 150" stroke="#3FA0E8" stroke-width="4" fill="none" stroke-linecap="round"/></g>`;
 
 // props
 const truck = (x, y) => `<g transform="translate(${x} ${y})">
@@ -184,12 +195,12 @@ const SCENES = {
     truck(160, 158) +
     creature(214, 116, { species: 'bunny', color: C.bunnyPink, face: 'worried', flip: true, arm: 'reach' })),
 
-  pushed: () => frame('#FFE4DD', '#F6CFC6', // waiting in line toward a door
-    floorBand('#F6CFC6') + doorway(286, 150) +
-    `<g stroke="#E89A8C" stroke-width="3" stroke-dasharray="6 8" opacity=".7"><line x1="44" y1="170" x2="250" y2="170"/></g>` +
-    creature(112, 116, { species: 'fox', color: C.foxOrange, face: 'angry', lean: 13, arm: 'reach' }) +
-    sparkle(166, 96) +
-    creature(204, 120, { species: 'cat', color: C.catGrey, face: 'worried', lean: 9, arm: 'up' })),
+  pushed: () => frame('#FFE4DD', '#F6CFC6', // cutting in line at the playground slide
+    floorBand('#F6CFC6') + slide() +
+    `<g stroke="#E89A8C" stroke-width="3" stroke-dasharray="6 8" opacity=".6"><line x1="40" y1="172" x2="150" y2="172"/></g>` +
+    creature(96, 120, { species: 'cat', color: C.catGrey, face: 'worried', lean: -8, arm: 'up' }) +
+    sparkle(146, 100) +
+    creature(186, 116, { species: 'fox', color: C.foxOrange, face: 'angry', lean: -12, arm: 'reach' })),
 
   excluded: () => frame('#E3F0FF', '#C9DEF6', // playroom: two on a rug, one apart
     floorBand('#C9DEF6') + windowProp(256, 50) + rug(132, 180, 118, '#CBDFF5') +
