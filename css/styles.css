@@ -134,15 +134,13 @@ body[data-mode="adult"]{background:var(--adult-bg);}
   font-weight:800;text-align:left;box-shadow:var(--shadow);cursor:pointer;display:flex;gap:12px;align-items:center;transition:transform .12s;}
 .choice:active{transform:scale(.97);} .choice .ce{font-size:28px;flex:none;}
 .choice .choice-speak{margin-left:auto;font-size:20px;opacity:.5;flex:none;}
-/* video-style play button overlaid on the story animation */
-.scene.illus.has-play{position:relative;}
-.play-overlay{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);
-  width:64px;height:64px;border-radius:50%;border:none;cursor:pointer;
-  background:rgba(255,255,255,.82);color:var(--sky);font-size:26px;padding-left:4px;
-  box-shadow:0 4px 14px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;
-  animation:playpulse 2.2s ease-in-out infinite;}
-.play-overlay:active{transform:translateX(-50%) scale(.92);}
-@keyframes playpulse{0%,100%{box-shadow:0 4px 14px rgba(0,0,0,.18)}50%{box-shadow:0 4px 14px rgba(0,0,0,.18),0 0 0 10px rgba(124,198,254,.18)}}
+/* tap the animation to hear the story — small sound hint, no play button */
+.scene.illus.tappable{position:relative;cursor:pointer;}
+.scene.illus.tappable:active{transform:scale(.99);}
+.tap-hint{position:absolute;right:10px;bottom:10px;width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;font-size:17px;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);animation:taphint 2.2s ease-in-out infinite;pointer-events:none;}
+@keyframes taphint{0%,100%{box-shadow:0 2px 8px rgba(0,0,0,.15)}50%{box-shadow:0 2px 8px rgba(0,0,0,.15),0 0 0 8px rgba(124,198,254,.18)}}
 /* story script line under the animation */
 .script-text{text-align:center;margin:10px 0 14px;cursor:pointer;}
 /* in-story "now you try" prompt + inline recorder */
