@@ -14,10 +14,42 @@ if ('speechSynthesis' in window) {
   speechSynthesis.onvoiceschanged = pickVoice;
 }
 
+// Browsers block audio until the user interacts with the page (and iOS only
+// allows speech started *within* a user-gesture handler). We "unlock" on the
+// first tap: resume the WebAudio context and prime speechSynthesis. Until then,
+// auto-narration is queued and replayed once unlocked.
+let unlocked = false;
+let pendingSpeak = null;
+function unlock() {
+  if (unlocked) return;
+  unlocked = true;
+  try {
+    if (Audio._ctx && Audio._ctx.state === 'suspended') Audio._ctx.resume();
+  } catch {}
+  try {
+    // prime the speech engine with a silent utterance inside the gesture
+    const u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0;
+    speechSynthesis.speak(u);
+  } catch {}
+  // replay whatever wanted to speak before the first tap (e.g. splash greeting)
+  if (pendingSpeak) {
+    const p = pendingSpeak; pendingSpeak = null;
+    setTimeout(() => Audio.speak(p), 150); // let priming settle first
+  }
+}
+if (typeof window !== 'undefined') {
+  ['pointerdown', 'touchend', 'mousedown', 'keydown'].forEach(ev =>
+    window.addEventListener(ev, unlock, { once: false, passive: true }));
+}
+
 export const Audio = {
+  get unlocked() { return unlocked; },
   /** Speak text aloud (child-directed narration). Returns immediately. */
   speak(text, { rate = 0.95, pitch = 1.15 } = {}) {
     if (!Store.settings.narration || !('speechSynthesis' in window) || !text) return;
+    // before the first user gesture, remember the latest line to play on unlock
+    if (!unlocked) { pendingSpeak = text; return; }
     try {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(String(text));
@@ -28,18 +60,19 @@ export const Audio = {
   },
   stop() { try { speechSynthesis.cancel(); } catch {} },
 
-  /** Speak a list of phrases one after another (e.g. prompt then each choice). */
-  speakSeq(items, { rate = 0.95, pitch = 1.15, gap = 250 } = {}) {
+  /** Speak a list of phrases one after another (e.g. script then each choice). */
+  speakSeq(items, { rate = 0.95, pitch = 1.15 } = {}) {
     if (!Store.settings.narration || !('speechSynthesis' in window)) return;
+    const list = (Array.isArray(items) ? items : [items]).filter(Boolean);
+    if (!list.length) return;
+    if (!unlocked) { pendingSpeak = list[0]; return; } // queue first line until gesture
     try {
       speechSynthesis.cancel();
-      items.filter(Boolean).forEach((text, i) => {
+      list.forEach((text) => {
         const u = new SpeechSynthesisUtterance(String(text));
         if (voice) u.voice = voice;
         u.rate = rate; u.pitch = pitch; u.volume = 1;
-        // small pause between items via a tiny leading space utterance is unreliable;
-        // rely on the engine's natural queue + sentence punctuation instead.
-        speechSynthesis.speak(u);
+        speechSynthesis.speak(u); // queued; engine plays them in order
       });
     } catch {}
   },
