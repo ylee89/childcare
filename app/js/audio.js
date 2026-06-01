@@ -11,14 +11,17 @@ function pickVoice() {
   const score = (v) => {
     let s = 0;
     const n = (v.name || '');
-    // high-quality / neural voices sound the most natural
+    // RELIABILITY FIRST: local (offline) voices actually produce sound. Chrome's
+    // remote "Google …" voices are nicer but frequently emit no audio, so we
+    // strongly prefer local and de-prioritise Google network voices.
+    if (v.localService) s += 8; else s -= 4;
+    // high-quality / neural local voices sound the most natural
     if (/natural|neural|premium|enhanced|siri/i.test(n)) s += 6;
-    if (/google/i.test(n)) s += 4;            // Chrome/Android Google voices are good
-    if (/microsoft/i.test(n)) s += 2;
-    if (/female|samantha|karen|moira|tessa|aria|jenny|ava|zira/i.test(n)) s += 3; // warmer for kids
+    if (/microsoft/i.test(n)) s += 3;
+    if (/female|samantha|karen|moira|tessa|aria|jenny|ava|zira|kathy/i.test(n)) s += 3; // warmer for kids
+    if (/^google/i.test(n) && !v.localService) s -= 3; // unreliable network voice
     if (/en-US/i.test(v.lang)) s += 2;
     else if (/en-GB|en-AU/i.test(v.lang)) s += 1;
-    if (v.localService) s += 1;               // offline-capable, reliable
     return s;
   };
   // best-scoring English voice; only pin it if it's clearly a good match,
