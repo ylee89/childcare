@@ -390,12 +390,10 @@ route('story', ({ id }) => {
   const prompt = story.scene + ' What could you do?';
   function ask() {
     stage.innerHTML = '';
-    // animation "scene" with a video-style play button overlaid; tap to (re)play
-    const scene = h('div', { class: 'scene illus has-play', onclick: () => Audio.speak(prompt),
-      html: storyScene(story.id) });
-    scene.append(
-      h('button', { class: 'play-overlay', 'aria-label': 'Play story',
-        onclick: (e) => { e.stopPropagation(); Audio.speak(prompt); } }, '▶'));
+    // tap the animation (or the script text) to hear the story
+    const scene = h('div', { class: 'scene illus tappable', 'aria-label': 'Tap to hear the story',
+      onclick: () => Audio.speak(prompt), html: storyScene(story.id) });
+    scene.append(h('span', { class: 'tap-hint', 'aria-hidden': 'true' }, '🔊'));
     stage.append(
       scene,
       h('div', { class: 'prompt script-text', onclick: () => Audio.speak(prompt) }, prompt));
