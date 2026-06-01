@@ -43,9 +43,28 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   sec('0. Load + clean slate');
   await page.goto(BASE, { waitUntil: 'networkidle' });
   await page.evaluate(() => { try { localStorage.clear(); } catch {} }); // one-time clean slate
+  // Autoplay-unlock contract: wrap the REAL speechSynthesis.speak with a
+  // call-through counter (not a stub) so we'd catch "no sound until first tap".
+  await page.addInitScript(() => {
+    window.__realUtter = [];
+    if (window.speechSynthesis) {
+      const s = window.speechSynthesis;
+      const orig = s.speak.bind(s);
+      s.speak = (u) => { try { window.__realUtter.push(String(u && u.text || '')); } catch {} return orig(u); };
+    }
+  });
   await page.reload({ waitUntil: 'networkidle' });
   await page.waitForFunction(() => !!window.FeelFriends);
-  await page.evaluate(() => { // spy on narration: record spoken text, no real audio
+  await sleep(900); // splash auto-narration would fire here IF it weren't gated
+  const beforeGesture = await page.evaluate(() => (window.__realUtter || []).length);
+  ok('no audio before first user gesture (autoplay-safe)', beforeGesture === 0, 'count=' + beforeGesture);
+  await page.mouse.click(200, 420); // a real gesture unlocks audio
+  await sleep(500);
+  const afterGesture = await page.evaluate(() => (window.__realUtter || []).slice());
+  ok('audio unlocks and speaks after first gesture',
+     afterGesture.some(t => t && t.trim().length > 1), JSON.stringify(afterGesture));
+
+  await page.evaluate(() => { // now spy/stub for the rest (records text, no real audio)
     window.__spoken = [];
     if (window.speechSynthesis) {
       window.speechSynthesis.speak = (u) => { try { window.__spoken.push(String(u && u.text || '')); } catch {} };
