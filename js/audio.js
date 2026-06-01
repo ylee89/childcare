@@ -28,6 +28,22 @@ export const Audio = {
   },
   stop() { try { speechSynthesis.cancel(); } catch {} },
 
+  /** Speak a list of phrases one after another (e.g. prompt then each choice). */
+  speakSeq(items, { rate = 0.95, pitch = 1.15, gap = 250 } = {}) {
+    if (!Store.settings.narration || !('speechSynthesis' in window)) return;
+    try {
+      speechSynthesis.cancel();
+      items.filter(Boolean).forEach((text, i) => {
+        const u = new SpeechSynthesisUtterance(String(text));
+        if (voice) u.voice = voice;
+        u.rate = rate; u.pitch = pitch; u.volume = 1;
+        // small pause between items via a tiny leading space utterance is unreliable;
+        // rely on the engine's natural queue + sentence punctuation instead.
+        speechSynthesis.speak(u);
+      });
+    } catch {}
+  },
+
   // --- WebAudio SFX (no asset files; soft synthesized tones) ---
   _ctx: null,
   _ac() { return this._ctx || (this._ctx = new (window.AudioContext || window.webkitAudioContext)()); },

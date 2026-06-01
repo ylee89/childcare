@@ -68,6 +68,80 @@ function toast(parent, text, kind = '') {
   return t;
 }
 
+// A choice button that reads its own label aloud when tapped, then runs onPick.
+// `spoken` lets us narrate something cleaner than the visible label if needed.
+function choiceButton(emoji, label, onPick, spoken) {
+  return h('button', { class: 'choice', onclick: () => {
+    Audio.speak(spoken || label);
+    onPick();
+  } }, h('span', { class: 'ce' }, emoji), label,
+    h('span', { class: 'choice-speak', 'aria-hidden': 'true' }, '🔊'));
+}
+
+// Auto-narrate a scene: read the prompt, then each choice label in order, so a
+// non-reader hears every option. Call after appending the buttons.
+function narrateScene(promptText, choiceLabels) {
+  const items = [promptText, ...choiceLabels.map((l, i) => `Choice ${i + 1}. ${l}`)];
+  setTimeout(() => Audio.speakSeq(items), 200);
+}
+
+// Reusable inline voice recorder. Lets a child record themselves, play it back,
+// and delete it. Falls back to "say it out loud" echo mode without a mic.
+// key: storage id for the recording. label: what to say/practise.
+function recorderWidget(key, label, onDone) {
+  const wrap = h('div', { class: 'rec-widget' });
+  const status = h('div', { class: 'mic-label' }, 'tap to record');
+  const micBtn = h('button', { class: 'mic small', 'aria-label': 'Record yourself' }, '🎤');
+  const controls = h('div', { class: 'rowbtns' });
+  wrap.append(h('div', { class: 'center' }, micBtn, status, controls));
+
+  let mediaRecorder = null, chunks = [], stream = null;
+
+  function showSaved() {
+    const rec = Store.recording(key);
+    controls.innerHTML = '';
+    if (rec) {
+      const audioEl = new window.Audio(rec.dataUrl);
+      controls.append(
+        h('button', { class: 'pill-btn', onclick: () => audioEl.play() }, '▶ Hear me'),
+        h('button', { class: 'pill-btn ghost', onclick: () => { Store.deleteRecording(key); showSaved(); } }, '🗑 Delete'));
+    }
+  }
+  async function startRec() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      chunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e => chunks.push(e.data);
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/webm' });
+        const r = new FileReader();
+        r.onload = () => { Store.saveRecording(key, r.result); showSaved(); };
+        r.readAsDataURL(blob);
+        stream.getTracks().forEach(t => t.stop());
+      };
+      mediaRecorder.start();
+      micBtn.classList.add('rec'); status.textContent = 'listening… (tap to stop)';
+    } catch { echoMode(); }
+  }
+  function stopRec() {
+    micBtn.classList.remove('rec'); status.textContent = 'tap to record';
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+    Audio.chime();
+    if (onDone) onDone(true);
+  }
+  function echoMode() {
+    micBtn.textContent = '🔊';
+    status.textContent = 'Say it out loud!';
+    micBtn.onclick = () => { Audio.speak(label); if (onDone) onDone(false); };
+  }
+  if (navigator.mediaDevices && window.MediaRecorder) {
+    micBtn.onclick = () => (micBtn.classList.contains('rec') ? stopRec() : startRec());
+  } else { echoMode(); }
+  showSaved();
+  return wrap;
+}
+
 /* ===================================================================== */
 /* ONBOARDING                                                            */
 /* ===================================================================== */
@@ -310,29 +384,41 @@ route('story', ({ id }) => {
   const stage = h('div', { class: 'stage' });
   wrap.append(topbar(story.title, { back: 'stories' }), stage, persistentNav());
 
+  const prompt = story.scene + ' What could you do?';
   function ask() {
     stage.innerHTML = '';
     stage.append(
       h('div', { class: 'scene illus', html: storyScene(story.id) }),
-      narrated(story.scene + ' What could you do?'),
-      ...story.choices.map(c => h('button', { class: 'choice', onclick: () => outcome(c) },
-        h('span', { class: 'ce' }, c.emoji), c.label)));
+      narrated(prompt));
+    story.choices.forEach(c => stage.append(
+      choiceButton(c.emoji, c.label, () => outcome(c))));
+    // read the prompt, then every choice aloud, for non-readers
+    narrateScene(prompt, story.choices.map(c => c.label));
   }
   function outcome(c) {
     Store.logEvent('stories', story.id, { good: c.good });
     if (c.good) Audio.chime(); else Audio.boop();
     stage.innerHTML = '';
-    const buttons = [h('button', { class: 'choice', onclick: ask }, h('span', { class: 'ce' }, '↺'), 'Try another way')];
-    if (c.good) {
-      Store.earnSticker('story', 'Story Solver');
-      if (c.bravePhrase) buttons.unshift(h('button', { class: 'choice', onclick: () => go('brave-practice', { id: c.bravePhrase }) },
-        h('span', { class: 'ce' }, '🗣️'), 'Practice the brave words'));
-      buttons.push(h('button', { class: 'choice', onclick: () => go('stories') }, h('span', { class: 'ce' }, '✅'), 'Keep going'));
-    }
     stage.append(
       h('div', { class: 'scene illus', html: storyOutcomeArt(c.good) }),
-      narrated(c.outcome),
-      ...buttons);
+      narrated(c.outcome));
+
+    if (c.good) {
+      Store.earnSticker('story', 'Story Solver');
+      // let the child say the brave words and record themselves to hear it back
+      if (c.bravePhrase) {
+        const p = phrase(c.bravePhrase);
+        stage.append(
+          h('div', { class: 'say-prompt', onclick: () => Audio.speak(`Now you try. Say: ${p.text}`) },
+            `Now you try! Say: “${p.text}” 💪`),
+          recorderWidget('story-' + story.id + '-' + c.bravePhrase, p.text, () => {
+            toast(wrap, 'You used your brave voice! 💪 (stays on this device)', 'ok');
+          }));
+        setTimeout(() => Audio.speakSeq([c.outcome, `Now you try. Say: ${p.text}`]), 200);
+      }
+    }
+    stage.append(choiceButton('↺', 'Try another way', ask, 'Try another way'));
+    if (c.good) stage.append(choiceButton('✅', 'Keep going', () => go('stories'), 'Keep going'));
   }
   ask();
   return wrap;
@@ -523,18 +609,22 @@ route('empathy', () => {
     const item = EMPATHY[idx % EMPATHY.length];
     const correct = emo(item.answer);
     const opts = shuffle([correct, ...sample(EMOTIONS.filter(e => e.key !== correct.key), 3)]);
+    const prompt = item.text + ' How do they feel?';
     stage.innerHTML = '';
-    stage.append(h('div', { class: 'scene' }, item.emoji), narrated(item.text + ' How do they feel?'),
-      (() => { const f = h('div', { class: 'faces' });
-        opts.forEach(o => f.append(h('button', { class: 'face', style: `--c:${o.color}`, onclick: () => {
-          if (o.key === correct.key) {
-            Audio.chime(); Store.logEvent('empathy', 'feel', { emotion: o.key }); Store.earnSticker('empathy', 'Kind Heart');
-            stage.innerHTML = '';
-            stage.append(h('div', { class: 'scene' }, item.emoji), narrated(`Yes — they feel ${o.key}. ${item.help}`),
-              h('button', { class: 'pill-btn', onclick: () => { idx++; round(); } }, 'Next friend'),
-              h('button', { class: 'pill-btn ghost', onclick: mission }, 'Kindness Mission 🌟'));
-          } else { Audio.boop(); toast(wrap, 'Look at their face… try again.', 'warn'); }
-        } }, h('span', { class: 'fe' }, o.emoji), h('small', {}, o.key)))); return f; })());
+    const f = h('div', { class: 'faces' });
+    opts.forEach(o => f.append(h('button', { class: 'face', style: `--c:${o.color}`, onclick: () => {
+      Audio.speak(o.key); // read the chosen feeling so non-readers hear it
+      if (o.key === correct.key) {
+        Audio.chime(); Store.logEvent('empathy', 'feel', { emotion: o.key }); Store.earnSticker('empathy', 'Kind Heart');
+        stage.innerHTML = '';
+        stage.append(h('div', { class: 'scene' }, item.emoji), narrated(`Yes — they feel ${o.key}. ${item.help}`),
+          h('button', { class: 'pill-btn', onclick: () => { idx++; round(); } }, 'Next friend'),
+          h('button', { class: 'pill-btn ghost', onclick: mission }, 'Kindness Mission 🌟'));
+      } else { Audio.boop(); toast(wrap, 'Look at their face… try again.', 'warn'); }
+    } }, h('span', { class: 'fe' }, o.emoji), h('small', {}, o.key))));
+    stage.append(h('div', { class: 'scene' }, item.emoji), narrated(prompt), f);
+    // read the prompt then each feeling option aloud
+    narrateScene(prompt, opts.map(o => o.key));
   }
   function mission() {
     const m = sample(MISSIONS, 1)[0];
@@ -559,14 +649,14 @@ route('choice', () => {
     const c = CHOICES[idx % CHOICES.length];
     const opts = shuffle([{ ...c.good, good: true }, { ...c.bad, good: false }]);
     stage.innerHTML = '';
-    stage.append(h('div', { class: 'scene' }, c.emoji), narrated(c.text),
-      ...opts.map(o => h('button', { class: 'choice', onclick: () => {
-        Store.logEvent('choice', 'round', { good: o.good });
-        if (o.good) {
-          Audio.chime(); score++;
-          show(o.outcome, true);
-        } else { Audio.boop(); show(o.outcome, false); }
-      } }, h('span', { class: 'ce' }, o.emoji), o.label)));
+    stage.append(h('div', { class: 'scene' }, c.emoji), narrated(c.text));
+    opts.forEach(o => stage.append(choiceButton(o.emoji, o.label, () => {
+      Store.logEvent('choice', 'round', { good: o.good });
+      if (o.good) { Audio.chime(); score++; show(o.outcome, true); }
+      else { Audio.boop(); show(o.outcome, false); }
+    })));
+    // read the situation then each choice aloud
+    narrateScene(c.text, opts.map(o => o.label));
   }
   function show(text, good) {
     stage.innerHTML = '';
