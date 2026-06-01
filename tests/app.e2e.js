@@ -260,12 +260,12 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await sleep(150);
   ok('tapping the picture replays the script',
      await page.evaluate(() => window.__spoken.some(t => /playing with a truck/i.test(t))));
-  // a visible speaker button exists and replays the script
-  ok('story shows a speaker button', await page.locator('.speak-btn').count() === 1);
+  // a video-style play button overlaid on the animation replays the script
+  ok('story shows a play button on the animation', await page.locator('.scene.illus .play-overlay').count() === 1);
   await page.evaluate(() => { window.__spoken = []; });
-  await page.locator('.speak-btn').click();
+  await page.locator('.play-overlay').click();
   await sleep(150);
-  ok('speaker button reads the script',
+  ok('play button reads the script',
      await page.evaluate(() => window.__spoken.some(t => /playing with a truck/i.test(t))));
   // tapping a choice speaks its label
   await page.evaluate(() => { window.__spoken = []; });
