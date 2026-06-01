@@ -66,13 +66,15 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
   await page.evaluate(() => { // now spy/stub for the rest (records text, no real audio)
     window.__spoken = [];
+    window.__pitch = [];
     if (window.speechSynthesis) {
-      // record text AND fire onend so the app's onend-chained speakSeq advances
+      // record text + pitch AND fire onend so onend-chained speakSeq advances
       window.speechSynthesis.speak = (u) => {
-        try { window.__spoken.push(String(u && u.text || '')); } catch {}
+        try { window.__spoken.push(String(u && u.text || '')); window.__pitch.push(u && u.pitch); } catch {}
         if (u && typeof u.onend === 'function') setTimeout(() => u.onend(), 0);
       };
       window.speechSynthesis.cancel = () => {};
+      window.speechSynthesis.resume = () => {};
     }
   });
   ok('app booted', await page.evaluate(() => !!window.FeelFriends));
@@ -254,6 +256,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   ok('story narrates each choice (Choice 1..)', spokenStory.filter(t => /^Choice \d/.test(t)).length >= 2);
   ok('script is not double-narrated (single scene utterance)',
      spokenStory.filter(t => /playing with a truck/i.test(t)).length === 1);
+  ok('narration uses a kid-friendly higher pitch (>1.2)',
+     await page.evaluate(() => (window.__pitch || []).some(p => typeof p === 'number' && p > 1.2)));
   // tapping the picture replays the story script
   await page.evaluate(() => { window.__spoken = []; });
   await page.locator('.scene.illus').click();
