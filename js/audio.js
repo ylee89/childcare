@@ -4,10 +4,28 @@ import { Store } from './store.js';
 let voice = null;
 function pickVoice() {
   if (!('speechSynthesis' in window)) return null;
-  const vs = speechSynthesis.getVoices();
-  // prefer a warm English voice; fall back to first available
-  voice = vs.find(v => /en(-|_)?(US|GB)/i.test(v.lang) && /female|samantha|karen|google/i.test(v.name))
-       || vs.find(v => /^en/i.test(v.lang)) || vs[0] || null;
+  const vs = speechSynthesis.getVoices() || [];
+  if (!vs.length) { voice = null; return; }
+  const en = vs.filter(v => /^en(-|_|$)/i.test(v.lang));
+  const pool = en.length ? en : vs;
+  const score = (v) => {
+    let s = 0;
+    const n = (v.name || '');
+    // high-quality / neural voices sound the most natural
+    if (/natural|neural|premium|enhanced|siri/i.test(n)) s += 6;
+    if (/google/i.test(n)) s += 4;            // Chrome/Android Google voices are good
+    if (/microsoft/i.test(n)) s += 2;
+    if (/female|samantha|karen|moira|tessa|aria|jenny|ava|zira/i.test(n)) s += 3; // warmer for kids
+    if (/en-US/i.test(v.lang)) s += 2;
+    else if (/en-GB|en-AU/i.test(v.lang)) s += 1;
+    if (v.localService) s += 1;               // offline-capable, reliable
+    return s;
+  };
+  // best-scoring English voice; only pin it if it's clearly a good match,
+  // otherwise leave voice null so the engine uses its working default (this
+  // is what makes audio actually play on devices with odd voice lists).
+  const best = pool.slice().sort((a, b) => score(b) - score(a))[0];
+  voice = (en.length && best && score(best) >= 2) ? best : null;
 }
 if ('speechSynthesis' in window) {
   pickVoice();
@@ -47,6 +65,9 @@ if (typeof window !== 'undefined') {
 
 export const Audio = {
   get unlocked() { return unlocked; },
+  // diagnostics: which voice are we using on this device? (window.FeelFriends.Store-less)
+  voiceInfo() { return { name: voice && voice.name, lang: voice && voice.lang, unlocked,
+    count: (('speechSynthesis' in window) ? speechSynthesis.getVoices().length : 0) }; },
   /** Speak text aloud (child-directed narration). Returns immediately. */
   speak(text, opts = {}) {
     if (!text) return;
@@ -60,7 +81,8 @@ export const Audio = {
    * queued back-to-back right after cancel() — that's what made the story
    * script never play.
    */
-  speakSeq(items, { rate = 0.95, pitch = 1.15 } = {}) {
+  // higher pitch + slightly slower = friendly, child-directed delivery
+  speakSeq(items, { rate = 0.92, pitch = 1.35 } = {}) {
     if (!Store.settings.narration || !('speechSynthesis' in window)) return;
     const list = (Array.isArray(items) ? items : [items]).filter(Boolean).map(String);
     if (!list.length) return;
@@ -72,10 +94,11 @@ export const Audio = {
       const next = () => {
         if (myId !== _seq || i >= list.length) return;
         const u = new SpeechSynthesisUtterance(list[i++]);
-        if (voice) u.voice = voice;
+        if (voice) { u.voice = voice; u.lang = voice.lang; }
         u.rate = rate; u.pitch = pitch; u.volume = 1;
         u.onend = () => setTimeout(next, 120);
         u.onerror = () => setTimeout(next, 120);
+        try { speechSynthesis.resume(); } catch {} // some browsers pause the queue
         speechSynthesis.speak(u);
       };
       setTimeout(next, 60); // let cancel() settle before first speak (Safari)
