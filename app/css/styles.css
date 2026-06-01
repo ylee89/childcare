@@ -133,6 +133,11 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .choice{width:100%;background:var(--cloud);border:none;border-radius:var(--radius-card);padding:18px;font-size:17px;
   font-weight:800;text-align:left;box-shadow:var(--shadow);cursor:pointer;display:flex;gap:12px;align-items:center;transition:transform .12s;}
 .choice:active{transform:scale(.97);} .choice .ce{font-size:28px;flex:none;}
+.choice .choice-speak{margin-left:auto;font-size:20px;opacity:.5;flex:none;}
+/* in-story "now you try" prompt + inline recorder */
+.say-prompt{font-size:19px;font-weight:800;text-align:center;margin:8px 0 4px;cursor:pointer;color:var(--coral);}
+.rec-widget{margin:4px 0 8px;}
+.mic.small{width:96px;height:96px;font-size:40px;}
 
 /* brave voice */
 .try{font-size:20px;font-weight:800;}
