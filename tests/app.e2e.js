@@ -264,12 +264,13 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await sleep(150);
   ok('tapping the picture replays the script',
      await page.evaluate(() => window.__spoken.some(t => /playing with a truck/i.test(t))));
-  // a video-style play button overlaid on the animation replays the script
-  ok('story shows a play button on the animation', await page.locator('.scene.illus .play-overlay').count() === 1);
+  // no play button — tapping the animation itself reads the story
+  ok('no play button overlay', await page.locator('.play-overlay').count() === 0);
+  ok('animation is tappable for sound', await page.locator('.scene.illus.tappable').count() === 1);
   await page.evaluate(() => { window.__spoken = []; });
-  await page.locator('.play-overlay').click();
+  await page.locator('.scene.illus.tappable').click();
   await sleep(150);
-  ok('play button reads the script',
+  ok('tapping the animation reads the script',
      await page.evaluate(() => window.__spoken.some(t => /playing with a truck/i.test(t))));
   // tapping a choice speaks its label
   await page.evaluate(() => { window.__spoken = []; });
