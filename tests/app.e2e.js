@@ -241,6 +241,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   ok('choice buttons show a speaker icon', (await page.locator('.choice .choice-speak').count()) >= 2);
 
   sec('12. Settings persistence');
+  await page.evaluate(() => window.FeelFriends.go('dashboard')); // 11b navigated away
+  await page.waitForSelector('.card');
   await page.locator('.pill-btn', { hasText: 'Settings' }).click();
   await page.waitForSelector('.toggle');
   await page.locator('.toggle', { hasText: 'Voice narration' }).locator('input').uncheck();
