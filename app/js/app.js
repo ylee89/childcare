@@ -390,14 +390,15 @@ route('story', ({ id }) => {
   const prompt = story.scene + ' What could you do?';
   function ask() {
     stage.innerHTML = '';
+    // animation "scene" with a video-style play button overlaid; tap to (re)play
+    const scene = h('div', { class: 'scene illus has-play', onclick: () => Audio.speak(prompt),
+      html: storyScene(story.id) });
+    scene.append(
+      h('button', { class: 'play-overlay', 'aria-label': 'Play story',
+        onclick: (e) => { e.stopPropagation(); Audio.speak(prompt); } }, '▶'));
     stage.append(
-      // tap the picture to hear the story script again
-      h('div', { class: 'scene illus', onclick: () => Audio.speak(prompt), html: storyScene(story.id) }),
-      // script text + a big, obvious speaker button to (re)play it
-      h('div', { class: 'script-row' },
-        h('div', { class: 'prompt script-text', onclick: () => Audio.speak(prompt) }, prompt),
-        h('button', { class: 'speak-btn', 'aria-label': 'Read this story',
-          onclick: () => Audio.speak(prompt) }, '🔊')));
+      scene,
+      h('div', { class: 'prompt script-text', onclick: () => Audio.speak(prompt) }, prompt));
     story.choices.forEach(c => stage.append(
       choiceButton(c.emoji, c.label, () => outcome(c))));
     // read the full script first, then every choice aloud, for non-readers
