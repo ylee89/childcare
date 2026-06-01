@@ -53,10 +53,12 @@ function persistentNav() {
     h('button', { class: 'home', 'aria-label': 'Home', onclick: () => go('home') }, '🏠'),
     h('button', { class: 'calm', 'aria-label': 'Calm Corner', onclick: () => go('calm') }, '🫧'));
 }
-// narrate prompt text and return the element
-function narrated(text, cls = 'prompt') {
+// narrate prompt text and return the element.
+// speak=false makes it tap-to-read only (use when another call narrates it),
+// so we never double-fire speech and cut the line off.
+function narrated(text, cls = 'prompt', speak = true) {
   const e = h('div', { class: cls, onclick: () => Audio.speak(text) }, text);
-  setTimeout(() => Audio.speak(text), 120);
+  if (speak) setTimeout(() => Audio.speak(text), 120);
   return e;
 }
 function toast(parent, text, kind = '') {
@@ -384,15 +386,17 @@ route('story', ({ id }) => {
   const stage = h('div', { class: 'stage' });
   wrap.append(topbar(story.title, { back: 'stories' }), stage, persistentNav());
 
+  // the full content script: story scene + the question, read as one line
   const prompt = story.scene + ' What could you do?';
   function ask() {
     stage.innerHTML = '';
     stage.append(
-      h('div', { class: 'scene illus', html: storyScene(story.id) }),
-      narrated(prompt));
+      // tap the picture to hear the story script again
+      h('div', { class: 'scene illus', onclick: () => Audio.speak(prompt), html: storyScene(story.id) }),
+      narrated(prompt, 'prompt', false)); // narrateScene speaks it; avoid double-fire
     story.choices.forEach(c => stage.append(
       choiceButton(c.emoji, c.label, () => outcome(c))));
-    // read the prompt, then every choice aloud, for non-readers
+    // read the full script first, then every choice aloud, for non-readers
     narrateScene(prompt, story.choices.map(c => c.label));
   }
   function outcome(c) {
