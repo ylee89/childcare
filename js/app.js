@@ -393,7 +393,11 @@ route('story', ({ id }) => {
     stage.append(
       // tap the picture to hear the story script again
       h('div', { class: 'scene illus', onclick: () => Audio.speak(prompt), html: storyScene(story.id) }),
-      narrated(prompt, 'prompt', false)); // narrateScene speaks it; avoid double-fire
+      // script text + a big, obvious speaker button to (re)play it
+      h('div', { class: 'script-row' },
+        h('div', { class: 'prompt script-text', onclick: () => Audio.speak(prompt) }, prompt),
+        h('button', { class: 'speak-btn', 'aria-label': 'Read this story',
+          onclick: () => Audio.speak(prompt) }, '🔊')));
     story.choices.forEach(c => stage.append(
       choiceButton(c.emoji, c.label, () => outcome(c))));
     // read the full script first, then every choice aloud, for non-readers
