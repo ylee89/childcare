@@ -780,7 +780,25 @@ route('settings', () => {
   wrap.append(
     h('div', { class: 'topbar' }, h('button', { class: 'back', onclick: () => go('dashboard') }, '←'), h('h1', {}, 'Settings'), h('span')),
     h('div', { class: 'card' }, h('h3', {}, 'Audio & accessibility'),
-      tog('Voice narration', 'narration'), tog('Sound effects', 'sfx'), tog('Reduce motion', 'reduceMotion')),
+      tog('Voice narration', 'narration'), tog('Sound effects', 'sfx'), tog('Reduce motion', 'reduceMotion'),
+      (() => {
+        const status = h('div', { class: 'sub', style: 'margin-top:10px' }, 'Tap to test the voice.');
+        const refresh = () => {
+          const v = Audio.voiceInfo();
+          status.innerHTML = '';
+          status.append(
+            h('div', {}, `Narration: ${Store.settings.narration ? 'ON' : 'OFF'}`),
+            h('div', {}, `Audio unlocked: ${v.unlocked ? 'yes' : 'no (tap the screen once)'}`),
+            h('div', {}, `Voices available: ${v.count}`),
+            h('div', {}, `Using voice: ${v.name || 'device default'}${v.lang ? ' (' + v.lang + ')' : ''}`));
+        };
+        const btn = h('button', { class: 'pill-btn block', onclick: () => {
+          Audio.speak('Hi! This is the Feel Friends voice. Can you hear me?');
+          setTimeout(refresh, 100);
+        } }, '🔊 Test voice');
+        refresh();
+        return h('div', {}, btn, status);
+      })()),
     h('div', { class: 'card' }, h('h3', {}, 'Privacy & data'),
       h('p', { class: 'sub' }, 'All data is stored on this device. Nothing is uploaded.'),
       h('button', { class: 'pill-btn ghost block', onclick: () => {
