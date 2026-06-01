@@ -225,8 +225,18 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.waitForSelector('.choice');
   await sleep(500); // let narrateScene's queued speech fire
   const spokenStory = await page.evaluate(() => window.__spoken.slice());
-  ok('story narrates the scene prompt', spokenStory.some(t => /what could you do/i.test(t)));
+  // the full content script (scene text + question) must be read as one line
+  ok('story narrates the full script (scene + question)',
+     spokenStory.some(t => /playing with a truck/i.test(t) && /what could you do/i.test(t)));
   ok('story narrates each choice (Choice 1..)', spokenStory.filter(t => /^Choice \d/.test(t)).length >= 2);
+  ok('script is not double-narrated (single scene utterance)',
+     spokenStory.filter(t => /playing with a truck/i.test(t)).length === 1);
+  // tapping the picture replays the story script
+  await page.evaluate(() => { window.__spoken = []; });
+  await page.locator('.scene.illus').click();
+  await sleep(150);
+  ok('tapping the picture replays the script',
+     await page.evaluate(() => window.__spoken.some(t => /playing with a truck/i.test(t))));
   // tapping a choice speaks its label
   await page.evaluate(() => { window.__spoken = []; });
   await page.locator('.stage .choice').first().click();
