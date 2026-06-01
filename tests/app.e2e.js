@@ -67,7 +67,11 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.evaluate(() => { // now spy/stub for the rest (records text, no real audio)
     window.__spoken = [];
     if (window.speechSynthesis) {
-      window.speechSynthesis.speak = (u) => { try { window.__spoken.push(String(u && u.text || '')); } catch {} };
+      // record text AND fire onend so the app's onend-chained speakSeq advances
+      window.speechSynthesis.speak = (u) => {
+        try { window.__spoken.push(String(u && u.text || '')); } catch {}
+        if (u && typeof u.onend === 'function') setTimeout(() => u.onend(), 0);
+      };
       window.speechSynthesis.cancel = () => {};
     }
   });
@@ -255,6 +259,13 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.locator('.scene.illus').click();
   await sleep(150);
   ok('tapping the picture replays the script',
+     await page.evaluate(() => window.__spoken.some(t => /playing with a truck/i.test(t))));
+  // a visible speaker button exists and replays the script
+  ok('story shows a speaker button', await page.locator('.speak-btn').count() === 1);
+  await page.evaluate(() => { window.__spoken = []; });
+  await page.locator('.speak-btn').click();
+  await sleep(150);
+  ok('speaker button reads the script',
      await page.evaluate(() => window.__spoken.some(t => /playing with a truck/i.test(t))));
   // tapping a choice speaks its label
   await page.evaluate(() => { window.__spoken = []; });

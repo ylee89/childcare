@@ -19,7 +19,8 @@ if ('speechSynthesis' in window) {
 // first tap: resume the WebAudio context and prime speechSynthesis. Until then,
 // auto-narration is queued and replayed once unlocked.
 let unlocked = false;
-let pendingSpeak = null;
+let pendingSpeak = null; // string | string[] queued before the first gesture
+let _seq = 0;            // id of the current speak chain (for cancellation)
 function unlock() {
   if (unlocked) return;
   unlocked = true;
@@ -27,7 +28,8 @@ function unlock() {
     if (Audio._ctx && Audio._ctx.state === 'suspended') Audio._ctx.resume();
   } catch {}
   try {
-    // prime the speech engine with a silent utterance inside the gesture
+    // prime the speech engine with a silent utterance inside the gesture (iOS)
+    speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(' ');
     u.volume = 0;
     speechSynthesis.speak(u);
@@ -35,7 +37,7 @@ function unlock() {
   // replay whatever wanted to speak before the first tap (e.g. splash greeting)
   if (pendingSpeak) {
     const p = pendingSpeak; pendingSpeak = null;
-    setTimeout(() => Audio.speak(p), 150); // let priming settle first
+    setTimeout(() => Audio.speakSeq(p), 200); // let priming settle first
   }
 }
 if (typeof window !== 'undefined') {
@@ -46,34 +48,37 @@ if (typeof window !== 'undefined') {
 export const Audio = {
   get unlocked() { return unlocked; },
   /** Speak text aloud (child-directed narration). Returns immediately. */
-  speak(text, { rate = 0.95, pitch = 1.15 } = {}) {
-    if (!Store.settings.narration || !('speechSynthesis' in window) || !text) return;
-    // before the first user gesture, remember the latest line to play on unlock
-    if (!unlocked) { pendingSpeak = text; return; }
-    try {
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(String(text));
-      if (voice) u.voice = voice;
-      u.rate = rate; u.pitch = pitch; u.volume = 1;
-      speechSynthesis.speak(u);
-    } catch {}
+  speak(text, opts = {}) {
+    if (!text) return;
+    this.speakSeq([text], opts);
   },
-  stop() { try { speechSynthesis.cancel(); } catch {} },
+  stop() { try { _seq++; speechSynthesis.cancel(); } catch {} },
 
-  /** Speak a list of phrases one after another (e.g. script then each choice). */
+  /**
+   * Speak one or more phrases in order. Uses onend-chaining (speak the next
+   * line only after the previous finishes) because Safari/iOS drops utterances
+   * queued back-to-back right after cancel() — that's what made the story
+   * script never play.
+   */
   speakSeq(items, { rate = 0.95, pitch = 1.15 } = {}) {
     if (!Store.settings.narration || !('speechSynthesis' in window)) return;
-    const list = (Array.isArray(items) ? items : [items]).filter(Boolean);
+    const list = (Array.isArray(items) ? items : [items]).filter(Boolean).map(String);
     if (!list.length) return;
-    if (!unlocked) { pendingSpeak = list[0]; return; } // queue first line until gesture
+    if (!unlocked) { pendingSpeak = list; return; } // play once the user taps
     try {
       speechSynthesis.cancel();
-      list.forEach((text) => {
-        const u = new SpeechSynthesisUtterance(String(text));
+      const myId = ++_seq; // a newer call cancels an in-flight chain
+      let i = 0;
+      const next = () => {
+        if (myId !== _seq || i >= list.length) return;
+        const u = new SpeechSynthesisUtterance(list[i++]);
         if (voice) u.voice = voice;
         u.rate = rate; u.pitch = pitch; u.volume = 1;
-        speechSynthesis.speak(u); // queued; engine plays them in order
-      });
+        u.onend = () => setTimeout(next, 120);
+        u.onerror = () => setTimeout(next, 120);
+        speechSynthesis.speak(u);
+      };
+      setTimeout(next, 60); // let cancel() settle before first speak (Safari)
     } catch {}
   },
 
