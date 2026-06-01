@@ -45,8 +45,12 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.evaluate(() => { try { localStorage.clear(); } catch {} }); // one-time clean slate
   await page.reload({ waitUntil: 'networkidle' });
   await page.waitForFunction(() => !!window.FeelFriends);
-  await page.evaluate(() => { // mute audio side-effects during test
-    window.speechSynthesis && (window.speechSynthesis.speak = () => {});
+  await page.evaluate(() => { // spy on narration: record spoken text, no real audio
+    window.__spoken = [];
+    if (window.speechSynthesis) {
+      window.speechSynthesis.speak = (u) => { try { window.__spoken.push(String(u && u.text || '')); } catch {} };
+      window.speechSynthesis.cancel = () => {};
+    }
   });
   ok('app booted', await page.evaluate(() => !!window.FeelFriends));
   // skip splash if present, then wait for onboarding
@@ -113,9 +117,18 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.waitForSelector('.choice');
   ok('story offers 3 choices', await page.locator('.stage .choice').count() === 3);
   await page.locator('.choice', { hasText: 'Please stop' }).click();
-  await page.waitForSelector('.choice');
+  await page.waitForSelector('.say-prompt');
   ok('good choice praises brave voice', /brave voice/i.test(await page.locator('.prompt').innerText()));
-  ok('offers to practice the brave words', await page.locator('.choice', { hasText: 'Practice the brave words' }).count() === 1);
+  ok('in-story "now you try" say-prompt appears', await page.locator('.say-prompt').count() === 1);
+  ok('in-story recorder widget appears', await page.locator('.rec-widget .mic').count() === 1);
+  // record yourself inside the story and confirm playback control appears
+  await page.locator('.rec-widget .mic').click({ force: true });
+  await sleep(600);
+  await page.locator('.rec-widget .mic').click({ force: true });
+  await sleep(500);
+  ok('in-story recording saved (Hear me button)', await page.locator('.rec-widget .pill-btn', { hasText: 'Hear me' }).count() === 1);
+  const storyRec = await page.evaluate(() => Object.keys(window.FeelFriends.Store.childData().recordings).some(k => k.startsWith('story-')));
+  ok('story recording persisted to store', storyRec === true);
 
   // ---- 6. Brave Voice (record path with fake mic) ----
   sec('6. Brave Voice records and earns a sticker');
@@ -205,6 +218,28 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   ok('dashboard shows an insight', (await page.locator('.insight').innerText()).length > 10);
 
   // ---- 12. Settings: narration toggle persists ----
+  // ---- 11b. Audio narration reads prompts AND every choice aloud ----
+  sec('11b. Audio narration (non-readers)');
+  await page.evaluate(() => { window.__spoken = []; window.FeelFriends.go('stories'); });
+  await page.locator('.menu-tile', { hasText: 'Sharing' }).click();
+  await page.waitForSelector('.choice');
+  await sleep(500); // let narrateScene's queued speech fire
+  const spokenStory = await page.evaluate(() => window.__spoken.slice());
+  ok('story narrates the scene prompt', spokenStory.some(t => /what could you do/i.test(t)));
+  ok('story narrates each choice (Choice 1..)', spokenStory.filter(t => /^Choice \d/.test(t)).length >= 2);
+  // tapping a choice speaks its label
+  await page.evaluate(() => { window.__spoken = []; });
+  await page.locator('.stage .choice').first().click();
+  await sleep(200);
+  ok('tapping a choice speaks it', (await page.evaluate(() => window.__spoken.length)) >= 1);
+  // Good Choice section also narrates options
+  await page.evaluate(() => { window.__spoken = []; window.FeelFriends.go('choice'); });
+  await page.waitForSelector('.choice');
+  await sleep(500);
+  ok('Good Choice narrates its options', (await page.evaluate(() => window.__spoken.filter(t => /^Choice \d/.test(t)).length)) >= 2);
+  // choice buttons expose a speaker affordance
+  ok('choice buttons show a speaker icon', (await page.locator('.choice .choice-speak').count()) >= 2);
+
   sec('12. Settings persistence');
   await page.locator('.pill-btn', { hasText: 'Settings' }).click();
   await page.waitForSelector('.toggle');
