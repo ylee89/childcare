@@ -166,14 +166,16 @@ route('onboarding', () => {
   });
   const nameInput = h('input', { class: 'textinput', type: 'text', maxlength: '16',
     placeholder: 'First name (or leave blank)', oninput: e => name = e.target.value });
+  // label + control belong together: tight inside the field, full rhythm between fields
+  const field = (label, control) => h('div', { class: 'field' }, h('label', { class: 'flabel' }, label), control);
 
   wrap.append(
     h('div', { class: 'mascot' }, '🐻'),
     h('h1', { class: 'center-title' }, 'Welcome to Feel Friends'),
     h('p', { class: 'sub' }, 'Made for ages 3–6. A grown-up helps set up — just once.'),
-    h('label', { class: 'flabel' }, "Child's name"), nameInput,
-    h('label', { class: 'flabel' }, 'Age'), ageRow,
-    h('label', { class: 'flabel' }, 'Pick a friend'), avatarRow,
+    field("Child's name", nameInput),
+    field('Age', ageRow),
+    field('Pick a friend', avatarRow),
     h('button', { class: 'pill-btn block', onclick: () => {
       Store.addChild({ name: name.trim(), ageBand, avatar });
       go('home');
@@ -187,7 +189,7 @@ route('onboarding', () => {
 /* ===================================================================== */
 route('home', () => {
   const child = Store.child();
-  const wrap = h('div', { class: 'screen' });
+  const wrap = h('div', { class: 'screen pad' });
   const worlds = [
     ['emotion', '😊', 'Emotion Explorer', 't-emotion'],
     ['stories', '📖', 'Story Adventures', 't-story'],
@@ -239,6 +241,7 @@ route('checkin', () => {
   );
   function step2(e) {
     wrap.innerHTML = '';
+    wrap.className = 'screen pad center-y'; // one message + buttons: centre it, don't pin it to the top
     const msg = `You feel ${e.key}. It's okay to feel ${e.key}.`;
     wrap.append(
       h('div', { class: 'mascot', style: `background:${e.color}` }, e.emoji),
@@ -316,8 +319,9 @@ route('facematch', () => {
     Audio.pop();
     toast(wrap, 'You found all the feelings! ⭐ Sticker earned.', 'ok');
     faces.innerHTML = '';
-    faces.append(h('button', { class: 'pill-btn', onclick: () => { done = 0; drawDots(); round(); } }, 'Play again'),
-      h('button', { class: 'pill-btn ghost', onclick: () => go('cards') }, 'See my cards'));
+    faces.append(h('div', { class: 'rowbtns' },
+      h('button', { class: 'pill-btn', onclick: () => { done = 0; drawDots(); round(); } }, 'Play again'),
+      h('button', { class: 'pill-btn ghost', onclick: () => go('cards') }, 'See my cards')));
   }
   drawDots(); round();
   return wrap;
@@ -452,7 +456,8 @@ route('brave-practice', ({ id }) => {
   const status = h('div', { class: 'mic-label' }, 'tap to try');
   const micBtn = h('button', { class: 'mic' }, '🎤');
   const controls = h('div', { class: 'rowbtns' });
-  wrap.append(h('div', { class: 'center' },
+  // the mic is the whole point of this screen — let it take the leftover height
+  wrap.append(h('div', { class: 'center grow' },
     h('div', { class: 'try' }, 'Now you try! 💪'),
     micBtn, status, controls), persistentNav());
 
@@ -520,7 +525,8 @@ route('brave-practice', ({ id }) => {
 /* CALM CORNER                                                            */
 /* ===================================================================== */
 route('calm', () => {
-  const wrap = h('div', { class: 'screen pad calm' });
+  // no floating nav here, so no need for the nav's bottom room
+  const wrap = h('div', { class: 'screen calm' });
   wrap.append(
     h('div', { class: 'topbar' }, h('button', { class: 'back', onclick: () => go('home') }, '←'),
       h('h1', {}, 'Calm Corner'), h('span')),
@@ -609,7 +615,7 @@ route('calm', () => {
 /* ===================================================================== */
 route('empathy', () => {
   const wrap = h('div', { class: 'screen pad' });
-  const stage = h('div', {});
+  const stage = h('div', { class: 'stage' });
   wrap.append(topbar('Empathy Lab', { back: 'home' }), stage, persistentNav());
   let idx = 0;
   function round() {
@@ -625,8 +631,9 @@ route('empathy', () => {
         Audio.chime(); Store.logEvent('empathy', 'feel', { emotion: o.key }); Store.earnSticker('empathy', 'Kind Heart');
         stage.innerHTML = '';
         stage.append(h('div', { class: 'scene' }, item.emoji), narrated(`Yes — they feel ${o.key}. ${item.help}`),
-          h('button', { class: 'pill-btn', onclick: () => { idx++; round(); } }, 'Next friend'),
-          h('button', { class: 'pill-btn ghost', onclick: mission }, 'Kindness Mission 🌟'));
+          h('div', { class: 'rowbtns' },
+            h('button', { class: 'pill-btn', onclick: () => { idx++; round(); } }, 'Next friend'),
+            h('button', { class: 'pill-btn ghost', onclick: mission }, 'Kindness Mission 🌟')));
       } else { Audio.boop(); toast(wrap, 'Look at their face… try again.', 'warn'); }
     } }, h('span', { class: 'fe' }, o.emoji), h('small', {}, o.key))));
     stage.append(h('div', { class: 'scene' }, item.emoji), narrated(prompt), f);
@@ -637,8 +644,9 @@ route('empathy', () => {
     const m = sample(MISSIONS, 1)[0];
     stage.innerHTML = '';
     stage.append(h('div', { class: 'scene' }, '🌟'), narrated('Your kindness mission: ' + m),
-      h('button', { class: 'pill-btn mint', onclick: () => { Store.completeMission(m); Audio.pop(); toast(wrap,'Mission accepted! Try it today. 💛','ok'); } }, "I'll do it!"),
-      h('button', { class: 'pill-btn ghost', onclick: () => { idx++; round(); } }, 'Back'));
+      h('div', { class: 'rowbtns' },
+        h('button', { class: 'pill-btn mint', onclick: () => { Store.completeMission(m); Audio.pop(); toast(wrap,'Mission accepted! Try it today. 💛','ok'); } }, "I'll do it!"),
+        h('button', { class: 'pill-btn ghost', onclick: () => { idx++; round(); } }, 'Back')));
   }
   round();
   return wrap;
@@ -649,7 +657,7 @@ route('empathy', () => {
 /* ===================================================================== */
 route('choice', () => {
   const wrap = h('div', { class: 'screen pad' });
-  const stage = h('div', {});
+  const stage = h('div', { class: 'stage' });
   wrap.append(topbar('Good Choice', { back: 'home' }), stage, persistentNav());
   let idx = 0, score = 0;
   function round() {
@@ -670,13 +678,14 @@ route('choice', () => {
     const btns = good
       ? [h('button', { class: 'pill-btn', onclick: () => { idx++; if (idx >= CHOICES.length) finish(); else round(); } }, 'Next')]
       : [h('button', { class: 'pill-btn ghost', onclick: round }, 'Try again')];
-    stage.append(h('div', { class: 'scene' }, good ? '🌟' : '🤔'), narrated(text), ...btns);
+    stage.append(h('div', { class: 'scene' }, good ? '🌟' : '🤔'), narrated(text), h('div', { class: 'rowbtns' }, ...btns));
   }
   function finish() {
     Store.earnSticker('choice', 'Good Chooser');
     stage.innerHTML = '';
     stage.append(h('div', { class: 'scene' }, '🏆'), narrated('You made great choices! ⭐ Sticker earned.'),
-      h('button', { class: 'pill-btn', onclick: () => { idx = 0; round(); } }, 'Play again'));
+      h('div', { class: 'rowbtns' },
+        h('button', { class: 'pill-btn', onclick: () => { idx = 0; round(); } }, 'Play again')));
   }
   round();
   return wrap;
@@ -742,7 +751,7 @@ route('dashboard', () => {
   const child = Store.child();
   const s = Store.weekSummary();
   const maxEmo = Math.max(1, ...Object.values(s.emoCount));
-  const emoBars = h('div', {});
+  const emoBars = h('div', { class: 'bars' });
   EMOTIONS.filter(e => s.emoCount[e.key]).sort((a,b)=>s.emoCount[b.key]-s.emoCount[a.key]).forEach(e =>
     emoBars.append(h('div', { class: 'bar' }, h('span', { class: 'blabel' }, e.key),
       h('i', { style: `width:${(s.emoCount[e.key]/maxEmo)*140}px;background:${e.color}` }))));
