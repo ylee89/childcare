@@ -85,6 +85,23 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
   // ---- 1. Onboarding ----
   sec('1. Onboarding creates a persistent child profile');
+  // spacing contract: tight inside a group, --stack between fields, --section
+  // between the header and the form and before the primary action
+  const formSpacing = await page.evaluate(() => {
+    const gap = (a, b) => Math.round(b.getBoundingClientRect().top - a.getBoundingClientRect().bottom);
+    const s = document.querySelector('.screen');
+    const [head, f1, f2, f3, cta] = [...s.children];
+    return {
+      headToForm: gap(head, f1),
+      fieldToField: gap(f1, f2),
+      lastFieldToCta: gap(f3, cta),
+      labelToControl: gap(f1.children[0], f1.children[1]),
+    };
+  });
+  ok('onboarding header is a section from the form', formSpacing.headToForm === 32, JSON.stringify(formSpacing));
+  ok('onboarding fields use the stack rhythm', formSpacing.fieldToField === 24, JSON.stringify(formSpacing));
+  ok('onboarding CTA is a section from the last field', formSpacing.lastFieldToCta === 32, JSON.stringify(formSpacing));
+  ok('onboarding label hugs its control', formSpacing.labelToControl === 8, JSON.stringify(formSpacing));
   await page.fill('.textinput', 'Aria');
   await page.locator('.chiprow .chip', { hasText: '5-6' }).click();
   await page.locator('.chiprow .chip.big', { hasText: '🦊' }).click();

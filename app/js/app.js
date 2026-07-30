@@ -149,7 +149,7 @@ function recorderWidget(key, label, onDone) {
 /* ===================================================================== */
 route('onboarding', () => {
   let name = '', ageBand = '4-5', avatar = '🐻';
-  const wrap = h('div', { class: 'screen pad' });
+  const wrap = h('div', { class: 'screen' }); // no floating nav here, so no nav room needed
   const avatarRow = h('div', { class: 'chiprow' });
   AVATARS.forEach(a => {
     const b = h('button', { class: 'chip big' + (a === avatar ? ' on' : ''), onclick: () => {
@@ -170,13 +170,16 @@ route('onboarding', () => {
   const field = (label, control) => h('div', { class: 'field' }, h('label', { class: 'flabel' }, label), control);
 
   wrap.append(
-    h('div', { class: 'mascot' }, '🐻'),
-    h('h1', { class: 'center-title' }, 'Welcome to Feel Friends'),
-    h('p', { class: 'sub' }, 'Made for ages 3–6. A grown-up helps set up — just once.'),
+    // mascot + title + subtitle are one header group (tight), a section away
+    // from the form below it
+    h('div', { class: 'head-group' },
+      h('div', { class: 'mascot' }, '🐻'),
+      h('h1', { class: 'center-title' }, 'Welcome to Feel Friends'),
+      h('p', { class: 'sub' }, 'Made for ages 3–6. A grown-up helps set up — just once.')),
     field("Child's name", nameInput),
     field('Age', ageRow),
     field('Pick a friend', avatarRow),
-    h('button', { class: 'pill-btn block', onclick: () => {
+    h('button', { class: 'pill-btn block spaced', onclick: () => {
       Store.addChild({ name: name.trim(), ageBand, avatar });
       go('home');
     } }, "Let's go! 💛"),
@@ -454,8 +457,10 @@ route('brave-practice', ({ id }) => {
   const p = phrase(id) || PHRASES[0];
   const wrap = h('div', { class: 'screen pad' });
   wrap.append(topbar('Brave Voice', { back: 'brave' }));
-  wrap.append(narrated(`Mochi says: ${p.text}`));
-  wrap.append(h('p', { class: 'sub', onclick: () => Audio.speak(p.when) }, p.when));
+  // the phrase and the line explaining when to use it are one group
+  wrap.append(h('div', { class: 'head-group' },
+    narrated(`Mochi says: ${p.text}`),
+    h('p', { class: 'sub', onclick: () => Audio.speak(p.when) }, p.when)));
 
   const status = h('div', { class: 'mic-label' }, 'tap to try');
   const micBtn = h('button', { class: 'mic' }, '🎤');
@@ -745,8 +750,12 @@ route('gate', () => {
 
   wrap.append(
     h('div', { class: 'topbar' }, h('button', { class: 'back', onclick: () => go('home') }, '←'), h('h1', {}, 'Ask a grown-up 🔒'), h('span')),
-    h('p', { class: 'sub' }, 'Hold the button and solve this:'),
-    display, answerEl, pad, hold);
+    // instruction + sum + entry are one puzzle group; the pad and the hold
+    // button are separate steps below it
+    h('div', { class: 'head-group' },
+      h('p', { class: 'sub' }, 'Hold the button and solve this:'),
+      display, answerEl),
+    pad, hold);
   return wrap;
 });
 
