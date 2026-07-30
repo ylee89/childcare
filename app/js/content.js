@@ -17,6 +17,20 @@ export const EMOTIONS = [
 ];
 export const emo = (k) => EMOTIONS.find(e => e.key === k);
 
+// The daily check-in scales its choices to the age band. A 3-year-old asked to
+// pick from 12 faces tends to tap at random, and 12 faces also force tiles below
+// the 88pt touch target in 04-design-system.md. The games still draw on all 12,
+// so every feeling card stays collectible at any age.
+export const CHECKIN_SETS = {
+  '3-4': ['happy', 'sad', 'angry', 'scared', 'excited', 'loved'],
+  '4-5': ['happy', 'sad', 'angry', 'frustrated', 'scared', 'proud', 'excited', 'loved'],
+  '5-6': null, // the full canonical set
+};
+export const checkinEmotions = (ageBand) => {
+  const keys = CHECKIN_SETS[ageBand];
+  return keys ? keys.map(emo) : EMOTIONS;
+};
+
 // "Name That Feeling" — situation -> correct emotion
 export const SITUATIONS = [
   { text:"You got to play your favorite game.", answer:'happy' },
