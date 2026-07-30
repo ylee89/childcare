@@ -78,7 +78,7 @@ The only generative surface, and it is tightly contained:
    trigger generation.
 2. **Constrained generation.** System prompt enforces age-appropriate, gentle,
    non-frightening, SEL-positive output; restricted to the child's first name +
-   parent's situation + one of the 10 emotions (see content guardrails in
+   parent's situation + one of the 12 emotions (see content guardrails in
    [`08-content-library.md`](08-content-library.md)).
 3. **Safety filtering.** Output is screened for unsafe/inappropriate content
    before it's shown; failures regenerate or surface a friendly "let's try a

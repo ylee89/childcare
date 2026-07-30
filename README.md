@@ -122,7 +122,7 @@ xdg-open prototype/index.html    # Linux
 
 ## The six "Feel Friends" worlds (core features)
 
-1. **Emotion Explorer** — recognize and name 10 core emotions through games,
+1. **Emotion Explorer** — recognize and name 12 core emotions through games,
    face-matching, daily mood check-ins, and a collectible emotion-card deck.
 2. **Story Adventures** — interactive animated scenarios (sharing, being
    pushed, exclusion, teasing, turn-taking, asking for help) with

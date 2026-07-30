@@ -7,7 +7,7 @@ deliver. Copy here is the **narrated** voice of the app.
 
 ---
 
-## 1. The 10 core emotions
+## 1. The 12 core emotions
 
 Each card has: name · friend face · color · kid-definition · example · "what
 helps." Definitions are deliberately simple, body-based, and non-judgmental.
@@ -24,6 +24,8 @@ helps." Definitions are deliberately simple, body-based, and non-judgmental.
 | **lonely** | slate-blue | "Lonely is when you wish someone was with you." | "No one is playing with you." | "You can ask, 'Can I play too?'" |
 | **excited** | pink | "Excited is a bouncy, can't-wait feeling!" | "It's almost your birthday." | "Wiggle it out, then take a breath to feel calm-excited." |
 | **confused** | warm grey | "Confused is when things don't make sense yet." | "You don't know what to do next." | "That's okay! Ask a question: 'Can you show me?'" |
+| **surprised** | aqua | "Surprised is a quick 'oh!' feeling when something happens you didn't expect." | "A puppy jumped out of a box!" | "Take one breath. You can say, 'Wow, I didn't know that!'" |
+| **loved** | rose | "Loved is a warm, cozy feeling when someone cares about you." | "Grandma gives you a big warm hug." | "Say 'I love you too,' or give a hug back if you want one." |
 
 > Note: "what helps" intentionally cross-links to Brave Voice phrases and the
 > Calm Corner — the content is woven, not siloed.
@@ -144,7 +146,7 @@ More scenarios (waiting your turn, gentle hands, sharing snacks) in v1.2.
 Generated stories MUST:
 - Use the child's name and the parent-described situation.
 - Stay **gentle, hopeful, and resolution-positive** (the child copes/learns).
-- Center one of the 10 core emotions and a coping skill or brave phrase.
+- Center one of the 12 core emotions and a coping skill or brave phrase.
 - Be **short** (~6–10 simple sentences), present a feeling → a helpful
   action → a warm resolution.
 

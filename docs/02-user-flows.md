@@ -224,7 +224,7 @@ settings, recordings, reports, and the AI generator out of small hands.
      • Child: <select profile> → inserts their name
      • Situation: pick a template OR describe in a sentence
          ("Maya is nervous about the first day of swim class")
-     • Feeling focus: pick from the 10 emotions (optional)
+     • Feeling focus: pick from the 12 emotions (optional)
      • Tone: gentle / playful / reassuring
 ◆ Online?
    ├─ No  → "Connect to the internet to make a new story." (saved drafts still available)
