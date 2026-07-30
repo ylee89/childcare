@@ -57,6 +57,14 @@ export const Store = {
   child(id = state.activeChildId) { return state.children.find(c => c.id === id) || null; },
   childData(id = state.activeChildId) { return state.data[id] || (state.data[id] = blankChildData()); },
   setActiveChild(id) { state.activeChildId = id; persist(); },
+  // grown-ups can move a child up an age band as they grow (Settings → Child profile)
+  setAgeBand(id, ageBand) {
+    const c = this.child(id);
+    if (!c) return null;
+    c.ageBand = ageBand;
+    persist();
+    return c;
+  },
 
   setSetting(k, v) { state.settings[k] = v; persist(); },
 
