@@ -6,12 +6,24 @@
   --adult-bg:#F4F6FA; --adult-surface:#FFFFFF; --adult-primary:#4A6FA5; --adult-ink:#2A3140;
   --radius-tile:24px; --radius-card:20px; --pill:999px; --touch:88px;
   --shadow:0 6px 18px rgba(58,58,74,.12);
-  /* spacing scale (4px base) — every gap/padding below picks from these */
-  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px;
-  --gutter:20px;      /* side padding on EVERY screen */
-  --stack:18px;       /* vertical rhythm between blocks in a screen */
-  --nav-h:88px;       /* floating bottom nav */
-  --nav-space:124px;  /* bottom padding so the nav never covers content */
+  /* Spacing — the 8pt scale from docs/04-design-system.md §4.
+     Everything below picks from these; nothing hard-codes a pixel gap. */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  /* Semantic spacing: proximity does the grouping work.
+     tight  — inside one group (label + its control, chips in a row)
+     stack  — default rhythm between blocks on a screen
+     section— between things that are NOT related (a heading's block vs the next) */
+  --tight:var(--s3);      /* 12 */
+  --stack:var(--s5);      /* 24 */
+  --section:var(--s6);    /* 32 */
+  --gutter:var(--s5);     /* 24 — side padding on EVERY screen (docs/04 §4) */
+  --nav-h:88px;           /* floating bottom nav */
+  --nav-space:120px;      /* bottom padding so the nav never covers content */
+}
+/* Short screens get one density step down so a full board still fits without
+   scrolling — the ratios between tight/stack/section stay the same. */
+@media (max-height:700px){
+  :root{ --tight:var(--s2); --stack:var(--s4); --section:var(--s5); --gutter:var(--s4); --nav-space:104px; }
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;height:100%;font-family:"Nunito","Quicksand",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
@@ -24,7 +36,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
    gutter on the sides. Individual blocks below keep margin:0 so the stack
    stays the single source of spacing truth. */
 .screen{height:100%;overflow-y:auto;overscroll-behavior-y:contain;display:flex;flex-direction:column;
-  gap:var(--stack);padding:calc(env(safe-area-inset-top) + 12px) var(--gutter) var(--s6);animation:fade .25s;}
+  gap:var(--stack);padding:calc(env(safe-area-inset-top) + var(--s4)) var(--gutter) var(--section);animation:fade .25s;}
 .screen.pad{padding-bottom:var(--nav-space);}   /* screens with the floating nav */
 .screen.center-y{justify-content:center;}       /* single-moment screens (one message + buttons) */
 .grow{flex:1 1 auto;justify-content:center;}    /* let a block take the leftover height and centre in it */
@@ -32,7 +44,9 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .stack-center{display:flex;flex-direction:column;justify-content:center;gap:var(--stack);flex:1 1 auto;}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);margin:0 0 var(--s1);min-height:56px;}
+/* the top bar is its own region: full section break before the content below */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:var(--s2);
+  margin:0 0 calc(var(--section) - var(--stack));min-height:56px;}
 .topbar h1{font-size:24px;margin:0;font-weight:800;flex:1;text-align:center;line-height:1.2;}
 .back{font-size:24px;background:var(--cloud);border:none;border-radius:var(--pill);width:52px;height:52px;box-shadow:var(--shadow);cursor:pointer;flex:none;}
 .keybtn{font-size:20px;background:transparent;border:none;opacity:.45;cursor:pointer;flex:none;width:44px;height:44px;}
@@ -61,7 +75,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .splash-tag{font-size:16px;font-weight:700;color:#8a7f74;}
 @keyframes splashPop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
 
-.center-title{text-align:center;font-size:26px;margin:0;line-height:1.25;}
+.center-title{text-align:center;font-size:26px;margin:0 0 calc(var(--section) - var(--stack));line-height:1.25;}
 .sub{color:#7a7488;text-align:center;font-size:15px;margin:0;line-height:1.5;cursor:pointer;}
 .sub-left{text-align:left;font-size:14px;}   /* explanatory copy inside a grown-up card */
 
@@ -80,15 +94,16 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
   height:calc(var(--nav-h) + env(safe-area-inset-bottom));
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 var(--gutter) calc(var(--s5) + env(safe-area-inset-bottom));pointer-events:none;
+  padding:0 var(--gutter) calc(var(--s4) + env(safe-area-inset-bottom));pointer-events:none;
   background:linear-gradient(to top,var(--cream) 40%,rgba(255,248,239,0));}
 .nav .home,.nav .calm{pointer-events:auto;width:64px;height:64px;border-radius:50%;border:none;font-size:30px;
   box-shadow:var(--shadow);cursor:pointer;}
 .nav .home{background:var(--cloud);} .nav .calm{background:var(--calm-glow);}
 
 /* generic prompts/buttons */
-.prompt{font-size:23px;font-weight:800;text-align:center;margin:0;line-height:1.35;cursor:pointer;}
-.center{display:flex;flex-direction:column;align-items:center;gap:var(--s4);}
+.prompt{font-size:23px;font-weight:800;text-align:center;margin:0 0 calc(var(--section) - var(--stack));
+  line-height:1.35;cursor:pointer;}
+.center{display:flex;flex-direction:column;align-items:center;gap:var(--stack);}
 .pill-btn{background:var(--sky);color:#fff;border:none;border-radius:var(--pill);padding:16px 28px;font-size:18px;
   font-weight:800;box-shadow:var(--shadow);cursor:pointer;min-height:56px;}
 .pill-btn.ghost{background:var(--cloud);color:var(--ink);}
@@ -98,7 +113,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .pill-btn.block{display:block;width:100%;margin-top:0;}
 .pill-btn.spaced{margin-top:var(--s2);}   /* extra breathing room from the block above */
 /* group for 1..n buttons that belong together — never let two buttons touch */
-.rowbtns{display:flex;gap:var(--s3);flex-wrap:wrap;justify-content:center;margin:0;}
+.rowbtns{display:flex;gap:var(--s4);flex-wrap:wrap;justify-content:center;margin:0;}
 
 .toast{margin:0;background:#eee;border-radius:var(--radius-card);padding:16px 18px;text-align:center;
   font-size:17px;font-weight:800;line-height:1.35;}
@@ -107,6 +122,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 
 /* faces / mood */
 .faces{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);}
+.faces .face{aspect-ratio:1.05;}
 .faces .rowbtns{grid-column:1/-1;}   /* end-of-round buttons span the grid */
 .face{aspect-ratio:1;border:none;border-radius:24px;background:var(--cloud);box-shadow:var(--shadow);cursor:pointer;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform .12s;
@@ -140,7 +156,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .dot{width:14px;height:14px;border-radius:50%;background:#e2d9c8;} .dot.on{background:var(--sun);}
 
 /* menus */
-.menu{display:flex;flex-direction:column;gap:var(--s3);}
+.menu{display:flex;flex-direction:column;gap:var(--s4);}
 .menu-tile{background:var(--cloud);border:none;border-radius:var(--radius-card);padding:18px;box-shadow:var(--shadow);
   cursor:pointer;display:flex;align-items:center;gap:var(--s4);font-size:18px;font-weight:800;color:var(--ink);
   text-align:left;min-height:76px;line-height:1.3;}
@@ -148,7 +164,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 
 /* cards deck */
 .count{text-align:center;font-weight:800;margin:0;}
-.deck{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);}
+.deck{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);}
 .card3d{aspect-ratio:.78;border:none;border-radius:18px;background:var(--cloud);box-shadow:var(--shadow);cursor:pointer;
   position:relative;perspective:800px;padding:0;border-top:6px solid var(--c);}
 .card3d .c-front,.card3d .c-back{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
@@ -165,7 +181,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .scene{width:100%;aspect-ratio:16/10;border-radius:var(--radius-card);background:linear-gradient(135deg,#cdeafe,#e8d9ff);
   display:flex;align-items:center;justify-content:center;font-size:72px;box-shadow:var(--shadow);flex:none;}
 /* emoji-only scenes (empathy / good choice) stay an anchor, not half the screen */
-.scene:not(.illus){aspect-ratio:auto;height:168px;font-size:76px;}
+.scene:not(.illus){aspect-ratio:auto;height:clamp(112px,17vh,168px);font-size:clamp(56px,9vh,76px);}
 .scene.illus{font-size:0;padding:0;overflow:hidden;background:none;}
 .scene.illus svg{display:block;width:100%;height:100%;border-radius:var(--radius-card);}
 /* gentle life in story scenes (composes via translate/rotate props, not transform) */
@@ -211,10 +227,11 @@ body[data-mode="adult"]{background:var(--adult-bg);}
   justify-content:center;gap:var(--s2);padding:var(--s3);line-height:1.3;}
 .calm-tile .ico{font-size:42px;}
 /* a calm activity is the whole screen: centre it instead of pinning it to the top */
+.calm-stage:empty{display:none;}   /* while the menu is up, don't claim half the height */
 .calm-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  flex:1 1 auto;gap:var(--s7);margin:0;padding-bottom:var(--s6);}
+  flex:1 1 auto;gap:var(--section);margin:0;padding-bottom:var(--section);}
 .balloon{width:120px;height:150px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
-  background:radial-gradient(circle at 35% 30%,#ffd1e8,#ff8fc7);margin:var(--s5) auto;transition:transform 4s ease-in-out;}
+  background:radial-gradient(circle at 35% 30%,#ffd1e8,#ff8fc7);margin:var(--s4) auto;transition:transform 4s ease-in-out;}
 .balloon.in{transform:scale(1.4);}
 .breath-label{font-size:24px;font-weight:800;text-align:center;color:var(--calm-text);margin:0;line-height:1.4;
   max-width:22ch;}
@@ -224,12 +241,12 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .field{display:flex;flex-direction:column;gap:var(--s2);}
 .flabel{display:block;font-weight:800;margin:0 var(--s1);}
 .textinput{width:100%;padding:14px;border-radius:14px;border:2px solid #e7ddca;font-size:17px;min-height:56px;}
-.chiprow{display:flex;flex-wrap:wrap;gap:var(--s3);}
+.chiprow{display:flex;flex-wrap:wrap;gap:var(--tight);}
 .chip{border:2px solid #e7ddca;background:var(--cloud);border-radius:var(--pill);padding:12px 18px;font-size:16px;font-weight:800;cursor:pointer;}
 .chip.big{font-size:30px;padding:8px 12px;} .chip.on{border-color:var(--sky);background:#e9f5ff;}
 
 /* sticker book */
-.card-lite{background:var(--cloud);border-radius:var(--radius-card);padding:18px;box-shadow:var(--shadow);margin:0;
+.card-lite{background:var(--cloud);border-radius:var(--radius-card);padding:var(--stack);box-shadow:var(--shadow);margin:0;
   display:flex;flex-direction:column;gap:var(--s3);}
 .card-lite h3{margin:0;font-size:16px;}
 .mini-deck{display:flex;flex-wrap:wrap;gap:var(--s2);font-size:26px;} .mini.off{opacity:.4;}
@@ -240,7 +257,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 /* gate */
 .gate-eq{text-align:center;font-size:34px;font-weight:800;margin:0;}
 .gate-answer{text-align:center;font-size:30px;font-weight:800;color:var(--adult-primary);min-height:40px;margin:0;}
-.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3);max-width:280px;margin:0 auto;}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--tight);max-width:280px;margin:0 auto;}
 .num{font-size:24px;font-weight:800;padding:18px;border:none;border-radius:16px;background:var(--cloud);box-shadow:var(--shadow);cursor:pointer;}
 .numpad .num:last-child{grid-column:2;}
 .hold{display:block;width:100%;max-width:300px;margin:0 auto;padding:18px;border:none;border-radius:var(--pill);
@@ -251,7 +268,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .adult{color:var(--adult-ink);}
 .adult .topbar h1{color:var(--adult-ink);}
 .switcher{font-size:15px;font-weight:800;padding:10px;border-radius:10px;border:2px solid #d9e0ec;background:#fff;color:var(--adult-primary);}
-.card{background:var(--adult-surface);border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin:0;
+.card{background:var(--adult-surface);border-radius:16px;padding:var(--stack);box-shadow:0 2px 8px rgba(0,0,0,.06);margin:0;
   display:flex;flex-direction:column;gap:var(--s3);}
 .card h3{margin:0;font-size:16px;color:var(--adult-primary);}
 .stat{font-weight:700;font-size:15px;margin:0;line-height:1.45;}
@@ -261,3 +278,23 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .insight{background:#EEF4FF;border-radius:12px;padding:16px;font-size:14px;line-height:1.5;margin:0;}
 .toggle{display:flex;align-items:center;gap:var(--s3);font-size:16px;font-weight:700;padding:var(--s1) 0;min-height:44px;}
 .toggle input{width:24px;height:24px;flex:none;}
+
+/* ---------------------------------------------------------------------------
+   Compact density for short screens (≤700px tall, e.g. 360×640).
+   The spacing tokens already stepped down at the top of this file; these rules
+   shrink the few *fixed-size* ornaments so a whole screen still fits without
+   asking a 4-year-old to scroll for the options.
+   --------------------------------------------------------------------------- */
+@media (max-height:700px){
+  .mascot{width:76px;height:76px;font-size:42px;}
+  .brand-name{font-size:22px;} .brand-logo{width:28px;height:28px;}
+  .tile{padding:12px 8px;} .tile .ico{font-size:32px;}
+  .prompt{font-size:20px;}
+  .faces .face{aspect-ratio:1.35;} .faces .fe{font-size:40px;}
+  .target .tface{font-size:46px;}
+  .num{padding:12px;font-size:22px;}
+  .gate-eq{font-size:28px;} .gate-answer{font-size:26px;min-height:32px;} .hold{padding:14px;}
+  .scene:not(.illus){height:96px;font-size:52px;}
+  .mic{width:120px;height:120px;font-size:48px;}
+  .menu-tile{min-height:64px;padding:14px;}
+}
