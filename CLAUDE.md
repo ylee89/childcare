@@ -65,7 +65,8 @@ build step. Lives in `app/`. Repo: `ylee89/childcare` (public).
 - 6 child worlds: Emotion Explorer (mood check-in, Face Match, Name That Feeling,
   flippable cards), Story Adventures, Brave Voice (mic record/playback, local
   only), Calm Corner (balloon breathing, glitter jar, counting, quiet), Empathy
-  Lab, Good Choice. Parent gate (hold+math) → Dashboard + Settings.
+  Lab, Good Choice. Parent gate (hold+math) → Dashboard + Settings
+  (Settings → Child profile edits the age band, which sets the check-in set).
 - **Accessibility:** every choice auto-narrated then tappable to re-read (🔊);
   story script read aloud; in-story record-yourself widget. Non-readers covered.
 - Branding: splash + home wordmark + mascot Lumi.

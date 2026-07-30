@@ -137,17 +137,21 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.locator('.menu-tile', { hasText: 'Face Match' }).click();
   await page.waitForSelector('.target b');
   // play the full game by always tapping the correct face
+  const matched = new Set(); // targets are random, so track what we actually matched
   for (let r = 0; r < 6; r++) {
     const finished = await page.locator('.pill-btn', { hasText: 'Play again' }).count();
     if (finished) break;
     const target = (await page.locator('.target b').innerText()).toLowerCase();
+    matched.add(target);
     const btn = page.locator('.faces .face', { has: page.locator('small', { hasText: new RegExp('^' + target + '$') }) }).first();
     await btn.click();
     await sleep(1250);
   }
   ok('Face Match reaches a finish state', await page.locator('.pill-btn', { hasText: 'Play again' }).count() === 1);
-  const cardsAfter = await page.evaluate(() => window.FeelFriends.Store.childData().cards.length);
-  ok('feeling cards were collected', cardsAfter >= 4, 'cards=' + cardsAfter);
+  const collected = await page.evaluate(() => window.FeelFriends.Store.childData().cards);
+  ok('every matched feeling became a card', [...matched].every(k => collected.includes(k)),
+     'matched=' + [...matched] + ' cards=' + collected);
+  ok('feeling cards were collected', collected.length >= matched.size, 'cards=' + collected.length);
   const stickersAfter = await page.evaluate(() => window.FeelFriends.Store.childData().stickers.length);
   ok('a sticker was earned for finishing', stickersAfter >= 1);
 
@@ -317,8 +321,19 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   const narrOff = await page.evaluate(() => window.FeelFriends.Store.settings.narration === false);
   ok('narration setting toggled off in store', narrOff);
 
+  // grown-ups can move the child up an age band as they grow
+  ok('settings offers the age bands', await page.locator('.chiprow .chip').count() === 3);
+  await page.locator('.chiprow .chip', { hasText: '3-4' }).click();
+  ok('age band saved to store', await page.evaluate(() => window.FeelFriends.Store.child().ageBand === '3-4'));
+  ok('card explains the effect', /offers 6 feelings/.test(await page.innerText('.card')));
+  await page.evaluate(() => window.FeelFriends.go('checkin'));
+  await page.waitForSelector('.moodgrid');
+  ok('check-in follows the new age band', await page.locator('.moodgrid .face').count() === 6);
+  await page.evaluate(() => { window.FeelFriends.Store.setAgeBand(window.FeelFriends.Store.child().id, '5-6'); });
+
   // ---- 13. Persistence across reload ----
   sec('13. Data persists across reload (local-first)');
+  const cardsBeforeReload = await page.evaluate(() => window.FeelFriends.Store.childData().cards.length);
   await page.reload({ waitUntil: 'networkidle' });
   await page.waitForFunction(() => !!window.FeelFriends);
   const persisted = await page.evaluate(() => {
@@ -327,7 +342,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   });
   ok('still onboarded after reload', persisted.onboarded === true);
   ok('child name persisted', persisted.name === 'Aria');
-  ok('cards persisted', persisted.cards >= 4, 'cards=' + persisted.cards);
+  ok('cards persisted', persisted.cards === cardsBeforeReload && persisted.cards > 0,
+     'before=' + cardsBeforeReload + ' after=' + persisted.cards);
   ok('check-ins persisted', persisted.checkins >= 1);
   ok('did NOT re-show onboarding', await page.locator('text=Welcome to Feel Friends').count() === 0);
 

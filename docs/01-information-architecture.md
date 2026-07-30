@@ -104,6 +104,7 @@ Feel Friends
     │   └── My Stories (saved, playable in Child Mode)
     ├── Children (add / edit / switch profiles)
     ├── Settings
+    │   ├── Child profile (age band — sets the check-in feeling set)
     │   ├── Audio & narration (voice, volume, captions)
     │   ├── Accessibility (text size, reduce motion, high contrast)
     │   ├── Microphone & recording (on/off, auto-delete)
@@ -179,6 +180,9 @@ the 88pt touch target in [`04-design-system.md`](04-design-system.md)):
 The games (Face Match, Name That Feeling, Empathy Lab) always draw on all 12 —
 they show 4 options per round, so there is no choice overload — which keeps
 every feeling card collectible at any age.
+
+The band is set at onboarding and editable any time in **Settings → Child
+profile**, so a grown-up can move the child up as they grow.
 
 ---
 

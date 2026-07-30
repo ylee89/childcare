@@ -63,6 +63,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 
 .center-title{text-align:center;font-size:26px;margin:0;line-height:1.25;}
 .sub{color:#7a7488;text-align:center;font-size:15px;margin:0;line-height:1.5;cursor:pointer;}
+.sub-left{text-align:left;font-size:14px;}   /* explanatory copy inside a grown-up card */
 
 /* home grid */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);}
