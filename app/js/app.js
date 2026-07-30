@@ -2,7 +2,7 @@
 import { Store } from './store.js';
 import { Audio } from './audio.js';
 import {
-  EMOTIONS, emo, SITUATIONS, STORIES, PHRASES, phrase,
+  EMOTIONS, emo, checkinEmotions, SITUATIONS, STORIES, PHRASES, phrase,
   EMPATHY, CHOICES, MISSIONS, AVATARS, AGE_BANDS,
 } from './content.js';
 import { storyScene, storyOutcomeArt, mascot } from './illustrations.js';
@@ -223,8 +223,10 @@ route('home', () => {
 /* ===================================================================== */
 route('checkin', () => {
   const wrap = h('div', { class: 'screen' }); // no floating nav here, so no nav room needed
-  const grid = h('div', { class: 'moodgrid' });
-  EMOTIONS.forEach(e => {
+  // fewer, bigger faces for the youngest band (see checkinEmotions in content.js)
+  const choices = checkinEmotions(Store.child()?.ageBand);
+  const grid = h('div', { class: 'moodgrid' + (choices.length <= 6 ? ' roomy' : '') });
+  choices.forEach(e => {
     grid.append(h('button', { class: 'face', style: `--c:${e.color}`, onclick: () => {
       Store.checkIn(e.key);
       Store.collectCard(e.key);

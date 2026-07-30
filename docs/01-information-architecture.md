@@ -166,6 +166,20 @@ reports — for consistency. Each emotion has: a name, a friend/face, a color,
 a sound, a short kid-definition, and an example situation. Full definitions in
 [`08-content-library.md`](08-content-library.md).
 
+**Choice load scales with the age band.** The daily check-in offers a subset so
+the youngest children aren't picking from 12 faces at once (and so tiles clear
+the 88pt touch target in [`04-design-system.md`](04-design-system.md)):
+
+| Age band | Check-in offers | Layout |
+|---|---|---|
+| 3–4 | happy · sad · angry · scared · excited · loved (6) | 3 per row, biggest tiles |
+| 4–5 | + frustrated · proud (8) | 4 per row |
+| 5–6 | the full canonical 12 | 4 per row |
+
+The games (Face Match, Name That Feeling, Empathy Lab) always draw on all 12 —
+they show 4 options per round, so there is no choice overload — which keeps
+every feeling card collectible at any age.
+
 ---
 
 ## 5. Data model (conceptual)

@@ -36,7 +36,8 @@ build step. Lives in `app/`. Repo: `ylee89/childcare` (public).
 - `js/store.js` — local-first state in localStorage (profiles, checkins, cards,
   stickers, events, recordings). Nothing uploaded.
 - `js/audio.js` — Web Speech narration + WebAudio SFX. KEY details below.
-- `js/content.js` — SEL curriculum data (12 emotions, STORIES, PHRASES, EMPATHY,
+- `js/content.js` — SEL curriculum data (12 emotions + `checkinEmotions()`
+  age-band subsets for the check-in, STORIES, PHRASES, EMPATHY,
   CHOICES, MISSIONS).
 - `js/illustrations.js` — inline SVG: `storyScene(id)`, `storyOutcomeArt(good)`,
   `mascot(size)`. Cute CREATURE characters (bear/bunny/fox/cat) + mascot "Lumi"

@@ -99,7 +99,30 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   // ---- 2. Daily mood check-in (auto-prompts) ----
   sec('2. Mood check-in records a feeling');
   await page.waitForSelector('.moodgrid', { timeout: 3000 });
-  ok('check-in shows all 12 emotions', await page.locator('.moodgrid .face').count() === 12);
+  ok('check-in shows all 12 emotions (age 5-6)', await page.locator('.moodgrid .face').count() === 12);
+  // the youngest band gets a smaller, bigger-tiled set (choice load scales with age)
+  const bandCounts = await page.evaluate(async () => {
+    const S = window.FeelFriends.Store, out = {};
+    const id = S.child().id;
+    for (const band of ['3-4', '4-5', '5-6']) {
+      S.state.children.find(c => c.id === id).ageBand = band;
+      window.FeelFriends.go('checkin');
+      out[band] = {
+        faces: document.querySelectorAll('.moodgrid .face').length,
+        roomy: !!document.querySelector('.moodgrid.roomy'),
+        tile: Math.round(document.querySelector('.moodgrid .face').getBoundingClientRect().width),
+      };
+    }
+    S.state.children.find(c => c.id === id).ageBand = '5-6';
+    window.FeelFriends.go('checkin');
+    return out;
+  });
+  ok('age 3-4 check-in offers 6 feelings', bandCounts['3-4'].faces === 6, JSON.stringify(bandCounts['3-4']));
+  ok('age 4-5 check-in offers 8 feelings', bandCounts['4-5'].faces === 8, JSON.stringify(bandCounts['4-5']));
+  ok('age 5-6 check-in offers all 12', bandCounts['5-6'].faces === 12, JSON.stringify(bandCounts['5-6']));
+  ok('age 3-4 tiles are the biggest', bandCounts['3-4'].roomy && bandCounts['3-4'].tile > bandCounts['5-6'].tile,
+     JSON.stringify(bandCounts));
+  await page.waitForSelector('.moodgrid');
   await page.locator('.moodgrid .face', { hasText: 'happy' }).click();
   await page.waitForSelector('.prompt');
   ok('check-in gives validating message', /it's okay to feel happy/i.test(await page.locator('.prompt').innerText()));

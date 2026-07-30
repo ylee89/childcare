@@ -121,6 +121,10 @@ body[data-mode="adult"]{background:var(--adult-bg);}
   border-radius:18px;padding:var(--s2) var(--s1);gap:var(--s1);}
 .moodgrid .face .fe{font-size:38px;line-height:1;}
 .moodgrid .face small{font-size:12px;max-width:100%;line-height:1.15;overflow-wrap:anywhere;}
+/* the 6-feeling set (ages 3–4): 3 per row, so tiles clear the 88pt target */
+.moodgrid.roomy .face{flex-basis:calc((100% - 2 * var(--s3)) / 3);}
+.moodgrid.roomy .face .fe{font-size:46px;}
+.moodgrid.roomy .face small{font-size:14px;}
 /* very narrow phones (≤320px): same 4 per row, just scaled down so feeling
    words still fit on one line */
 @media (max-width:339px){
