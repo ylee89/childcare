@@ -1,6 +1,8 @@
 // Feel Friends — persistent state (local-first, offline).
 // All child data lives on-device in localStorage. Nothing is uploaded.
 
+import { EMOTIONS } from './content.js';
+
 const KEY = 'feelfriends.v1';
 
 const DEFAULT = {
@@ -134,8 +136,8 @@ export const Store = {
     const hard = checks.filter(c => ['sad','angry','scared','nervous','lonely','frustrated'].includes(c.emotion));
     if (hard.length >= 3)
       return `${this.child(id).name} logged several hard feelings this week. Try a Calm Corner breathing activity together, and talk about what helped.`;
-    if (d.cards.length < 10)
-      return `${this.child(id).name} has discovered ${d.cards.length} of 10 feeling cards. Play Face Match in Emotion Explorer to meet the rest.`;
+    if (d.cards.length < EMOTIONS.length)
+      return `${this.child(id).name} has discovered ${d.cards.length} of ${EMOTIONS.length} feeling cards. Play Face Match in Emotion Explorer to meet the rest.`;
     return `${this.child(id).name} is exploring lots of feelings — great! Try the Brave Voice phrases together in real situations this week.`;
   },
 

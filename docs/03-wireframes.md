@@ -131,7 +131,7 @@ says its own feeling, then re-prompts. No buzzer, no minus.
 │  │frust│ │ ?? │ │scar│ │ ?? │    │
 │  └────┘ └────┘ └────┘ └────┘    │
 │  ┌────┐ ┌────┐                  │
-│  │🤩 │ │😕 │   8 / 10 found     │  ← count framed as discovery,
+│  │🤩 │ │😕 │   8 / 12 found     │  ← count framed as discovery,
 │  │excit│ │conf│                  │     not a quota/score
 │  └────┘ └────┘                  │
 │                                  │

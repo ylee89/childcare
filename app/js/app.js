@@ -371,7 +371,7 @@ route('cards', () => {
   });
   const n = Store.childData().cards.length;
   wrap.append(topbar('My Feeling Cards', { back: 'emotion' }),
-    h('div', { class: 'count' }, `${n} / 10 feelings found`), deck, persistentNav());
+    h('div', { class: 'count' }, `${n} / ${EMOTIONS.length} feelings found`), deck, persistentNav());
   return wrap;
 });
 
@@ -708,7 +708,7 @@ route('sticker', () => {
     shelf.append(h('div', { class: 'sticker' }, h('span', { class: 'se' }, stickerEmoji[id] || '⭐'), h('small', {}, '×' + n))));
 
   wrap.append(topbar('My Collection', { back: 'home' }),
-    h('div', { class: 'card-lite' }, h('h3', {}, `Feeling cards: ${d.cards.length}/10`),
+    h('div', { class: 'card-lite' }, h('h3', {}, `Feeling cards: ${d.cards.length}/${EMOTIONS.length}`),
       h('div', { class: 'mini-deck' }, ...EMOTIONS.map(e => h('span', { class: 'mini' + (Store.hasCard(e.key) ? '' : ' off') }, Store.hasCard(e.key) ? e.emoji : '❓')))),
     h('div', { class: 'card-lite' }, h('h3', {}, 'Stickers I earned'), shelf),
     h('div', { class: 'card-lite' }, h('h3', {}, 'Friends I met'),
@@ -768,7 +768,7 @@ route('dashboard', () => {
       h('p', { class: 'stat' }, `${s.days} days active · ${s.worlds} worlds · ${s.checkins} check-ins`)),
     h('div', { class: 'card' }, h('h3', {}, 'Feelings this week'), emoBars),
     h('div', { class: 'card' }, h('h3', {}, 'Progress'),
-      h('p', { class: 'stat' }, `🃏 ${s.cards}/10 feeling cards · ⭐ ${s.stickers} stickers`)),
+      h('p', { class: 'stat' }, `🃏 ${s.cards}/${EMOTIONS.length} feeling cards · ⭐ ${s.stickers} stickers`)),
     h('div', { class: 'card' }, h('h3', {}, '💡 Areas to support'),
       h('div', { class: 'insight' }, Store.insight()),
       h('button', { class: 'pill-btn adult block', onclick: () => go('brave') }, 'Open Brave Voice →')),

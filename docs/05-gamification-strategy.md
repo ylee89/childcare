@@ -96,7 +96,7 @@ refuse to use, and why.
 
 | Reward | Reinforces |
 |---|---|
-| Emotion Cards | Naming & understanding the 10 emotions |
+| Emotion Cards | Naming & understanding the 12 emotions |
 | Brave Voice sticker | Practicing assertive communication & boundaries |
 | Calm sticker | Self-regulation as a repeatable habit |
 | Kind sticker / Missions | Empathy & prosocial behavior in the real world |

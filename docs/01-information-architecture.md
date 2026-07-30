@@ -60,7 +60,7 @@ Feel Friends
 │   │   ├── Face Match game
 │   │   ├── Name That Feeling game
 │   │   ├── Feeling Sounds / situations game
-│   │   └── Emotion Card Collection (deck of 10)
+│   │   └── Emotion Card Collection (deck of 12)
 │   │
 │   ├── 2. Story Adventures
 │   │   ├── Story picker (6 situations)
@@ -151,15 +151,15 @@ Adults get a familiar pattern:
 | **World** | A top-level feature area in Child Mode | Calm Corner |
 | **Activity** | A single playable unit inside a world | Balloon Breathing |
 | **Round / Scene** | One step within an activity | One story choice point |
-| **Emotion** | One of the 10 core feelings | "frustrated" |
+| **Emotion** | One of the 12 core feelings | "frustrated" |
 | **Card** | A collectible representing an emotion | Frustrated card |
 | **Sticker** | A non-scored reward for participation | "Brave Voice" sticker |
 | **Friend** | A recurring character/guide | Mochi the bear |
 | **Check-in** | A daily mood self-report | "Today I feel…" |
 
-### The 10 core emotions (canonical set & order)
+### The 12 core emotions (canonical set & order)
 
-`happy · sad · angry · frustrated · nervous · scared · proud · lonely · excited · confused`
+`happy · sad · angry · frustrated · nervous · scared · proud · lonely · excited · confused · surprised · loved`
 
 This ordering and naming is used **everywhere** — cards, check-ins, games,
 reports — for consistency. Each emotion has: a name, a friend/face, a color,

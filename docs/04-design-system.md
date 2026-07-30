@@ -59,7 +59,7 @@ Cleaner, more "adult/utility," so the switch is unmistakable.
 
 ### Emotion colors (canonical — reused everywhere)
 
-Each of the 10 emotions has one fixed color so children build a consistent
+Each of the 12 emotions has one fixed color so children build a consistent
 color↔feeling association across cards, check-ins, and charts.
 
 | Emotion | Token | Hex |
@@ -74,6 +74,8 @@ color↔feeling association across cards, check-ins, and charts.
 | lonely | `--emo-lonely` | `#8FB0C9` (muted slate-blue) |
 | excited | `--emo-excited` | `#FF8FC7` (bright pink) |
 | confused | `--emo-confused` | `#C0B7A8` (warm grey) |
+| surprised | `--emo-surprised` | `#6FD3D8` (aqua) |
+| loved | `--emo-loved` | `#E97BA8` (rose) |
 
 > Color is **never the only signal**. Every emotion also has a distinct face,
 > a label, and a sound (accessibility + colorblind safety — see §9).
@@ -171,7 +173,7 @@ A short catalog (props/states summarized). All have a **narrated** state.
 
 - **Style:** rounded, thick-stroke, flat-with-soft-shadow, high color contrast.
 - **Faces:** clear, slightly exaggerated expressions so emotions read instantly
-  to a 3-year-old. Consistent face structure across the 10 emotions (same
+  to a 3-year-old. Consistent face structure across the 12 emotions (same
   character family), varying only expression — this teaches "same person,
   different feeling."
 - **Diversity:** human characters and situations represent varied skin tones,

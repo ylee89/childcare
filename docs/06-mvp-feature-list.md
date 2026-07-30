@@ -46,7 +46,7 @@ Legend: ✅ Must · 🔶 included in lite form · 🔷 deferred
       reduce-motion, high-contrast, text scaling).
 
 ### 1. Emotion Explorer (core)
-- [ ] **Daily Mood Check-in** — 10 emotions, optional intensity, validating
+- [ ] **Daily Mood Check-in** — 12 emotions, optional intensity, validating
       response, soft Calm Corner suggestion for hard feelings, fully skippable.
 - [ ] **Face Match** game — no-fail, gentle redirect, scales rounds by age band.
 - [ ] **Name That Feeling** — situation → pick the feeling.

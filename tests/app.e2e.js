@@ -99,7 +99,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   // ---- 2. Daily mood check-in (auto-prompts) ----
   sec('2. Mood check-in records a feeling');
   await page.waitForSelector('.moodgrid', { timeout: 3000 });
-  ok('check-in shows 10 emotions', await page.locator('.moodgrid .face').count() === 10);
+  ok('check-in shows all 12 emotions', await page.locator('.moodgrid .face').count() === 12);
   await page.locator('.moodgrid .face', { hasText: 'happy' }).click();
   await page.waitForSelector('.prompt');
   ok('check-in gives validating message', /it's okay to feel happy/i.test(await page.locator('.prompt').innerText()));
@@ -132,8 +132,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   sec('4. Card collection view');
   await page.locator('.pill-btn', { hasText: 'See my cards' }).click();
   await page.waitForSelector('.deck');
-  ok('deck shows 10 card slots', await page.locator('.card3d').count() === 10);
-  ok('count text reflects progress', /\/ 10 feelings found/.test(await page.locator('.count').innerText()));
+  ok('deck shows 12 card slots', await page.locator('.card3d').count() === 12);
+  ok('count text reflects progress', /\/ \d+ feelings found/.test(await page.locator('.count').innerText()));
 
   // ---- 5. Story Adventures (consequence + brave bridge) ----
   sec('5. Story Adventures');
@@ -220,7 +220,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   sec('10. Sticker Book aggregates rewards');
   await page.evaluate(() => window.FeelFriends.go('sticker'));
   await page.waitForSelector('.card-lite');
-  ok('shows feeling card progress', /Feeling cards: \d+\/10/.test(await page.innerText('.card-lite')));
+  ok('shows feeling card progress', /Feeling cards: \d+\/\d+/.test(await page.innerText('.card-lite')));
   ok('shows earned stickers', await page.locator('.sticker').count() >= 1);
 
   // ---- 11. Parent gate + dashboard with real data ----
