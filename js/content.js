@@ -12,6 +12,8 @@ export const EMOTIONS = [
   { key:'lonely',     emoji:'😞', color:'#8FB0C9', def:"Lonely is when you wish someone was with you.", helps:"You can ask, 'Can I play too?'" },
   { key:'excited',    emoji:'🤩', color:'#FF8FC7', def:"Excited is a bouncy, can't-wait feeling!", helps:"Wiggle it out, then take a breath to feel calm-excited." },
   { key:'confused',   emoji:'😕', color:'#C0B7A8', def:"Confused is when things don't make sense yet.", helps:"That's okay! Ask a question: 'Can you show me?'" },
+  { key:'surprised',  emoji:'😮', color:'#6FD3D8', def:"Surprised is a quick 'oh!' feeling when something happens you didn't expect.", helps:"Take one breath. You can say, 'Wow, I didn't know that!'" },
+  { key:'loved',      emoji:'🥰', color:'#E97BA8', def:"Loved is a warm, cozy feeling when someone cares about you.", helps:"Say 'I love you too,' or give a hug back if you want one." },
 ];
 export const emo = (k) => EMOTIONS.find(e => e.key === k);
 
@@ -23,6 +25,8 @@ export const SITUATIONS = [
   { text:"You tied your shoes all by yourself!", answer:'proud' },
   { text:"Nobody is playing with you right now.", answer:'lonely' },
   { text:"Someone knocked over your blocks on purpose.", answer:'angry' },
+  { text:"You opened a box and a puppy jumped out!", answer:'surprised' },
+  { text:"Grandma gives you a big warm hug.", answer:'loved' },
 ];
 
 // Story Adventures — branching scenarios
