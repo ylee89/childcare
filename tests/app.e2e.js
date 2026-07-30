@@ -242,6 +242,22 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.waitForSelector('.calm-grid');
   const calmEvents = await page.evaluate(() => window.FeelFriends.Store.childData().events.filter(e => e.world === 'calm').length);
   ok('calm session logged', calmEvents >= 1);
+  // the trailing emoji is lifted out of the sentence into its own icon, a
+  // --stack above it — inside the text it wrapped into a crammed orphan line
+  await page.locator('.calm-tile', { hasText: 'Counting' }).click();
+  await page.waitForSelector('.calm-line');
+  const calmLine = await page.evaluate(() => {
+    const ico = document.querySelector('.calm-ico').getBoundingClientRect();
+    const t = document.querySelector('.breath-label');
+    return { gap: Math.round(t.getBoundingClientRect().top - ico.bottom), text: t.textContent };
+  });
+  ok('calm icon sits a stack above the sentence', calmLine.gap === 24, JSON.stringify(calmLine));
+  ok('calm sentence carries no trailing emoji', !/\p{Extended_Pictographic}/u.test(calmLine.text), calmLine.text);
+  await page.locator('.pill-btn', { hasText: 'Next' }).click();
+  const calmStep2 = await page.innerText('.breath-label');
+  ok('counting advances to the next step', calmStep2 !== calmLine.text, calmStep2);
+  await page.evaluate(() => window.FeelFriends.go('calm'));
+  await page.waitForSelector('.calm-grid');
 
   // ---- 8. Empathy Lab ----
   sec('8. Empathy Lab');
