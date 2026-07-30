@@ -533,7 +533,10 @@ route('calm', () => {
   const wrap = h('div', { class: 'screen calm' });
   wrap.append(
     h('div', { class: 'topbar' }, h('button', { class: 'back', onclick: () => go('home') }, '←'),
-      h('h1', {}, 'Calm Corner'), h('span')),
+      h('h1', {}, 'Calm Corner'), h('span')));
+  // the menu is centred in the space under the top bar, exactly like the
+  // activities that replace it — so nothing here clings to the top edge
+  const menu = h('div', { class: 'stack-center' },
     narrated('Pick a calm thing.'),
     h('div', { class: 'calm-grid' },
       calmTile('🎈', 'Balloon Breathing', balloon),
@@ -541,14 +544,14 @@ route('calm', () => {
       calmTile('🔢', 'Counting Calm', counting),
       calmTile('🎧', 'Quiet Listen', quiet)));
   const stageHost = h('div', { class: 'calm-stage' });
-  wrap.append(stageHost);
+  wrap.append(menu, stageHost);
 
   function calmTile(ico, label, fn) {
     return h('button', { class: 'calm-tile', onclick: () => { Audio.speak(label); fn(); } },
       h('span', { class: 'ico' }, ico), label);
   }
-  function clearMenu(title) {
-    wrap.querySelectorAll('.prompt,.calm-grid').forEach(n => n.remove());
+  function clearMenu() {
+    menu.remove();
     stageHost.innerHTML = '';
   }
   function backBtn() {

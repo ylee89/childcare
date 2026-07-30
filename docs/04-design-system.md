@@ -114,10 +114,28 @@ Dynamic Type up to 200%.
 ## 4. Spacing, shape & layout
 
 - **Spacing scale (8pt base):** 4, 8, 12, 16, 24, 32, 48, 64.
+- **Three semantic steps** — spacing carries meaning (proximity = "these belong
+  together"), so screens pick a step rather than a number:
+
+  | Token | Value | Use |
+  |---|---|---|
+  | `--tight` | 12 | inside one group: a label and its control, chips in a row |
+  | `--stack` | 24 | default rhythm between blocks on a screen |
+  | `--section` | 32 | between unrelated things — and under a heading, so a title never looks glued to the content it introduces |
+
+  A heading (`.prompt`, `.center-title`) and the top bar both carry a
+  `--section` gap below them; everything else falls back to `--stack`.
+- **Screen layout:** every screen is one vertical flex stack — the gap is the
+  single source of spacing truth and blocks carry `margin: 0`. Content that
+  would otherwise cling to the top bar (Calm Corner menu, mood check-in) sits in
+  a `.stack-center` block that centres in the leftover height.
+- **Compact density (≤ 700px tall):** the three steps each drop one notch
+  (8 / 16 / 24) and fixed ornaments (mascot, scene art, numpad) shrink, so a
+  whole screen still fits — a young child should never scroll to see the options.
 - **Corner radius:** generous and soft — tiles `24px`, buttons `999px` (pill),
   cards `20px`. No sharp corners anywhere in Child Mode.
 - **Layout grid:** single-column priority; child world tiles in a forgiving
-  2-column grid with ≥ 24px gutters.
+  2-column grid with ≥ 24px gutters. Screen side gutters are `--stack` (24).
 - **Safe areas:** respect notches/home indicators; persistent 🏠/🫧 sit above
   the home indicator.
 

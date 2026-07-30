@@ -100,6 +100,14 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   sec('2. Mood check-in records a feeling');
   await page.waitForSelector('.moodgrid', { timeout: 3000 });
   ok('check-in shows all 12 emotions (age 5-6)', await page.locator('.moodgrid .face').count() === 12);
+  // spacing contract: a heading is a --section (32px) away from its content,
+  // which is more than the --stack (24px) rhythm between sibling blocks
+  const headGap = await page.evaluate(() => {
+    const q = document.querySelector('.prompt').getBoundingClientRect();
+    const g = document.querySelector('.moodgrid').getBoundingClientRect();
+    return Math.round(g.top - q.bottom);
+  });
+  ok('question sits a section apart from the faces', headGap === 32, 'gap=' + headGap);
   // the youngest band gets a smaller, bigger-tiled set (choice load scales with age)
   const bandCounts = await page.evaluate(async () => {
     const S = window.FeelFriends.Store, out = {};
@@ -199,6 +207,17 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   sec('7. Calm Corner regulation');
   await page.evaluate(() => window.FeelFriends.go('calm'));
   ok('calm mode palette active', await mode() === 'calm');
+  // the menu sits centred in the space under the top bar, not glued to it
+  const calmBalance = await page.evaluate(() => {
+    const bar = document.querySelector('.topbar').getBoundingClientRect();
+    const menu = document.querySelector('.stack-center');
+    // .stack-center fills the leftover height, so measure its CONTENT, not the box
+    const first = menu.firstElementChild.getBoundingClientRect();
+    const last = menu.lastElementChild.getBoundingClientRect();
+    return { above: Math.round(first.top - bar.bottom), below: Math.round(window.innerHeight - last.bottom) };
+  });
+  ok('calm menu is centred under the top bar', Math.abs(calmBalance.above - calmBalance.below) <= 40
+     && calmBalance.above > 40, JSON.stringify(calmBalance));
   await page.locator('.calm-tile', { hasText: 'Balloon Breathing' }).click();
   await page.waitForSelector('.balloon');
   ok('breathing balloon shows', await page.locator('.balloon').count() === 1);
@@ -275,7 +294,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.evaluate(() => { window.__spoken = []; window.FeelFriends.go('stories'); });
   await page.locator('.menu-tile', { hasText: 'Sharing' }).click();
   await page.waitForSelector('.choice');
-  await sleep(500); // let narrateScene's queued speech fire
+  // narrateScene chains utterances on onend, so wait for the queue to drain
+  await page.waitForFunction(() => window.__spoken.filter(t => /^Choice \d/.test(t)).length >= 2,
+    null, { timeout: 5000 }).catch(() => {});
   const spokenStory = await page.evaluate(() => window.__spoken.slice());
   // the full content script (scene text + question) must be read as one line
   ok('story narrates the full script (scene + question)',
@@ -307,7 +328,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   // Good Choice section also narrates options
   await page.evaluate(() => { window.__spoken = []; window.FeelFriends.go('choice'); });
   await page.waitForSelector('.choice');
-  await sleep(500);
+  await page.waitForFunction(() => window.__spoken.filter(t => /^Choice \d/.test(t)).length >= 2,
+    null, { timeout: 5000 }).catch(() => {});
   ok('Good Choice narrates its options', (await page.evaluate(() => window.__spoken.filter(t => /^Choice \d/.test(t)).length)) >= 2);
   // choice buttons expose a speaker affordance
   ok('choice buttons show a speaker icon', (await page.locator('.choice .choice-speak').count()) >= 2);
