@@ -790,8 +790,42 @@ route('settings', () => {
       onchange: e => Store.setSetting(key, e.target.checked) });
     return h('label', { class: 'toggle' }, input, label);
   };
+  // Child profile — the age band decides how many feelings the daily check-in
+  // offers, so grown-ups need to move it up as the child grows.
+  function childCard() {
+    const child = Store.child();
+    if (!child) return h('div');
+    const card = h('div', { class: 'card' }, h('h3', {}, 'Child profile'));
+    if (Store.state.children.length > 1) {
+      card.append(h('select', { class: 'switcher', 'aria-label': 'Choose child',
+        onchange: e => { Store.setActiveChild(e.target.value); go('settings'); } },
+        ...Store.state.children.map(c => h('option', { value: c.id, selected: c.id === child.id }, `${c.avatar} ${c.name}`))));
+    }
+    const note = h('p', { class: 'stat' });
+    const showNote = (band) =>
+      note.textContent = `${child.avatar} ${child.name} · check-in offers ${checkinEmotions(band).length} feelings.`;
+    const row = h('div', { class: 'chiprow' });
+    AGE_BANDS.forEach(ab => {
+      const b = h('button', { class: 'chip' + (ab === child.ageBand ? ' on' : ''),
+        'aria-pressed': String(ab === child.ageBand), onclick: () => {
+          Store.setAgeBand(child.id, ab);
+          [...row.children].forEach(c => { c.classList.remove('on'); c.setAttribute('aria-pressed', 'false'); });
+          b.classList.add('on'); b.setAttribute('aria-pressed', 'true');
+          showNote(ab);
+        } }, ab);
+      row.append(b);
+    });
+    showNote(child.ageBand);
+    card.append(h('label', { class: 'flabel' }, 'Age band'), row, note,
+      h('p', { class: 'sub sub-left' },
+        'Younger children get fewer, bigger faces at check-in (3–4 → 6, 4–5 → 8, 5–6 → all 12). '
+        + 'The games always use all 12 feelings, so every card stays collectible.'));
+    return card;
+  }
+
   wrap.append(
     h('div', { class: 'topbar' }, h('button', { class: 'back', onclick: () => go('dashboard') }, '←'), h('h1', {}, 'Settings'), h('span')),
+    childCard(),
     h('div', { class: 'card' }, h('h3', {}, 'Audio & accessibility'),
       tog('Voice narration', 'narration'), tog('Sound effects', 'sfx'), tog('Reduce motion', 'reduceMotion'),
       (() => {
