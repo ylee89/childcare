@@ -562,12 +562,24 @@ route('calm', () => {
   function backBtn() {
     return h('button', { class: 'pill-btn mint', onclick: () => { Audio.stop(); Store.logEvent('calm', 'session'); go('calm'); } }, 'I feel calmer');
   }
+  // A calm instruction line. The trailing emoji becomes a deliberate icon above
+  // the sentence — left inside the text it wraps onto its own line and ends up
+  // crammed against the words. Narration still reads the whole original line.
+  const calmLine = (text) => setCalmLine(h('div', { class: 'calm-line' }), text);
+  function setCalmLine(el, text) {
+    const m = text.match(/^(.*?)\s*([\p{Extended_Pictographic}️‍]+)$/u);
+    el.innerHTML = '';
+    if (m) el.append(h('div', { class: 'calm-ico', 'aria-hidden': 'true' }, m[2]));
+    el.append(h('div', { class: 'breath-label' }, m ? m[1] : text));
+    return el;
+  }
 
   function balloon() {
     clearMenu();
     const bal = h('div', { class: 'balloon' });
-    const label = h('div', { class: 'breath-label' }, 'Breathe in…');
-    stageHost.append(bal, label, backBtn());
+    const line = calmLine('Breathe in…');
+    const label = line.querySelector('.breath-label');
+    stageHost.append(bal, line, backBtn());
     let inhale = true;
     const cycle = () => {
       if (Store.settings.reduceMotion) bal.style.opacity = inhale ? '1' : '.5';
@@ -584,7 +596,7 @@ route('calm', () => {
   function glitter() {
     clearMenu();
     const canvas = h('canvas', { class: 'glitter', width: '300', height: '380' });
-    stageHost.append(h('div', { class: 'breath-label' }, 'Shake it up, then watch it settle ✨'), canvas, backBtn());
+    stageHost.append(calmLine('Shake it up, then watch it settle ✨'), canvas, backBtn());
     const ctx = canvas.getContext('2d');
     const W = canvas.width, H = canvas.height;
     let parts = Array.from({ length: 120 }, () => ({
@@ -606,17 +618,17 @@ route('calm', () => {
     clearMenu();
     const steps = ['Find 5 things you can SEE 👀','Find 4 things you can HEAR 👂','Find 3 things you can TOUCH ✋','Take 2 slow breaths 🌬️','Give yourself 1 big hug 🤗'];
     let i = 0;
-    const label = h('div', { class: 'breath-label' });
+    const line = calmLine(steps[0]);
     const next = h('button', { class: 'pill-btn mint', onclick: () => {
-      i++; if (i < steps.length) { label.textContent = steps[i]; Audio.speak(steps[i]); }
+      i++; if (i < steps.length) { setCalmLine(line, steps[i]); Audio.speak(steps[i]); }
       else { Store.logEvent('calm', 'counting'); go('calm'); }
     } }, 'Next');
-    label.textContent = steps[0]; Audio.speak(steps[0]);
-    stageHost.append(label, next);
+    Audio.speak(steps[0]);
+    stageHost.append(line, next);
   }
   function quiet() {
     clearMenu();
-    stageHost.append(h('div', { class: 'breath-label' }, 'Close your eyes and just listen 🎧'), backBtn());
+    stageHost.append(calmLine('Close your eyes and just listen 🎧'), backBtn());
     Audio.speak('Close your eyes, and just listen. You are safe and calm.', { rate: 0.8 });
   }
   return wrap;
