@@ -222,7 +222,7 @@ route('home', () => {
 /* MOOD CHECK-IN                                                          */
 /* ===================================================================== */
 route('checkin', () => {
-  const wrap = h('div', { class: 'screen pad' });
+  const wrap = h('div', { class: 'screen' }); // no floating nav here, so no nav room needed
   const grid = h('div', { class: 'moodgrid' });
   EMOTIONS.forEach(e => {
     grid.append(h('button', { class: 'face', style: `--c:${e.color}`, onclick: () => {
@@ -234,14 +234,16 @@ route('checkin', () => {
   });
   wrap.append(
     h('div', { class: 'topbar' }, h('span'), h('span'),
-      h('button', { class: 'keybtn', onclick: () => go('home') }, '☁️ later')),
-    narrated('How are you feeling today?'),
-    grid,
-    h('button', { class: 'pill-btn ghost block', onclick: () => go('home') }, 'All done'),
+      h('button', { class: 'chip-btn', onclick: () => go('home') }, '☁️ later')),
+    // question + faces + "All done" sit centred in the space under the top bar
+    h('div', { class: 'stack-center' },
+      narrated('How are you feeling today?'),
+      grid,
+      h('button', { class: 'pill-btn ghost block spaced', onclick: () => go('home') }, 'All done')),
   );
   function step2(e) {
     wrap.innerHTML = '';
-    wrap.className = 'screen pad center-y'; // one message + buttons: centre it, don't pin it to the top
+    wrap.className = 'screen center-y'; // one message + buttons: centre it, don't pin it to the top
     const msg = `You feel ${e.key}. It's okay to feel ${e.key}.`;
     wrap.append(
       h('div', { class: 'mascot', style: `background:${e.color}` }, e.emoji),

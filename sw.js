@@ -1,5 +1,5 @@
 // Feel Friends — service worker for offline core lessons.
-const CACHE = 'feel-friends-v15';
+const CACHE = 'feel-friends-v16';
 const ASSETS = [
   './',
   './index.html',
