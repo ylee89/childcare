@@ -238,6 +238,12 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .glitter{background:var(--calm-surface);border-radius:18px;cursor:pointer;max-width:100%;}
 
 /* onboarding form */
+/* a title and the line that explains it belong together — tight inside the
+   group, one --section before the form starts */
+.head-group{display:flex;flex-direction:column;align-items:center;gap:var(--s2);
+  margin-bottom:calc(var(--section) - var(--stack));}
+.head-group .center-title{margin:0;}
+.head-group .mascot{margin-bottom:var(--s1);}
 .field{display:flex;flex-direction:column;gap:var(--s2);}
 .flabel{display:block;font-weight:800;margin:0 var(--s1);}
 .textinput{width:100%;padding:14px;border-radius:14px;border:2px solid #e7ddca;font-size:17px;min-height:56px;}
