@@ -39,7 +39,10 @@ build step. Lives in `app/`. Repo: `ylee89/childcare` (public).
 - `js/content.js` — SEL curriculum data (12 emotions + `checkinEmotions()`
   age-band subsets for the check-in, STORIES, PHRASES, EMPATHY,
   CHOICES, MISSIONS).
+- `js/icons.js` — the UI icon set: `icon(name, size)`, one 48×48 grid, brand
+  palette, no system emoji in chrome (worlds, calm, nav, rewards, story tiles).
 - `js/illustrations.js` — inline SVG: `storyScene(id)`, `storyOutcomeArt(good)`,
+  `avatarArt(species)` (the 4 crew portraits — avatars are keys now, not emoji),
   `mascot(size)`. Cute CREATURE characters (bear/bunny/fox/cat) + mascot "Lumi"
   (blue droplet + heart antenna). Story scenes have environments (playroom,
   kitchen w/ cookie jar, pastel slide). Tappable to hear story (no play button).

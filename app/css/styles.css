@@ -49,14 +49,20 @@ body[data-mode="adult"]{background:var(--adult-bg);}
   margin:0 0 calc(var(--section) - var(--stack));min-height:56px;}
 .topbar h1{font-size:24px;margin:0;font-weight:800;flex:1;text-align:center;line-height:1.2;}
 .back{font-size:24px;background:var(--cloud);border:none;border-radius:var(--pill);width:52px;height:52px;box-shadow:var(--shadow);cursor:pointer;flex:none;}
-.keybtn{font-size:20px;background:transparent;border:none;opacity:.45;cursor:pointer;flex:none;width:44px;height:44px;}
+.keybtn{font-size:20px;background:transparent;border:none;opacity:.75;cursor:pointer;flex:none;width:44px;height:44px;
+  display:flex;align-items:center;justify-content:center;}
 /* a labelled top-bar action (e.g. "☁️ later") — sized by its text, never wrapped */
 .chip-btn{border:none;background:var(--cloud);border-radius:var(--pill);padding:0 18px;min-height:44px;flex:none;
+  display:inline-flex;align-items:center;gap:var(--s2);
   font-size:15px;font-weight:800;color:#8a8296;box-shadow:var(--shadow);cursor:pointer;white-space:nowrap;}
-.greet{font-size:22px;font-weight:800;}
+.greet{font-size:22px;font-weight:800;margin:0;display:flex;align-items:center;gap:var(--s2);}
+.greet-ico{display:flex;flex:none;}
 
 .mascot{width:104px;height:104px;border-radius:50%;background:var(--sun);display:flex;align-items:center;
-  justify-content:center;font-size:58px;margin:var(--s1) auto 0;box-shadow:var(--shadow);cursor:pointer;flex:none;}
+  justify-content:center;font-size:58px;margin:var(--s1) auto 0;box-shadow:var(--shadow);cursor:pointer;flex:none;
+  overflow:hidden;}
+.mascot svg{display:block;}
+.mascot.brandmark{background:none;box-shadow:none;}   /* the mascot IS the art here */
 /* home brand wordmark */
 .brand{display:flex;align-items:center;justify-content:center;gap:var(--s2);margin:0;cursor:pointer;}
 .brand-logo{display:flex;width:34px;height:34px;}
@@ -70,7 +76,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .splash-mascot{display:flex;align-items:center;justify-content:center;
   animation:splashPop .6s ease-out, ffBob 3s ease-in-out .6s infinite;}
 .splash-mascot svg{filter:drop-shadow(0 8px 16px rgba(111,176,232,.35));}
-.splash-name{font-size:34px;font-weight:800;letter-spacing:.5px;
+.splash-name{font-size:34px;margin:0;font-weight:800;letter-spacing:.5px;
   background:linear-gradient(90deg,var(--coral),var(--sky));-webkit-background-clip:text;background-clip:text;color:transparent;}
 .splash-tag{font-size:16px;font-weight:700;color:#8a7f74;}
 @keyframes splashPop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
@@ -85,19 +91,22 @@ body[data-mode="adult"]{background:var(--adult-bg);}
   box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;
   font-weight:800;font-size:16px;color:var(--ink);transition:transform .12s;}
 .tile:active{transform:scale(.95);}
-.tile .ico{font-size:40px;}
+.tile .ico{font-size:40px;display:flex;}
+.ico svg{display:block;}
 .t-emotion{background:#FFF1CF;} .t-story{background:#E3F0FF;} .t-brave{background:#FFE4DD;}
 .t-empathy{background:#EEE8FF;} .t-choice{background:#E3F7E9;} .t-sticker{background:#FCE9F4;}
 
-/* persistent nav — floats over the screen, with a soft scrim so content
-   scrolling underneath stays readable */
+/* persistent nav — a docked bar, not buttons dropped on the content. Opaque
+   with a soft lift, so anything scrolling past reads as "behind the bar"
+   instead of "covered up". Screens using it reserve --nav-space below. */
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
   height:calc(var(--nav-h) + env(safe-area-inset-bottom));
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 var(--gutter) calc(var(--s4) + env(safe-area-inset-bottom));pointer-events:none;
-  background:linear-gradient(to top,var(--cream) 40%,rgba(255,248,239,0));}
+  padding:0 var(--gutter) calc(var(--s4) + env(safe-area-inset-bottom));pointer-events:auto;
+  background:var(--cream);border-radius:var(--radius-tile) var(--radius-tile) 0 0;
+  box-shadow:0 -8px 24px rgba(58,58,74,.10);}
 .nav .home,.nav .calm{pointer-events:auto;width:64px;height:64px;border-radius:50%;border:none;font-size:30px;
-  box-shadow:var(--shadow);cursor:pointer;}
+  box-shadow:var(--shadow);cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .nav .home{background:var(--cloud);} .nav .calm{background:var(--calm-glow);}
 
 /* generic prompts/buttons */
@@ -160,7 +169,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .menu-tile{background:var(--cloud);border:none;border-radius:var(--radius-card);padding:18px;box-shadow:var(--shadow);
   cursor:pointer;display:flex;align-items:center;gap:var(--s4);font-size:18px;font-weight:800;color:var(--ink);
   text-align:left;min-height:76px;line-height:1.3;}
-.menu-tile .ico{font-size:32px;flex:none;}
+.menu-tile .ico{font-size:32px;flex:none;display:flex;}
 
 /* cards deck */
 .count{text-align:center;font-weight:800;margin:0;}
@@ -183,6 +192,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 /* emoji-only scenes (empathy / good choice) stay an anchor, not half the screen */
 .scene:not(.illus){aspect-ratio:auto;height:clamp(112px,17vh,168px);font-size:clamp(56px,9vh,76px);}
 .scene.illus{font-size:0;padding:0;overflow:hidden;background:none;}
+.scene svg{display:block;}
 .scene.illus svg{display:block;width:100%;height:100%;border-radius:var(--radius-card);}
 /* gentle life in story scenes (composes via translate/rotate props, not transform) */
 @media (prefers-reduced-motion: no-preference){
@@ -213,6 +223,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .try{font-size:20px;font-weight:800;}
 .mic{width:150px;height:150px;border-radius:50%;border:none;background:var(--coral);color:#fff;font-size:60px;
   box-shadow:var(--shadow);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.mic svg{display:block;}
 .mic.rec{animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,140,122,.5)}50%{transform:scale(1.06);box-shadow:0 0 0 18px rgba(255,140,122,0)}}
 .mic-label{font-weight:800;}
@@ -225,7 +236,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .calm-tile{aspect-ratio:1.1;border:none;border-radius:24px;background:var(--calm-surface);color:var(--calm-text);
   font-size:17px;font-weight:800;cursor:pointer;display:flex;flex-direction:column;align-items:center;
   justify-content:center;gap:var(--s2);padding:var(--s3);line-height:1.3;}
-.calm-tile .ico{font-size:42px;}
+.calm-tile .ico{font-size:42px;display:flex;}
 /* a calm activity is the whole screen: centre it instead of pinning it to the top */
 .calm-stage:empty{display:none;}   /* while the menu is up, don't claim half the height */
 .calm-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -252,16 +263,18 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .textinput{width:100%;padding:14px;border-radius:14px;border:2px solid #e7ddca;font-size:17px;min-height:56px;}
 .chiprow{display:flex;flex-wrap:wrap;gap:var(--tight);}
 .chip{border:2px solid #e7ddca;background:var(--cloud);border-radius:var(--pill);padding:12px 18px;font-size:16px;font-weight:800;cursor:pointer;}
-.chip.big{font-size:30px;padding:8px 12px;} .chip.on{border-color:var(--sky);background:#e9f5ff;}
+.chip.big{font-size:30px;padding:6px;line-height:0;}
+.chip.big svg{display:block;border-radius:50%;} .chip.on{border-color:var(--sky);background:#e9f5ff;}
 
 /* sticker book */
 .card-lite{background:var(--cloud);border-radius:var(--radius-card);padding:var(--stack);box-shadow:var(--shadow);margin:0;
   display:flex;flex-direction:column;gap:var(--s3);}
-.card-lite h3{margin:0;font-size:16px;}
+.card-lite h2{margin:0;font-size:16px;}
 .mini-deck{display:flex;flex-wrap:wrap;gap:var(--s2);font-size:26px;} .mini.off{opacity:.4;}
 .shelf{display:flex;flex-wrap:wrap;gap:var(--s4);} .sticker{display:flex;flex-direction:column;align-items:center;}
-.sticker .se{font-size:34px;} .sticker small{font-weight:800;}
-.friends{font-size:22px;line-height:1.6;}
+.sticker .se{font-size:34px;display:flex;} .sticker small{font-weight:800;}
+.friends{display:flex;flex-wrap:wrap;gap:var(--s4);}
+.friend{display:flex;flex-direction:column;align-items:center;gap:var(--s1);font-weight:800;}
 
 /* gate */
 .gate-eq{text-align:center;font-size:34px;font-weight:800;margin:0;}
@@ -279,7 +292,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 .switcher{font-size:15px;font-weight:800;padding:10px;border-radius:10px;border:2px solid #d9e0ec;background:#fff;color:var(--adult-primary);}
 .card{background:var(--adult-surface);border-radius:16px;padding:var(--stack);box-shadow:0 2px 8px rgba(0,0,0,.06);margin:0;
   display:flex;flex-direction:column;gap:var(--s3);}
-.card h3{margin:0;font-size:16px;color:var(--adult-primary);}
+.card h2{margin:0;font-size:16px;color:var(--adult-primary);}
 .stat{font-weight:700;font-size:15px;margin:0;line-height:1.45;}
 .bar{display:flex;align-items:center;gap:10px;margin:0;font-size:14px;font-weight:700;}
 .bars{display:flex;flex-direction:column;gap:var(--s2);}
@@ -297,7 +310,7 @@ body[data-mode="adult"]{background:var(--adult-bg);}
 @media (max-height:700px){
   .mascot{width:76px;height:76px;font-size:42px;}
   .brand-name{font-size:22px;} .brand-logo{width:28px;height:28px;}
-  .tile{padding:12px 8px;} .tile .ico{font-size:32px;}
+  .tile{padding:12px 8px;} .tile .ico{font-size:32px;} .tile .ico svg{width:36px;height:36px;}
   .prompt{font-size:20px;}
   .faces .face{aspect-ratio:1.35;} .faces .fe{font-size:40px;}
   .target .tface{font-size:46px;}

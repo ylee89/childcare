@@ -5,7 +5,8 @@ import {
   EMOTIONS, emo, checkinEmotions, SITUATIONS, STORIES, PHRASES, phrase,
   EMPATHY, CHOICES, MISSIONS, AVATARS, AGE_BANDS,
 } from './content.js';
-import { storyScene, storyOutcomeArt, mascot } from './illustrations.js';
+import { storyScene, storyOutcomeArt, mascot, avatarArt, AVATAR_ART } from './illustrations.js';
+import { icon } from './icons.js';
 
 const root = document.getElementById('app');
 
@@ -46,24 +47,24 @@ function topbar(title, { back = null, gate = true } = {}) {
   return h('div', { class: 'topbar' },
     back ? h('button', { class: 'back', 'aria-label': 'Back', onclick: () => go(back) }, '←') : h('span'),
     h('h1', {}, title),
-    gate ? h('button', { class: 'keybtn', 'aria-label': 'Grown-ups', onclick: () => go('gate') }, '🔑') : h('span'));
+    gate ? h('button', { class: 'keybtn', 'aria-label': 'Grown-ups', onclick: () => go('gate'), html: icon('key', 28) }) : h('span'));
 }
 function persistentNav() {
   return h('nav', { class: 'nav' },
-    h('button', { class: 'home', 'aria-label': 'Home', onclick: () => go('home') }, '🏠'),
-    h('button', { class: 'calm', 'aria-label': 'Calm Corner', onclick: () => go('calm') }, '🫧'));
+    h('button', { class: 'home', 'aria-label': 'Home', onclick: () => go('home'), html: icon('home', 34) }),
+    h('button', { class: 'calm', 'aria-label': 'Calm Corner', onclick: () => go('calm'), html: icon('calm', 34) }));
 }
 // narrate prompt text and return the element.
 // speak=false makes it tap-to-read only (use when another call narrates it),
 // so we never double-fire speech and cut the line off.
-function narrated(text, cls = 'prompt', speak = true) {
-  const e = h('div', { class: cls, onclick: () => Audio.speak(text) }, text);
+function narrated(text, cls = 'prompt', speak = true, tag = 'div') {
+  const e = h(tag, { class: cls, onclick: () => Audio.speak(text) }, text);
   if (speak) setTimeout(() => Audio.speak(text), 120);
   return e;
 }
 function toast(parent, text, kind = '') {
   let t = parent.querySelector('.toast');
-  if (!t) { t = h('div', { class: 'toast' }); parent.append(t); }
+  if (!t) { t = h('div', { class: 'toast', role: 'status', 'aria-live': 'polite' }); parent.append(t); }
   t.className = 'toast ' + kind;
   t.textContent = text;
   t.style.display = 'block';
@@ -93,7 +94,7 @@ function narrateScene(promptText, choiceLabels) {
 function recorderWidget(key, label, onDone) {
   const wrap = h('div', { class: 'rec-widget' });
   const status = h('div', { class: 'mic-label' }, 'tap to record');
-  const micBtn = h('button', { class: 'mic small', 'aria-label': 'Record yourself' }, '🎤');
+  const micBtn = h('button', { class: 'mic small', 'aria-label': 'Record yourself', html: icon('mic', 40) });
   const controls = h('div', { class: 'rowbtns' });
   wrap.append(h('div', { class: 'center' }, micBtn, status, controls));
 
@@ -148,13 +149,14 @@ function recorderWidget(key, label, onDone) {
 /* ONBOARDING                                                            */
 /* ===================================================================== */
 route('onboarding', () => {
-  let name = '', ageBand = '4-5', avatar = '🐻';
+  let name = '', ageBand = '4-5', avatar = 'bear';
   const wrap = h('div', { class: 'screen' }); // no floating nav here, so no nav room needed
   const avatarRow = h('div', { class: 'chiprow' });
   AVATARS.forEach(a => {
-    const b = h('button', { class: 'chip big' + (a === avatar ? ' on' : ''), onclick: () => {
-      avatar = a; [...avatarRow.children].forEach(c => c.classList.remove('on')); b.classList.add('on');
-    } }, a);
+    const b = h('button', { class: 'chip big' + (a === avatar ? ' on' : ''),
+      'aria-label': AVATAR_ART[a].name, html: avatarArt(a, 56), onclick: () => {
+        avatar = a; [...avatarRow.children].forEach(c => c.classList.remove('on')); b.classList.add('on');
+      } });
     avatarRow.append(b);
   });
   const ageRow = h('div', { class: 'chiprow' });
@@ -173,7 +175,7 @@ route('onboarding', () => {
     // mascot + title + subtitle are one header group (tight), a section away
     // from the form below it
     h('div', { class: 'head-group' },
-      h('div', { class: 'mascot' }, '🐻'),
+      h('div', { class: 'mascot brandmark', html: mascot(104) }),
       h('h1', { class: 'center-title' }, 'Welcome to Feel Friends'),
       h('p', { class: 'sub' }, 'Made for ages 3–6. A grown-up helps set up — just once.')),
     field("Child's name", nameInput),
@@ -194,23 +196,25 @@ route('home', () => {
   const child = Store.child();
   const wrap = h('div', { class: 'screen pad' });
   const worlds = [
-    ['emotion', '😊', 'Emotion Explorer', 't-emotion'],
-    ['stories', '📖', 'Story Adventures', 't-story'],
-    ['brave',   '🗣️', 'Brave Voice', 't-brave'],
-    ['empathy', '💜', 'Empathy Lab', 't-empathy'],
-    ['choice',  '✅', 'Good Choice', 't-choice'],
-    ['sticker', '📚', 'Sticker Book', 't-sticker'],
+    ['emotion', 'emotion', 'Emotion Explorer', 't-emotion'],
+    ['stories', 'stories', 'Story Adventures', 't-story'],
+    ['brave',   'brave',   'Brave Voice', 't-brave'],
+    ['empathy', 'empathy', 'Empathy Lab', 't-empathy'],
+    ['choice',  'choice',  'Good Choice', 't-choice'],
+    ['sticker', 'sticker', 'Sticker Book', 't-sticker'],
   ];
   const grid = h('div', { class: 'grid' });
   worlds.forEach(([r, ico, label, cls]) =>
     grid.append(h('button', { class: 'tile ' + cls, onclick: () => { Audio.speak(label); go(r); } },
-      h('span', { class: 'ico' }, ico), label)));
+      h('span', { class: 'ico', html: icon(ico, 46) }), label)));
 
   wrap.append(
     h('div', { class: 'topbar' },
-      h('div', { class: 'greet' }, `☀️ Hi, ${child?.name || 'Friend'}!`),
-      h('button', { class: 'keybtn', onclick: () => go('gate') }, '🔑')),
-    h('div', { class: 'mascot', onclick: () => Audio.speak(`Hi ${child?.name || 'friend'}! What would you like to do?`) }, child?.avatar || '🐻'),
+      h('h1', { class: 'greet' },
+        h('span', { class: 'greet-ico', html: icon('sun', 28) }), `Hi, ${child?.name || 'Friend'}!`),
+      h('button', { class: 'keybtn', 'aria-label': 'Grown-ups', onclick: () => go('gate'), html: icon('key', 28) })),
+    h('div', { class: 'mascot', html: avatarArt(child?.avatar, 104),
+      onclick: () => Audio.speak(`Hi ${child?.name || 'friend'}! What would you like to do?`) }),
     h('div', { class: 'brand', onclick: () => Audio.speak('Feel Friends') },
       h('span', { class: 'brand-logo', html: mascot(34) }),
       h('span', { class: 'brand-name' }, 'Feel Friends')),
@@ -239,10 +243,11 @@ route('checkin', () => {
   });
   wrap.append(
     h('div', { class: 'topbar' }, h('span'), h('span'),
-      h('button', { class: 'chip-btn', onclick: () => go('home') }, '☁️ later')),
+      h('button', { class: 'chip-btn', onclick: () => go('home') },
+        h('span', { class: 'chip-ico', html: icon('cloud', 20) }), 'later')),
     // question + faces + "All done" sit centred in the space under the top bar
     h('div', { class: 'stack-center' },
-      narrated('How are you feeling today?'),
+      narrated('How are you feeling today?', 'prompt', true, 'h1'),
       grid,
       h('button', { class: 'pill-btn ghost block spaced', onclick: () => go('home') }, 'All done')),
   );
@@ -252,7 +257,7 @@ route('checkin', () => {
     const msg = `You feel ${e.key}. It's okay to feel ${e.key}.`;
     wrap.append(
       h('div', { class: 'mascot', style: `background:${e.color}` }, e.emoji),
-      narrated(msg),
+      narrated(msg, 'prompt', true, 'h1'),
       h('div', { class: 'rowbtns' },
         h('button', { class: 'pill-btn ghost', onclick: () => go('home') }, 'Back home'),
         ...(['sad','angry','scared','nervous','lonely','frustrated'].includes(e.key)
@@ -272,16 +277,17 @@ route('emotion', () => {
     topbar('Emotion Explorer', { back: 'home' }),
     narrated('Pick a feelings game!'),
     h('div', { class: 'menu' },
-      menuTile('😊', 'Mood Check-in', () => go('checkin')),
-      menuTile('🔎', 'Face Match', () => go('facematch')),
-      menuTile('💭', 'Name That Feeling', () => go('nametfeeling')),
-      menuTile('🃏', 'My Feeling Cards', () => go('cards'))),
+      menuTile('emotion', 'Mood Check-in', () => go('checkin')),
+      menuTile('star', 'Face Match', () => go('facematch')),
+      menuTile('think', 'Name That Feeling', () => go('nametfeeling')),
+      menuTile('sticker', 'My Feeling Cards', () => go('cards'))),
     persistentNav());
   return wrap;
 });
+// ico is a name from js/icons.js
 function menuTile(ico, label, onclick) {
   return h('button', { class: 'menu-tile', onclick: () => { Audio.speak(label); onclick(); } },
-    h('span', { class: 'ico' }, ico), label);
+    h('span', { class: 'ico', html: icon(ico, 40) }), label);
 }
 
 route('facematch', () => {
@@ -386,7 +392,7 @@ route('cards', () => {
 route('stories', () => {
   const wrap = h('div', { class: 'screen pad' });
   const list = h('div', { class: 'menu' });
-  STORIES.forEach(s => list.append(menuTile(s.emoji, s.title, () => go('story', { id: s.id }))));
+  STORIES.forEach(s => list.append(menuTile(s.icon, s.title, () => go('story', { id: s.id }))));
   wrap.append(topbar('Story Adventures', { back: 'home' }), narrated('Pick a story.'), list, persistentNav());
   return wrap;
 });
@@ -448,7 +454,7 @@ route('story', ({ id }) => {
 route('brave', () => {
   const wrap = h('div', { class: 'screen pad' });
   const list = h('div', { class: 'menu' });
-  PHRASES.forEach(p => list.append(menuTile('🗣️', `"${p.text}"`, () => go('brave-practice', { id: p.id }))));
+  PHRASES.forEach(p => list.append(menuTile('brave', `"${p.text}"`, () => go('brave-practice', { id: p.id }))));
   wrap.append(topbar('Brave Voice', { back: 'home' }), narrated('Pick a brave phrase to practice.'), list, persistentNav());
   return wrap;
 });
@@ -463,7 +469,7 @@ route('brave-practice', ({ id }) => {
     h('p', { class: 'sub', onclick: () => Audio.speak(p.when) }, p.when)));
 
   const status = h('div', { class: 'mic-label' }, 'tap to try');
-  const micBtn = h('button', { class: 'mic' }, '🎤');
+  const micBtn = h('button', { class: 'mic', 'aria-label': 'Record yourself', html: icon('mic', 60) });
   const controls = h('div', { class: 'rowbtns' });
   // the mic is the whole point of this screen — let it take the leftover height
   wrap.append(h('div', { class: 'center grow' },
@@ -544,16 +550,16 @@ route('calm', () => {
   const menu = h('div', { class: 'stack-center' },
     narrated('Pick a calm thing.'),
     h('div', { class: 'calm-grid' },
-      calmTile('🎈', 'Balloon Breathing', balloon),
-      calmTile('✨', 'Glitter Jar', glitter),
-      calmTile('🔢', 'Counting Calm', counting),
-      calmTile('🎧', 'Quiet Listen', quiet)));
+      calmTile('balloon', 'Balloon Breathing', balloon),
+      calmTile('glitter', 'Glitter Jar', glitter),
+      calmTile('counting', 'Counting Calm', counting),
+      calmTile('quiet', 'Quiet Listen', quiet)));
   const stageHost = h('div', { class: 'calm-stage' });
   wrap.append(menu, stageHost);
 
   function calmTile(ico, label, fn) {
     return h('button', { class: 'calm-tile', onclick: () => { Audio.speak(label); fn(); } },
-      h('span', { class: 'ico' }, ico), label);
+      h('span', { class: 'ico', html: icon(ico, 40) }), label);
   }
   function clearMenu() {
     menu.remove();
@@ -667,7 +673,7 @@ route('empathy', () => {
   function mission() {
     const m = sample(MISSIONS, 1)[0];
     stage.innerHTML = '';
-    stage.append(h('div', { class: 'scene' }, '🌟'), narrated('Your kindness mission: ' + m),
+    stage.append(h('div', { class: 'scene', html: icon('star', 90) }), narrated('Your kindness mission: ' + m),
       h('div', { class: 'rowbtns' },
         h('button', { class: 'pill-btn mint', onclick: () => { Store.completeMission(m); Audio.pop(); toast(wrap,'Mission accepted! Try it today. 💛','ok'); } }, "I'll do it!"),
         h('button', { class: 'pill-btn ghost', onclick: () => { idx++; round(); } }, 'Back')));
@@ -702,12 +708,12 @@ route('choice', () => {
     const btns = good
       ? [h('button', { class: 'pill-btn', onclick: () => { idx++; if (idx >= CHOICES.length) finish(); else round(); } }, 'Next')]
       : [h('button', { class: 'pill-btn ghost', onclick: round }, 'Try again')];
-    stage.append(h('div', { class: 'scene' }, good ? '🌟' : '🤔'), narrated(text), h('div', { class: 'rowbtns' }, ...btns));
+    stage.append(h('div', { class: 'scene', html: icon(good ? 'star' : 'think', 90) }), narrated(text), h('div', { class: 'rowbtns' }, ...btns));
   }
   function finish() {
     Store.earnSticker('choice', 'Good Chooser');
     stage.innerHTML = '';
-    stage.append(h('div', { class: 'scene' }, '🏆'), narrated('You made great choices! ⭐ Sticker earned.'),
+    stage.append(h('div', { class: 'scene', html: icon('trophy', 90) }), narrated('You made great choices! ⭐ Sticker earned.'),
       h('div', { class: 'rowbtns' },
         h('button', { class: 'pill-btn', onclick: () => { idx = 0; round(); } }, 'Play again')));
   }
@@ -721,20 +727,23 @@ route('choice', () => {
 route('sticker', () => {
   const wrap = h('div', { class: 'screen pad' });
   const d = Store.childData();
-  const stickerEmoji = { emotion:'⭐', story:'📖', brave:'💪', empathy:'💜', choice:'✅', calm:'🎈' };
+  const stickerIcon = { emotion:'star', story:'stories', brave:'brave', empathy:'empathy', choice:'choice', calm:'balloon' };
   const counts = {};
   d.stickers.forEach(s => counts[s.id] = (counts[s.id] || 0) + 1);
   const shelf = h('div', { class: 'shelf' });
   if (d.stickers.length === 0) shelf.append(h('p', { class: 'sub' }, 'Play the worlds to earn stickers!'));
   Object.entries(counts).forEach(([id, n]) =>
-    shelf.append(h('div', { class: 'sticker' }, h('span', { class: 'se' }, stickerEmoji[id] || '⭐'), h('small', {}, '×' + n))));
+    shelf.append(h('div', { class: 'sticker' },
+      h('span', { class: 'se', html: icon(stickerIcon[id] || 'star', 40) }), h('small', {}, '×' + n))));
 
   wrap.append(topbar('My Collection', { back: 'home' }),
-    h('div', { class: 'card-lite' }, h('h3', {}, `Feeling cards: ${d.cards.length}/${EMOTIONS.length}`),
+    h('div', { class: 'card-lite' }, h('h2', {}, `Feeling cards: ${d.cards.length}/${EMOTIONS.length}`),
       h('div', { class: 'mini-deck' }, ...EMOTIONS.map(e => h('span', { class: 'mini' + (Store.hasCard(e.key) ? '' : ' off') }, Store.hasCard(e.key) ? e.emoji : '❓')))),
-    h('div', { class: 'card-lite' }, h('h3', {}, 'Stickers I earned'), shelf),
-    h('div', { class: 'card-lite' }, h('h3', {}, 'Friends I met'),
-      h('div', { class: 'friends' }, '🐻 Mochi  🐰 Pip  🦊 Fen  🦉 Luna')),
+    h('div', { class: 'card-lite' }, h('h2', {}, 'Stickers I earned'), shelf),
+    h('div', { class: 'card-lite' }, h('h2', {}, 'Friends I met'),
+      h('div', { class: 'friends' },
+        ...Object.entries(AVATAR_ART).map(([key, a]) => h('div', { class: 'friend' },
+          h('span', { html: avatarArt(key, 52) }), h('small', {}, a.name.split(' ')[0]))))),
     persistentNav());
   return wrap;
 });
@@ -786,19 +795,19 @@ route('dashboard', () => {
   if (!Object.keys(s.emoCount).length) emoBars.append(h('p', { class: 'sub' }, 'No mood check-ins yet this week.'));
 
   const childSwitch = h('select', { class: 'switcher', onchange: e => { Store.setActiveChild(e.target.value); go('dashboard'); } },
-    ...Store.state.children.map(c => h('option', { value: c.id, selected: c.id === child.id }, `${c.avatar} ${c.name}`)));
+    ...Store.state.children.map(c => h('option', { value: c.id, selected: c.id === child.id }, c.name)));
 
   wrap.append(
     h('div', { class: 'topbar' }, h('button', { class: 'back', onclick: () => go('home') }, '←'), h('h1', {}, 'Dashboard'), childSwitch),
-    h('div', { class: 'card' }, h('h3', {}, 'This week'),
+    h('div', { class: 'card' }, h('h2', {}, 'This week'),
       h('p', { class: 'stat' }, `${s.days} days active · ${s.worlds} worlds · ${s.checkins} check-ins`)),
-    h('div', { class: 'card' }, h('h3', {}, 'Feelings this week'), emoBars),
-    h('div', { class: 'card' }, h('h3', {}, 'Progress'),
+    h('div', { class: 'card' }, h('h2', {}, 'Feelings this week'), emoBars),
+    h('div', { class: 'card' }, h('h2', {}, 'Progress'),
       h('p', { class: 'stat' }, `🃏 ${s.cards}/${EMOTIONS.length} feeling cards · ⭐ ${s.stickers} stickers`)),
-    h('div', { class: 'card' }, h('h3', {}, '💡 Areas to support'),
+    h('div', { class: 'card' }, h('h2', {}, '💡 Areas to support'),
       h('div', { class: 'insight' }, Store.insight()),
       h('button', { class: 'pill-btn adult block', onclick: () => go('brave') }, 'Open Brave Voice →')),
-    h('div', { class: 'card' }, h('h3', {}, 'Settings & data'),
+    h('div', { class: 'card' }, h('h2', {}, 'Settings & data'),
       h('button', { class: 'pill-btn ghost block', onclick: () => go('settings') }, 'Settings')),
   );
   return wrap;
@@ -819,15 +828,15 @@ route('settings', () => {
   function childCard() {
     const child = Store.child();
     if (!child) return h('div');
-    const card = h('div', { class: 'card' }, h('h3', {}, 'Child profile'));
+    const card = h('div', { class: 'card' }, h('h2', {}, 'Child profile'));
     if (Store.state.children.length > 1) {
       card.append(h('select', { class: 'switcher', 'aria-label': 'Choose child',
         onchange: e => { Store.setActiveChild(e.target.value); go('settings'); } },
-        ...Store.state.children.map(c => h('option', { value: c.id, selected: c.id === child.id }, `${c.avatar} ${c.name}`))));
+        ...Store.state.children.map(c => h('option', { value: c.id, selected: c.id === child.id }, c.name))));
     }
     const note = h('p', { class: 'stat' });
     const showNote = (band) =>
-      note.textContent = `${child.avatar} ${child.name} · check-in offers ${checkinEmotions(band).length} feelings.`;
+      note.textContent = `${child.name} · check-in offers ${checkinEmotions(band).length} feelings.`;
     const row = h('div', { class: 'chiprow' });
     AGE_BANDS.forEach(ab => {
       const b = h('button', { class: 'chip' + (ab === child.ageBand ? ' on' : ''),
@@ -850,7 +859,7 @@ route('settings', () => {
   wrap.append(
     h('div', { class: 'topbar' }, h('button', { class: 'back', onclick: () => go('dashboard') }, '←'), h('h1', {}, 'Settings'), h('span')),
     childCard(),
-    h('div', { class: 'card' }, h('h3', {}, 'Audio & accessibility'),
+    h('div', { class: 'card' }, h('h2', {}, 'Audio & accessibility'),
       tog('Voice narration', 'narration'), tog('Sound effects', 'sfx'), tog('Reduce motion', 'reduceMotion'),
       (() => {
         const status = h('div', { class: 'sub', style: 'margin-top:10px' }, 'Tap to test the voice.');
@@ -870,7 +879,7 @@ route('settings', () => {
         refresh();
         return h('div', {}, btn, status);
       })()),
-    h('div', { class: 'card' }, h('h3', {}, 'Privacy & data'),
+    h('div', { class: 'card' }, h('h2', {}, 'Privacy & data'),
       h('p', { class: 'sub' }, 'All data is stored on this device. Nothing is uploaded.'),
       h('button', { class: 'pill-btn ghost block', onclick: () => {
         const blob = new Blob([JSON.stringify(Store.state, null, 2)], { type: 'application/json' });
@@ -889,7 +898,7 @@ function splash() {
   document.body.dataset.mode = 'child';
   const s = h('div', { class: 'splash' },
     h('div', { class: 'splash-mascot', html: mascot(132) }),
-    h('div', { class: 'splash-name' }, 'Feel Friends'),
+    h('h1', { class: 'splash-name' }, 'Feel Friends'),
     h('div', { class: 'splash-tag' }, 'Big feelings are okay 💛'));
   root.innerHTML = '';
   root.append(s);

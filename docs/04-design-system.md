@@ -198,6 +198,15 @@ A short catalog (props/states summarized). All have a **narrated** state.
   abilities, family structures, and cultures by default.
 - **Asset format:** vector (SVG) UI + Lottie/Rive for animation, so everything
   scales crisply and ships small for offline.
+- **The icon set lives in [`app/js/icons.js`](../app/js/icons.js)** — every UI
+  icon (the six worlds, the calm activities, nav, chrome, rewards, story tiles)
+  is drawn there on one 48×48 grid in the palette above, with the same soft
+  volumetric shading as the story art. **No system emoji in the chrome:** emoji
+  render differently on iOS / Android / Windows, which puts the visual identity
+  outside our control and reads as placeholder art. Avatars are the four crew
+  characters from [`app/js/illustrations.js`](../app/js/illustrations.js).
+  Emotion *faces* are still emoji — those are content, and a consistent set of
+  12 expressive faces is its own design pass (tracked as a follow-up).
 
 ---
 
