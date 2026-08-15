@@ -46,7 +46,7 @@ export const SITUATIONS = [
 // Story Adventures — branching scenarios
 export const STORIES = [
   {
-    id:'sharing', title:'Sharing', emoji:'🧸', face:'😊',
+    id:'sharing', title:'Sharing', icon:'story-sharing', emoji:'🧸', face:'😊',
     scene:"You're playing with a truck. Another friend really wants a turn.",
     choices:[
       { emoji:'🗣️', label:'"We can take turns. You can have it next."', good:true,
@@ -58,7 +58,7 @@ export const STORIES = [
     ]
   },
   {
-    id:'pushed', title:'Being pushed', emoji:'🧍', face:'😠',
+    id:'pushed', title:'Being pushed', icon:'story-pushed', emoji:'🧍', face:'😠',
     scene:"You're standing in line and someone pushes you.",
     choices:[
       { emoji:'🗣️', label:'"Please stop. I don\'t like that."', good:true,
@@ -70,7 +70,7 @@ export const STORIES = [
     ]
   },
   {
-    id:'excluded', title:'Being left out', emoji:'🙅', face:'😞',
+    id:'excluded', title:'Being left out', icon:'story-excluded', emoji:'🙅', face:'😞',
     scene:"Two friends are playing and say, \"You can't play with us.\"",
     choices:[
       { emoji:'🗣️', label:'"Can I play too?"', good:true,
@@ -82,7 +82,7 @@ export const STORIES = [
     ]
   },
   {
-    id:'help', title:'Asking for help', emoji:'🙋', face:'🤩',
+    id:'help', title:'Asking for help', icon:'story-help', emoji:'🙋', face:'🤩',
     scene:"You can't open your snack and you're getting frustrated.",
     choices:[
       { emoji:'🗣️', label:'"Can I have help, please?"', good:true,
@@ -133,5 +133,5 @@ export const MISSIONS = [
   "Give a gentle hug (if they want one) 🤗",
 ];
 
-export const AVATARS = ['🐻','🐰','🦊','🦉','🐱','🐸','🐥','🦄'];
+export const AVATARS = ['bear', 'bunny', 'fox', 'cat'];
 export const AGE_BANDS = ['3-4','4-5','5-6'];

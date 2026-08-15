@@ -22,7 +22,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await sleep(1800);
   await page.evaluate(() => {
     const S = window.FeelFriends.Store;
-    if (!S.isOnboarded()) S.addChild({ name: 'Aria', ageBand: '5-6', avatar: '🦊' });
+    if (!S.isOnboarded()) S.addChild({ name: 'Aria', ageBand: '5-6', avatar: 'fox' });
     S.checkIn('happy'); // mark today's check-in done so home shows directly
     window.FeelFriends.go('home');
   });

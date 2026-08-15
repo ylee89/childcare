@@ -27,7 +27,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   await page.reload({ waitUntil: 'networkidle' });
   await page.fill('.textinput', 'Aria');
   await page.locator('.chip', { hasText: '5-6' }).click();
-  await page.locator('.chip.big', { hasText: '🦊' }).click();
+  await page.locator('.chip.big[aria-label*="fox"]').click();
   await page.locator('.pill-btn', { hasText: "Let's go" }).click();
   await page.waitForSelector('.moodgrid');
 

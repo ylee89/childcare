@@ -104,14 +104,28 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   ok('onboarding label hugs its control', formSpacing.labelToControl === 8, JSON.stringify(formSpacing));
   await page.fill('.textinput', 'Aria');
   await page.locator('.chiprow .chip', { hasText: '5-6' }).click();
-  await page.locator('.chiprow .chip.big', { hasText: '🦊' }).click();
+  await page.locator('.chiprow .chip.big[aria-label*="fox"]').click();
   await page.locator('.pill-btn', { hasText: "Let's go" }).click();
   await page.waitForFunction(() => document.querySelector('.grid'));
   const child = await stateChild();
   ok('child saved with name', child && child.name === 'Aria', JSON.stringify(child));
   ok('child saved with age band', child && child.ageBand === '5-6');
-  ok('child saved with avatar', child && child.avatar === '🦊');
+  ok('child saved with avatar', child && child.avatar === 'fox');
   ok('home shows 6 world tiles', await page.locator('.grid .tile').count() === 6);
+  // the icon set: UI chrome is drawn SVG, not system emoji (which render
+  // differently per platform and read as placeholder art)
+  const chrome = await page.evaluate(() => {
+    const emoji = /\p{Extended_Pictographic}/u;
+    const spots = [...document.querySelectorAll('.tile .ico, .nav button, .keybtn, .mascot, .greet-ico')];
+    return {
+      count: spots.length,
+      svg: spots.filter(el => el.querySelector('svg')).length,
+      withEmoji: spots.filter(el => emoji.test(el.textContent || '')).map(el => el.className),
+    };
+  });
+  ok('world tiles, nav and chrome are drawn icons', chrome.count >= 10 && chrome.svg === chrome.count,
+     JSON.stringify(chrome));
+  ok('no system emoji left in the chrome', chrome.withEmoji.length === 0, JSON.stringify(chrome.withEmoji));
 
   // ---- 2. Daily mood check-in (auto-prompts) ----
   sec('2. Mood check-in records a feeling');

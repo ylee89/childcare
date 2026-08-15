@@ -287,3 +287,29 @@ export function mascot(size = 120) {
       <path d="M16 44 l1.2 3 3 1.2 -3 1.2 -1.2 3 -1.2 -3 -3 -1.2 3 -1.2 Z"/></g>
   </svg>`;
 }
+
+// ---- avatar portraits: the four Feel Friends, drawn not typed ----------
+// Same creature language as the story art, framed as a round portrait so the
+// picker and the home greeting show real characters instead of system emoji.
+export const AVATAR_ART = {
+  bear:  { color: '#E8A86B', bg: '#FFF1CF', name: 'Mochi the bear' },
+  bunny: { color: '#F7C1D4', bg: '#FCE9F4', name: 'Pip the bunny' },
+  fox:   { color: '#F08A4B', bg: '#FFE4DD', name: 'Fen the fox' },
+  cat:   { color: '#B8A6E8', bg: '#EEE8FF', name: 'Luna the cat' },
+};
+// Accepts a species key; older profiles stored an emoji, so map those too.
+const LEGACY_AVATAR = { '🐻': 'bear', '🐰': 'bunny', '🦊': 'fox', '🐱': 'cat', '🦉': 'cat', '🐸': 'bunny', '🐥': 'bear', '🦄': 'fox' };
+export const avatarSpecies = (v) => (AVATAR_ART[v] ? v : (LEGACY_AVATAR[v] || 'bear'));
+
+export function avatarArt(value, size = 64) {
+  const sp = avatarSpecies(value);
+  const a = AVATAR_ART[sp];
+  return `<svg viewBox="0 0 120 120" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${a.name}">
+    ${DEFS}
+    <defs><clipPath id="ffAv${sp}"><circle cx="60" cy="60" r="60"/></clipPath></defs>
+    <circle cx="60" cy="60" r="60" fill="${a.bg}"/>
+    <g clip-path="url(#ffAv${sp})"><g transform="translate(0 22) scale(1.15)">
+      ${creature(52, 46, { species: sp, color: a.color, face: 'smile', arm: 'none', noShadow: true })}
+    </g></g>
+  </svg>`;
+}
